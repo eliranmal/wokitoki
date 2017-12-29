@@ -1,1 +1,1 @@
-# wokitoki.me
+# wokitoki
