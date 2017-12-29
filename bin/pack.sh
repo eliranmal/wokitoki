@@ -8,9 +8,9 @@ main() {
 	local pack_target_dir="$root_dir"'/export'
 
 	echo "packing [$pack_source_dir => $pack_target_dir]"
-	
+
 	pushd "$pack_source_dir" \
-	    && zip -v "$pack_target_dir"'/octosort.zip' -r * \
+	    && zip -v "$pack_target_dir"'/wokitoki.zip' -r * \
 	    && popd
 }
 
