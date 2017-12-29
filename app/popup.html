@@ -28,6 +28,7 @@
     <section id="roomContainer" class="cf">
         <h4 id="subtitle"></h4>
         <form id="createRoom">
+            <input class="form-input" placeholder="Room name"/>
             <button disabled type="submit" class="button">Create conference</button>
         </form>
 
@@ -35,7 +36,7 @@
             <div class="local-details">
                 <input id="nickInput" placeholder="Add your name"/>
                 <audio id="localAudio" controls oncontextmenu="return false;" disabled></audio>
-                <img id="snapshot" src="img/avatar-default.png" class="avatar"/>
+                <!--<img id="snapshot" src="img/avatar-default.png" class="avatar"/>-->
                 <video id="snapshotvideo" class="avatar"></video>
                 <div id='countdown'></div>
                 <!-- add class of 'muted' when so -->

@@ -161,6 +161,8 @@ if (room) {
     document.getElementById('createRoom').onsubmit = function () {
         document.getElementById('createRoom').disabled = true;
         document.querySelector('form#createRoom>button').textContent = 'Creating conference...';
+        var roomNameValue = document.querySelector('form#createRoom>input').value;
+        room = roomNameValue || room;
         room = room.toLowerCase().replace(/\s/g, '-').replace(/[^A-Za-z0-9_\-]/g, '');
         doJoin(room);
         return false;
