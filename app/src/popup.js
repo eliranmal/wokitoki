@@ -1,18 +1,9 @@
-// grab the room from the URL
 var room;
-var framed = window.self !== window.top;
-var hasroom = framed && document.referrer && document.referrer.split('?').length > 1;
-if (framed) {
-    room = document.referrer && document.referrer.split('?')[1];
-} else {
-    room = window.parent.location && window.parent.location.search.split('?')[1];
-}
-
 var nick;
 var avatar;
-var hasCameras = false;
-
 var webrtc;
+var hasCameras = false;
+var queryGum = false;
 
 // for simplistic metrics gathering
 function track(name, info) {
@@ -21,11 +12,19 @@ function track(name, info) {
     }
 }
 
+// function getJoinLink(name) {
+//     return framed ? document.referrer + (hasroom ? '' : '?' + name) : window.parent.location.href;
+// }
+
 function setRoom(name) {
     if (document.querySelector('form#createRoom')) {
         document.querySelector('form#createRoom').remove();
+        // todo - make it reversible, something like:
+        // document.querySelector('form#createRoom').disabled = true;
     }
-    document.getElementById('subtitle').textContent =  'Link to join: ' + (framed ? document.referrer + (hasroom ? '' : '?' + name) : window.parent.location.href);
+    // document.getElementById('subtitle').textContent =  'Link to join: ' + getJoinLink(name);
+    document.getElementById('subtitle').textContent = 'Room name: ' + name;
+    localStorage.setItem('roomName', name);
 }
 
 function generateRoomName() {
@@ -38,7 +37,7 @@ function generateRoomName() {
     var preps = ['on', 'beside', 'in', 'beneath', 'above', 'under', 'by', 'over', 'against', 'near'];
 
     var random = function (arr) {
-        return arr[Math.floor(Math.random()*arr.length)];
+        return arr[Math.floor(Math.random() * arr.length)];
     };
 
     var prep = random(preps);
@@ -54,92 +53,12 @@ function generateRoomName() {
         .replace(/-a-(a|e|i|o|u)/, '-an-$1');
 }
 
-function getSnapshot() {
-    return new Promise(function (resolve, reject) {
-        navigator.mediaDevices.getUserMedia({video:{width: 320, height:240}})
-            .then(function (stream) {
-                // UX: takes snapshot after 2 seconds.
-                var img = document.getElementById('snapshot');
-                theStream = stream;
-                var canvasEl = document.createElement('canvas');
-                var video = document.getElementById('snapshotvideo');
-                video.srcObject = stream;
-                video.autoplay = true;
-                video.onloadeddata = function() {
-                    img.style.display = 'none';
-                    video.style.display = 'block';
-                    var wait = 3; // countdown
-                    var countdown = function() {
-                        if (wait > 0) {
-                            document.getElementById('countdown').style.display = 'block';
-                            document.getElementById('countdown').textContent = wait;
-                            wait--;
-                            window.setTimeout(countdown, 1000);
-                            return;
-                        }
-                        document.getElementById('countdown').style.display = 'none';
-                        var w = 320;
-                        var h = 240;
-                        canvasEl.width = w;
-                        canvasEl.height = h;
-                        var context = canvasEl.getContext('2d');
-
-                        context.fillRect(0, 0, w, h);
-                        context.translate(w/2, h/2);
-                        context.scale(-1, 1);
-                        context.translate(w/-2, h/-2);
-                        context.drawImage(
-                            video,
-                            0, 0, w, h
-                        );
-                        video.style.display = 'none';
-                        stream.getTracks().forEach(function(track) {
-                            track.stop();
-                        });
-                        var url = canvasEl.toDataURL('image/jpg');
-                        var data = url.match(/data:([^;]*);(base64)?,([0-9A-Za-z+/]+)/);
-                        img.src = url;
-                        img.style.display = 'block';
-                        resolve(url);
-                    };
-                    countdown();
-                };
-            })
-            .catch(reject);
-    });
-}
-
-// if we have a camera, we can use it to take a snapshot
-// should happen on a button click
-document.getElementById('snapshotButton').onclick = function() {
-    document.querySelector('.local-controls').style.visibility = 'hidden';
-    var p;
-    p = getSnapshot();
-    p.then(function (dataurl) {
-        avatar = dataurl;
-        webrtc.sendToAll('avatar', {avatar: avatar});
-    })
-        .catch(function (err) {
-        });
-};
-
-// update nickname
-document.getElementById('nickInput').onkeydown = function(e) {
-    if (e.keyCode !== 13) return;
-    var el = document.getElementById('nickInput');
-    el.disabled = true;
-    nick = el.value;
-    nick = nick.toLowerCase().replace(/\s/g, '-').replace(/[^A-Za-z0-9_\-]/g, '');
-    webrtc.sendToAll('nickname', {nick: nick});
-    return false;
-};
-
 function doJoin(room) {
     webrtc.startLocalVideo();
     webrtc.createRoom(room, function (err, name) {
-        var newUrl = (framed ? document.referrer : window.parent.location.pathname) + '?' + room;
+        // var newUrl = (framed ? document.referrer : window.parent.location.pathname) + '?' + room;
         if (!err) {
-            if (!framed) window.parent.history.replaceState({foo: 'bar'}, null, newUrl);
+            // if (!framed) window.parent.history.replaceState({foo: 'bar'}, null, newUrl);
             setRoom(room);
         } else {
             console.log('error', err, room);
@@ -151,22 +70,17 @@ function doJoin(room) {
     });
 }
 
-var queryGum = false;
-if (room) {
-    setRoom(room);
-    queryGum = true;
-} else {
-    room = generateRoomName();
-    document.querySelector('form#createRoom>button').disabled = false;
-    document.getElementById('createRoom').onsubmit = function () {
-        document.getElementById('createRoom').disabled = true;
-        document.querySelector('form#createRoom>button').textContent = 'Creating conference...';
-        var roomNameValue = document.querySelector('form#createRoom>input').value;
-        room = roomNameValue || room;
-        room = room.toLowerCase().replace(/\s/g, '-').replace(/[^A-Za-z0-9_\-]/g, '');
-        doJoin(room);
-        return false;
-    };
+function doLeave() {
+    webrtc.leaveRoom();
+    webrtc.stopLocalVideo()
+}
+
+function removeRoom() {
+    localStorage.removeItem('roomName');
+}
+
+function sanitize(str) {
+    return str.toLowerCase().replace(/\s/g, '-').replace(/[^A-Za-z0-9_\-]/g, '');
 }
 
 function GUM() {
@@ -186,7 +100,7 @@ function GUM() {
         },
     });
 
-    webrtc.on('localStream', function(stream) {
+    webrtc.on('localStream', function (stream) {
         var localAudio = document.getElementById('localAudio');
         localAudio.disabled = false;
         localAudio.volume = 0;
@@ -198,7 +112,7 @@ function GUM() {
         var track = stream.getAudioTracks()[0];
         var btn = document.querySelector('.local .button-mute');
         btn.style.visibility = 'visible';
-        btn.onclick = function() {
+        btn.onclick = function () {
             track.enabled = !track.enabled;
             btn.className = 'button button-small button-mute' + (track.enabled ? '' : ' muted');
         };
@@ -259,7 +173,7 @@ function GUM() {
         mute.style.visibility = 'hidden';
         d.appendChild(mute);
 
-        mute.onclick = function() {
+        mute.onclick = function () {
             if (peer.videoEl.muted) { // unmute
                 mute.className = 'button button-small button-mute';
             } else { // mute
@@ -352,9 +266,13 @@ function GUM() {
     } else if (navigator && navigator.mediaDevices && navigator.mediaDevices.enumerateDevices) {
         navigator.mediaDevices.enumerateDevices()
             .then(function (devices) {
-                var cameras = devices.filter(function(device) { return device.kind === 'videoinput'; });
+                var cameras = devices.filter(function (device) {
+                    return device.kind === 'videoinput';
+                });
                 hasCameras = cameras.length;
-                var mics = devices.filter(function(device) { return device.kind === 'audioinput'; });
+                var mics = devices.filter(function (device) {
+                    return device.kind === 'audioinput';
+                });
                 if (mics.length) {
                     document.getElementById('requirements').style.display = 'none';
                     if (queryGum) webrtc.startLocalVideo();
@@ -367,5 +285,67 @@ function GUM() {
 }
 
 
-// todo - put this somewhere else
+
+
+
+// grab the room from the URL
+// var framed = window.self !== window.top;
+// var hasroom = framed && document.referrer && document.referrer.split('?').length > 1;
+// if (framed) {
+//     room = document.referrer && document.referrer.split('?')[1];
+// } else {
+//     room = window.parent.location && window.parent.location.search.split('?')[1];
+// }
+
+room = localStorage.getItem('roomName');
+
+
+// update nickname
+document.getElementById('nickInput').onkeydown = function (e) {
+    if (e.keyCode !== 13) return;
+    var el = document.getElementById('nickInput');
+    el.disabled = true;
+    nick = el.value;
+    nick = sanitize(nick);
+    webrtc.sendToAll('nickname', {nick: nick});
+    return false;
+};
+
+var buttonLeaveRoom = document.querySelector('.button-leave-room');
+// buttonLeaveRoom.style.visibility = 'hidden';
+buttonLeaveRoom.onclick = function (e) {
+    doLeave();
+    removeRoom();
+    room = null;
+    return false;
+};
+
+if (room) {
+    setRoom(room);
+    queryGum = true;
+} else {
+    // room = generateRoomName();
+    document.querySelector('form#createRoom>button').disabled = false;
+    document.getElementById('createRoom').onsubmit = function () {
+        document.getElementById('createRoom').disabled = true;
+        document.querySelector('form#createRoom>button').textContent = 'Creating conference...';
+        var roomNameValue = document.querySelector('form#createRoom>input').value;
+        room = sanitize(roomNameValue || generateRoomName());
+        doJoin(room);
+        return false;
+    };
+}
+
+
+
+// todo - put this somewhere else (onload)
 GUM();
+
+
+
+
+chrome.runtime.onMessage.addListener(function(req, sender, sendResponse) {
+    if (req.foo === 'bar') {
+        sendResponse(req.foo);
+    }
+});
