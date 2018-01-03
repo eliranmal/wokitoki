@@ -490,7 +490,7 @@ document.getElementById('nickInput').onkeydown = function (e) {
     // nick = el.value;
     // nick = sanitize(nick);
     // webrtc.sendToAll('nickname', {nick: nick});
-    chrome.runtime.sendMessage({cmd: 'onNickInput', args: el.value});
+    chrome.runtime.sendMessage({cmd: 'onNickInput', args: [el.value]});
     return false;
 };
 
