@@ -27,22 +27,17 @@ chrome.commands.onCommand.addListener(function(command) {
 chrome.runtime.onMessage.addListener(function(req, sender, sendResponse) {
     if (req.cmd) {
         try {
-            api[req.cmd].apply(api, req.args);
-            sendResponse('success:' + req.cmd);
+            var response = api[req.cmd].apply(api, req.args);
+            console.log('success:' + req.cmd);
+            if (typeof response !== 'undefined') {
+                sendResponse(response);
+            }
         } catch (ex) {
-            sendResponse('error:' + req.cmd);
+            console.error('error:' + req.cmd);
+            console.error(ex);
         }
     }
 });
-
-
-// window.onload = ''
-
-
-
-
-
-
 
 
 var room;
@@ -406,9 +401,6 @@ function onCreateRoom(roomName) {
 }
 
 
-
-
-// todo - put this somewhere else (onload)
-GUM();
+window.onload = GUM;
 
 
