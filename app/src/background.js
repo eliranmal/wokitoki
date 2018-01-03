@@ -1,14 +1,15 @@
-
 var api = {
     onSniffDevices: onSniffDevices,
     onNickInput: onNickInput,
     onLeaveRoom: onLeaveRoom,
     onSetRoom: onSetRoom,
+    onCreateRoom: onCreateRoom,
+    getRoom: getRoom,
     // setPeerMuteState: setPeerMuteState,
 };
 
 
-chrome.commands.onCommand.addListener(function(command) {
+chrome.commands.onCommand.addListener(function (command) {
     console.log('Command:', command);
     switch (command) {
         case 'toggle-feature-foo':
@@ -24,7 +25,7 @@ chrome.commands.onCommand.addListener(function(command) {
 });
 
 
-chrome.runtime.onMessage.addListener(function(req, sender, sendResponse) {
+chrome.runtime.onMessage.addListener(function (req, sender, sendResponse) {
     if (req.cmd) {
         try {
             var response = api[req.cmd].apply(api, req.args);
@@ -44,8 +45,8 @@ var room;
 var nick;
 var avatar;
 var webrtc;
-var hasCameras = false;
-var queryGum = false;
+// var hasCameras = false;
+// var queryGum = false;
 
 // for simplistic metrics gathering
 function track(name, info) {
@@ -127,6 +128,10 @@ function sanitize(str) {
 }
 
 function GUM() {
+
+
+    // todo - it appears that SimpleWebRTC must live in the browser
+
     webrtc = new SimpleWebRTC({
         // we don't do video
         localVideoEl: '',
@@ -161,7 +166,7 @@ function GUM() {
     //     };
     // });
     webrtc.on('localStream', function (stream) {
-        chrome.runtime.sendMessage({cmd: 'webrtcOnLocalStream', args: [stream, hasCameras]});
+        chrome.runtime.sendMessage({cmd: 'webrtcOnLocalStream', args: [stream]});
     });
 
     webrtc.on('readyToCall', function () {
@@ -340,16 +345,12 @@ function GUM() {
     //             }
     //         });
     // }
-    chrome.runtime.sendMessage({cmd: 'sniffDevices', args: [queryGum]});
+    // chrome.runtime.sendMessage({cmd: 'sniffDevices', args: [queryGum]});
 }
 
 function onSniffDevices(data) {
-    hasCameras = data.hasCameras;
-    if (data.hasMics && queryGum) webrtc.startLocalVideo();
+    if (data.hasMics && data.queryGum) webrtc.startLocalVideo();
 }
-
-
-
 
 
 room = localStorage.getItem('roomName');
@@ -386,21 +387,16 @@ function onLeaveRoom() {
     room = null;
 }
 
-
-chrome.runtime.sendMessage({cmd: 'preLoad', args: [room]}, function (res) {
-    // todo - verify this is always called
-    if (room) {
-        queryGum = true;
-    }
-});
-
-
 function onCreateRoom(roomName) {
     room = sanitize(roomName || generateRoomName());
     doJoin(room);
 }
 
+function getRoom() {
+    return room;
+}
 
-window.onload = GUM;
+
+GUM();
 
 

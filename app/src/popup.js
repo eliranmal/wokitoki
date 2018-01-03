@@ -1,4 +1,3 @@
-
 var api = {
     setRoom: setRoom,
     webrtcOnMessage: webrtcOnMessage,
@@ -12,7 +11,7 @@ var api = {
 };
 
 
-chrome.runtime.onMessage.addListener(function(req, sender, sendResponse) {
+chrome.runtime.onMessage.addListener(function (req, sender, sendResponse) {
     if (req.foo === 'bar') {
         sendResponse(req.foo);
     }
@@ -32,13 +31,12 @@ chrome.runtime.onMessage.addListener(function(req, sender, sendResponse) {
 });
 
 
-
 // var room;
 // var nick;
 // var avatar;
 // var webrtc;
-// var hasCameras = false;
-// var queryGum = false;
+var hasCameras = false;
+var queryGum = false;
 
 // for simplistic metrics gathering
 // function track(name, info) {
@@ -317,7 +315,7 @@ function setRoom(name) {
 // }
 
 
-function webrtcOnLocalStream (stream, hasCameras) {
+function webrtcOnLocalStream(stream) {
     var localAudio = document.getElementById('localAudio');
     localAudio.disabled = false;
     localAudio.volume = 0;
@@ -335,11 +333,11 @@ function webrtcOnLocalStream (stream, hasCameras) {
     };
 }
 
-function webrtcOnVideoAdded (video, peerDomId) {
+function webrtcOnVideoAdded(video, peerDomId) {
     document.querySelector('#container_' + peerDomId + '>div.remote-details').appendChild(video);
 }
 
-function webrtcOnCreatedPeer (peer, peerDomId) {
+function webrtcOnCreatedPeer(peer, peerDomId) {
     var remotes = document.getElementById('remotes');
     if (!remotes) return;
 
@@ -443,6 +441,22 @@ function webrtcOnMessage(message, peerDomId) {
     }
 }
 
+function preLoad(room) {
+    if (room) {
+        setRoom(room);
+        queryGum = true;
+    } else {
+        document.querySelector('form#createRoom>button').disabled = false;
+        document.getElementById('createRoom').onsubmit = function () {
+            document.getElementById('createRoom').disabled = true;
+            document.querySelector('form#createRoom>button').textContent = 'Creating conference...';
+            var roomName = document.querySelector('form#createRoom>input').value;
+            chrome.runtime.sendMessage({cmd: 'onCreateRoom', args: [roomName]});
+            return false;
+        };
+    }
+}
+
 function sniffDevices() {
     if (!(navigator && navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.RTCPeerConnection)) {
         // FIXME: show "sorry, get a modern browser" (recommending Edge)
@@ -457,7 +471,7 @@ function sniffDevices() {
                 var mics = devices.filter(function (device) {
                     return device.kind === 'audioinput';
                 });
-                var hasCameras = cameras.length;
+                hasCameras = cameras.length;
                 var hasMics = mics.length;
                 if (hasMics) {
                     document.getElementById('requirements').style.display = 'none';
@@ -468,15 +482,12 @@ function sniffDevices() {
                 chrome.runtime.sendMessage({
                     cmd: 'onSniffDevices', args: [{
                         hasMics: hasMics,
-                        hasCameras: hasCameras,
+                        queryGum: queryGum,
                     }]
                 });
             });
     }
 }
-
-
-
 
 
 // room = localStorage.getItem('roomName');
@@ -505,23 +516,10 @@ buttonLeaveRoom.onclick = function (e) {
 };
 
 
-function preLoad(room) {
-    if (room) {
-        setRoom(room);
-    } else {
-        document.querySelector('form#createRoom>button').disabled = false;
-        document.getElementById('createRoom').onsubmit = function () {
-            document.getElementById('createRoom').disabled = true;
-            document.querySelector('form#createRoom>button').textContent = 'Creating conference...';
-            var roomName = document.querySelector('form#createRoom>input').value;
-            chrome.runtime.sendMessage({cmd: 'onCreateRoom', args: [roomName]});
-            return false;
-        };
-    }
-}
-
-
-
-// GUM();
-
+window.onload = function () {
+    chrome.runtime.sendMessage({cmd: 'getRoom'}, function (room) {
+        preLoad(room);
+        sniffDevices();
+    });
+};
 
