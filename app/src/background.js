@@ -1,4 +1,13 @@
 
+var api = {
+    onSniffDevices: onSniffDevices,
+    onNickInput: onNickInput,
+    onLeaveRoom: onLeaveRoom,
+    onSetRoom: onSetRoom,
+    // setPeerMuteState: setPeerMuteState,
+};
+
+
 chrome.commands.onCommand.addListener(function(command) {
     console.log('Command:', command);
     switch (command) {
@@ -14,13 +23,6 @@ chrome.commands.onCommand.addListener(function(command) {
     }
 });
 
-
-var api = {
-    onSniffDevices: onSniffDevices,
-    onNickInput: onNickInput,
-    onLeaveRoom: onLeaveRoom,
-    // setPeerMuteState: setPeerMuteState,
-};
 
 chrome.runtime.onMessage.addListener(function(req, sender, sendResponse) {
     if (req.cmd) {
@@ -57,10 +59,6 @@ function track(name, info) {
     }
 }
 
-// function getJoinLink(name) {
-//     return framed ? document.referrer + (hasroom ? '' : '?' + name) : window.parent.location.href;
-// }
-
 // function setRoom(name) {
 //     if (document.querySelector('form#createRoom')) {
 //         document.querySelector('form#createRoom').remove();
@@ -71,6 +69,10 @@ function track(name, info) {
 //     document.getElementById('subtitle').textContent = 'Room name: ' + name;
 //     localStorage.setItem('roomName', name);
 // }
+
+function onSetRoom(roomName) {
+    localStorage.setItem('roomName', roomName);
+}
 
 function generateRoomName() {
     var adjectives = ['autumn', 'hidden', 'bitter', 'misty', 'silent', 'empty', 'dry', 'dark', 'summer', 'icy', 'delicate', 'quiet', 'white', 'cool', 'spring', 'winter', 'patient', 'twilight', 'dawn', 'crimson', 'wispy', 'weathered', 'blue', 'billowing', 'broken', 'cold', 'falling', 'frosty', 'green', 'long', 'late', 'lingering', 'bold', 'little', 'morning', 'muddy', 'old', 'red', 'rough', 'still', 'small', 'sparkling', 'shy', 'wandering', 'withered', 'wild', 'black', 'young', 'holy', 'solitary', 'fragrant', 'aged', 'snowy', 'proud', 'floral', 'restless', 'divine', 'polished', 'ancient', 'purple', 'lively', 'nameless'];

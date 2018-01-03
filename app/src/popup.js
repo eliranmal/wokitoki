@@ -1,5 +1,4 @@
 
-
 var api = {
     setRoom: setRoom,
     webrtcOnMessage: webrtcOnMessage,
@@ -11,9 +10,6 @@ var api = {
     sniffDevices: sniffDevices,
     preLoad: preLoad,
 };
-
-
-
 
 
 chrome.runtime.onMessage.addListener(function(req, sender, sendResponse) {
@@ -51,26 +47,16 @@ chrome.runtime.onMessage.addListener(function(req, sender, sendResponse) {
 //     }
 // }
 
-// function getJoinLink(name) {
-//     return framed ? document.referrer + (hasroom ? '' : '?' + name) : window.parent.location.href;
-// }
-
 function setRoom(name) {
     if (document.querySelector('form#createRoom')) {
         document.querySelector('form#createRoom').remove();
         // todo - make it reversible, something like:
         // document.querySelector('form#createRoom').disabled = true;
     }
-    // document.getElementById('subtitle').textContent =  'Link to join: ' + getJoinLink(name);
     document.getElementById('subtitle').textContent = 'Room name: ' + name;
 
-
-
-    // todo - replace this line with a chrome message,
-    // todo - then move all localStorage stuff to background page
-
     // localStorage.setItem('roomName', name);
-    // chrome.runtime.sendMessage({cmd: 'onNickInput', args: el.value});
+    chrome.runtime.sendMessage({cmd: 'onSetRoom', args: [name]});
 }
 
 // function generateRoomName() {
