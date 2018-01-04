@@ -5,7 +5,6 @@ var api = {
     onSetRoom: onSetRoom,
     onCreateRoom: onCreateRoom,
     getRoom: getRoom,
-    // setPeerMuteState: setPeerMuteState,
 };
 
 
@@ -129,9 +128,6 @@ function sanitize(str) {
 
 function GUM() {
 
-
-    // todo - it appears that SimpleWebRTC must live in the browser
-
     webrtc = new SimpleWebRTC({
         // we don't do video
         localVideoEl: '',
@@ -148,24 +144,22 @@ function GUM() {
         },
     });
 
-    // webrtc.on('localStream', function (stream) {
-    //     var localAudio = document.getElementById('localAudio');
-    //     localAudio.disabled = false;
-    //     localAudio.volume = 0;
-    //     //localAudio.srcObject = stream;
-    //     if (hasCameras) {
-    //         document.querySelector('.local-controls').style.visibility = 'visible';
-    //     }
-    //
-    //     var track = stream.getAudioTracks()[0];
-    //     var btn = document.querySelector('.local .button-mute');
-    //     btn.style.visibility = 'visible';
-    //     btn.onclick = function () {
-    //         track.enabled = !track.enabled;
-    //         btn.className = 'button button-small button-mute' + (track.enabled ? '' : ' muted');
-    //     };
-    // });
     webrtc.on('localStream', function (stream) {
+        // var localAudio = document.getElementById('localAudio');
+        // localAudio.disabled = false;
+        // localAudio.volume = 0;
+        // //localAudio.srcObject = stream;
+        // if (hasCameras) {
+        //     document.querySelector('.local-controls').style.visibility = 'visible';
+        // }
+        //
+        // var track = stream.getAudioTracks()[0];
+        // var btn = document.querySelector('.local .button-mute');
+        // btn.style.visibility = 'visible';
+        // btn.onclick = function () {
+        //     track.enabled = !track.enabled;
+        //     btn.className = 'button button-small button-mute' + (track.enabled ? '' : ' muted');
+        // };
         chrome.runtime.sendMessage({cmd: 'webrtcOnLocalStream', args: [stream]});
     });
 

@@ -519,7 +519,7 @@ buttonLeaveRoom.onclick = function (e) {
 window.onload = function () {
     chrome.runtime.sendMessage({cmd: 'getRoom'}, function (room) {
         preLoad(room);
-        sniffDevices();
     });
+    sniffDevices();
 };
 
