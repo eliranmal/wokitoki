@@ -14,18 +14,5 @@ chrome.commands.onCommand.addListener(function(command) {
     }
 });
 
-
-chrome.runtime.onMessage.addListener(function(req, sender, sendResponse) {
-    if (req.cmd && req.cmd in webrtc) {
-        try {
-            webrtc[req.cmd].apply(webrtc, req.args);
-            sendResponse('success:' + req);
-        } catch (ex) {
-            sendResponse('error:' + req);
-        }
-    }
-});
-
-
 // window.onload = ''
 
