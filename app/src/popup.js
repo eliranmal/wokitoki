@@ -12,10 +12,6 @@ function track(name, info) {
     }
 }
 
-// function getJoinLink(name) {
-//     return framed ? document.referrer + (hasroom ? '' : '?' + name) : window.parent.location.href;
-// }
-
 function setRoom(name) {
     if (document.querySelector('form#createRoom')) {
         document.querySelector('form#createRoom').remove();
@@ -341,11 +337,3 @@ if (room) {
 // todo - put this somewhere else (onload)
 GUM();
 
-
-
-
-chrome.runtime.onMessage.addListener(function(req, sender, sendResponse) {
-    if (req.foo === 'bar') {
-        sendResponse(req.foo);
-    }
-});

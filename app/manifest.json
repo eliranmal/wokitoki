@@ -11,15 +11,14 @@
   },
   "browser_action": {
     "default_title": "wokitoki",
-    "default_icon": "images/logo-48.png",
-    "default_popup": "popup.html"
+    "default_icon": "images/logo-48.png"
   },
   "commands": {
-    "toggle-feature-foo": {
+    "create-popup": {
       "suggested_key": {
         "default": "Ctrl+Shift+5"
       },
-      "description": "Toggle feature foo",
+      "description": "Create popup",
       "global": true
     }
   },
