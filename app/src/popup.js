@@ -13,14 +13,25 @@ function track(name, info) {
 }
 
 function setRoom(name) {
-    if (document.querySelector('form#createRoom')) {
-        document.querySelector('form#createRoom').remove();
-        // todo - make it reversible, something like:
-        // document.querySelector('form#createRoom').disabled = true;
+    if (document.getElementById('createRoom')) {
+        document.getElementById('createRoom').style.display = 'none';
     }
-    // document.getElementById('subtitle').textContent =  'Link to join: ' + getJoinLink(name);
+    if (document.querySelector('.button-leave-room')) {
+        document.querySelector('.button-leave-room').style.display = 'block';
+    }
     document.getElementById('subtitle').textContent = 'Room name: ' + name;
     localStorage.setItem('roomName', name);
+}
+
+function removeRoom() {
+    if (document.getElementById('createRoom')) {
+        document.getElementById('createRoom').style.display = 'block';
+    }
+    if (document.querySelector('.button-leave-room')) {
+        document.querySelector('.button-leave-room').style.display = 'none';
+    }
+    document.getElementById('subtitle').textContent = '';
+    localStorage.removeItem('roomName');
 }
 
 function generateRoomName() {
@@ -56,6 +67,7 @@ function doJoin(room) {
         if (!err) {
             // if (!framed) window.parent.history.replaceState({foo: 'bar'}, null, newUrl);
             setRoom(room);
+            // document.getElementById('createRoom').disabled = false;
         } else {
             console.log('error', err, room);
             if (err === 'taken') {
@@ -69,10 +81,6 @@ function doJoin(room) {
 function doLeave() {
     webrtc.leaveRoom();
     webrtc.stopLocalVideo()
-}
-
-function removeRoom() {
-    localStorage.removeItem('roomName');
 }
 
 function sanitize(str) {
@@ -308,7 +316,7 @@ document.getElementById('nickInput').onkeydown = function (e) {
 };
 
 var buttonLeaveRoom = document.querySelector('.button-leave-room');
-// buttonLeaveRoom.style.visibility = 'hidden';
+buttonLeaveRoom.style.display = 'none';
 buttonLeaveRoom.onclick = function (e) {
     doLeave();
     removeRoom();
@@ -324,7 +332,7 @@ if (room) {
     document.querySelector('form#createRoom>button').disabled = false;
     document.getElementById('createRoom').onsubmit = function () {
         document.getElementById('createRoom').disabled = true;
-        document.querySelector('form#createRoom>button').textContent = 'Creating conference...';
+        // document.querySelector('form#createRoom>button').textContent = 'Creating conference...';
         var roomNameValue = document.querySelector('form#createRoom>input').value;
         room = sanitize(roomNameValue || generateRoomName());
         doJoin(room);
@@ -333,7 +341,5 @@ if (room) {
 }
 
 
-
-// todo - put this somewhere else (onload)
-GUM();
+window.onload = GUM;
 
