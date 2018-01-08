@@ -9,23 +9,13 @@ chrome.commands.onCommand.addListener(function(command) {
     }
 });
 
-// window.onload = ''
-
-var popup;
-
 function createPopup() {
-    if (popup) {
-        console.log('popup is already created, skipping popup creation');
-        return;
-    }
-    console.log('no popup, creating new');
+    console.log('creating popup');
     chrome.windows.create({
         url: '../popup.html',
-        width: 600,
+        width: 700,
         height: 400,
         focused: true,
         type: chrome.windows.WindowType.POPUP,
-    }, function (x) {
-        popup = x;
     });
 }
