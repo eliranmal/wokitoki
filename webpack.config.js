@@ -1,20 +1,34 @@
+const pkg = require('./package.json');
 const path = require('path');
 const webpack = require('webpack');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const pkg = require('./package.json');
+const WriteFileWebpackPlugin = require('write-file-webpack-plugin');
 
-module.exports = {
+let config = {
     entry: {
         vendor: Object.keys(pkg.dependencies),
         background: './src/background/main.js',
         popup: './src/popup/main.js',
     },
     output: {
-        path: path.resolve(__dirname, './dist'),
+        path: path.resolve(__dirname, 'dist'),
         // publicPath: '/dist/',
         filename: '[name].js',
+    },
+    devServer: {
+        overlay: true,
+        historyApiFallback: true,
+        index: 'popup.html',
+        contentBase: path.resolve(__dirname, 'dist'),
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+        },
+    },
+    devtool: '#eval-source-map',
+    performance: {
+        hints: false
     },
     plugins: [
         new CleanWebpackPlugin(['dist']),
@@ -40,51 +54,45 @@ module.exports = {
             template: './background.html',
             chunks: ['background'],
         }),
-        // // todo - add for webpack-dev-server
-        // new WriteFilePlugin()
     ],
     module: {
         rules: [
             {
                 test: /\.css$/,
+                exclude: /node_modules/,
                 use: [
                     'style-loader',
                     'css-loader',
                 ],
-                exclude: /node_modules/,
             },
             {
                 test: /\.js$/,
-                use: 'babel-loader',
                 exclude: /node_modules/,
+                use: 'babel-loader',
             },
             {
                 test: /\.(png|jpg|gif|svg)$/,
-                use: 'file-loader?name=[name].[ext]?[hash]&outputPath=assets/images/',
                 exclude: /node_modules/,
+                use: {
+                    loader: 'file-loader',
+                    options: {
+                        name: '[name].[ext]?[hash]',
+                        outputPath: 'assets/images/',
+                    },
+                },
             },
             {
                 test: /\.html$/,
-                loader: 'html-loader',
-                exclude: /node_modules/
+                exclude: /node_modules/,
+                use: 'html-loader'
             },
         ]
     },
-    devServer: {
-        // contentBase: path.resolve(__dirname, './src'),
-        historyApiFallback: true,
-        noInfo: true,
-        overlay: true
-    },
-    performance: {
-        hints: false
-    },
-    devtool: '#eval-source-map'
 };
 
 if (process.env.NODE_ENV === 'production') {
-    module.exports.devtool = '#source-map';
-    module.exports.plugins = (module.exports.plugins || []).concat([
+    config.devtool = '#source-map';
+    config.plugins = (config.plugins || []).concat([
         new webpack.DefinePlugin({
             'process.env': {
                 NODE_ENV: '"production"'
@@ -98,6 +106,13 @@ if (process.env.NODE_ENV === 'production') {
         }),
         new webpack.LoaderOptionsPlugin({
             minimize: true
-        })
-    ])
+        }),
+    ]);
+} else if (process.env.NODE_ENV === 'development') {
+    config.plugins = (config.plugins || []).concat([
+        // tell dev server to persist files - we need to be able to install the extension from the filesystem
+        new WriteFileWebpackPlugin(),
+    ]);
 }
+
+module.exports = config;
