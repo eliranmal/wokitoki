@@ -1,4 +1,5 @@
 import audioChat from '../lib/audio-chat';
+import storage from '../lib/storage';
 
 
 var hasCameras = false;
@@ -13,8 +14,7 @@ function setRoom(name) {
     }
     document.getElementById('subtitle').textContent = 'Room name: ' + name;
 
-    // chrome.runtime.sendMessage({channel: audioChatChannel, cmd: 'onSetRoom', args: [name]});
-    audioChat.onSetRoom(name);
+    storage.set({roomName: name}, () => console.log('saved room name to storage'));
 }
 
 function removeRoom() {
@@ -26,8 +26,8 @@ function removeRoom() {
     }
     document.getElementById('subtitle').textContent = '';
 
-    // chrome.runtime.sendMessage({channel: audioChatChannel, cmd: 'onLeaveRoom'});
     audioChat.onLeaveRoom();
+    storage.remove('roomName', () => console.log('removed room name from storage'));
 }
 
 function webrtcOnLocalStream() {

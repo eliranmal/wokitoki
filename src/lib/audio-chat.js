@@ -1,4 +1,5 @@
 import dom from '../popup/dom';
+import storage from '../lib/storage';
 import SimpleWebRTC from 'simplewebrtc';
 
 
@@ -12,10 +13,6 @@ function track(name, info) {
     if (webrtc && webrtc.connection) {
         webrtc.connection.emit('metrics', name, info || {});
     }
-}
-
-function onSetRoom(roomName) {
-    localStorage.setItem('roomName', roomName);
 }
 
 function generateRoomName() {
@@ -65,10 +62,6 @@ function doLeave() {
     webrtc.stopLocalVideo()
 }
 
-function removeRoom() {
-    localStorage.removeItem('roomName');
-}
-
 function muteLocal() {
     localTrack.enabled = !localTrack.enabled;
     return localTrack.enabled;
@@ -79,8 +72,6 @@ function sanitize(str) {
 }
 
 function GUM() {
-
-    room = localStorage.getItem('roomName');
 
     webrtc = new SimpleWebRTC({
         // we don't do video
@@ -225,7 +216,6 @@ function onNickInput(value) {
 
 function onLeaveRoom() {
     doLeave();
-    removeRoom();
     room = null;
 }
 
@@ -248,14 +238,20 @@ function togglePeerMuted(peerId) {
     peer.videoEl.muted = !peer.videoEl.muted;
 }
 
+function init() {
+    storage.get('roomName', ({roomName}) => {
+        console.log('got room name from storage');
+        room = roomName;
+        GUM();
+    });
+}
 
 
 export default {
-    init: GUM,
+    init: init,
     onSniffDevices: onSniffDevices,
     onNickInput: onNickInput,
     onLeaveRoom: onLeaveRoom,
-    onSetRoom: onSetRoom,
     onCreateRoom: onCreateRoom,
     getRoom: getRoom,
     isPeerMuted: isPeerMuted,
