@@ -1,4 +1,4 @@
-import dom from './popup/dom';
+import dom from '../popup/dom';
 import SimpleWebRTC from 'simplewebrtc';
 
 

@@ -1,4 +1,5 @@
-var api;
+import commands from './commands';
+
 
 function apiCommandListener(api, channel) {
     return function commandListener(req, sender, sendResponse) {
@@ -24,32 +25,16 @@ function apiCommandListener(api, channel) {
 }
 
 function userCommandListener(command) {
-    console.log('user:command', command);
-    switch (command) {
-        case 'create-popup':
-            createPopup();
-            break;
+    const fn = commands[command];
+    if (typeof fn === 'function') {
+        console.log('user:command', command);
+        fn();
     }
 }
 
-function createPopup() {
-    // chrome.windows.create({
-    //     url: '../popup.html?c=' + Date.now(),
-    //     width: 700,
-    //     height: 400,
-    //     focused: true,
-    //     type: chrome.windows.WindowType.POPUP,
-    // });
-    chrome.tabs.create({
-        url: '../popup.html?c=' + Date.now(),
-    });
-}
 
-api = {
+export default {
     apiCommandListener: apiCommandListener,
     userCommandListener: userCommandListener,
 };
-
-// window.wokitokiEvents = api;
-export default api;
 

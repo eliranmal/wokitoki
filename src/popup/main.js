@@ -1,7 +1,7 @@
 import '../../assets/styles/popup.css';
 
 import dom from './dom';
-import AudioChat from '../audio-chat';
+import AudioChat from '../lib/audio-chat';
 
 // chrome.runtime.onMessage.addListener(
 //     window.wokitokiEvents.apiCommandListener({
