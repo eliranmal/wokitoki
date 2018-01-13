@@ -1,0 +1,28 @@
+{
+  "manifest_version": 2,
+  "permissions": [
+    "tabs"
+  ],
+  "background": {
+    "page": "background.html",
+    "persistent": true
+  },
+  "browser_action": {
+    "default_title": "wokitoki",
+    "default_icon": "assets/images/logo-48.png"
+  },
+  "commands": {
+    "create-popup": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+5"
+      },
+      "description": "Create popup",
+      "global": true
+    }
+  },
+  "icons": {
+    "48": "assets/images/logo-48.png",
+    "96": "assets/images/logo-96.png",
+    "128": "assets/images/logo-128.png"
+  }
+}

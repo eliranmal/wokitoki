@@ -59,7 +59,8 @@ coverage
 .grunt
 .yarn-integrity
 node_modules/
-export
+export/
+dist/
 
 ## npm pack output
 *.tgz
