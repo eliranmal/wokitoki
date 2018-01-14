@@ -41,10 +41,8 @@ function webrtcOnLocalStream() {
     var btn = document.querySelector('.local .button-mute');
     btn.style.visibility = 'visible';
     btn.onclick = function () {
-        // chrome.runtime.sendMessage({channel: audioChatChannel, cmd: 'muteLocal'}, function (trackEnabled) {
-        //     btn.className = 'button button-small button-mute' + (trackEnabled ? '' : ' muted');
-        // });
-        var trackEnabled = audioChat.muteLocal();
+        audioChat.toggleLocalEnabled();
+        var trackEnabled = audioChat.isLocalEnabled();
         btn.className = 'button button-small button-mute' + (trackEnabled ? '' : ' muted');
     };
 }
@@ -151,10 +149,11 @@ function preLoad(room) {
         document.getElementById('createRoom').onsubmit = function () {
             // fixme - this should be the button element
             document.getElementById('createRoom').disabled = true;
-            // document.querySelector('form#createRoom>button').textContent = 'Creating conference...';
+            // fixme - this should be reversible
+            // document.querySelector('form#createRoom>button').textContent = 'Creating room...';
             var roomName = document.querySelector('form#createRoom>input').value;
-            // chrome.runtime.sendMessage({channel: audioChatChannel, cmd: 'onCreateRoom', args: [roomName]});
-            audioChat.onCreateRoom(roomName);
+            // chrome.runtime.sendMessage({channel: audioChatChannel, cmd: 'createRoom', args: [roomName]});
+            audioChat.createRoom(roomName, setRoom);
             return false;
         };
     }
@@ -175,6 +174,7 @@ function sniffDevices() {
                     return device.kind === 'audioinput';
                 });
                 hasCameras = cameras.length;
+                console.log('hasCameras:', hasCameras)
                 var hasMics = mics.length;
                 if (hasMics) {
                     document.getElementById('requirements').style.display = 'none';
@@ -220,11 +220,10 @@ function initLeaveRoomButton() {
     };
 }
 
-function init() {
+function init(room) {
     initNicknameInput();
     initLeaveRoomButton();
     // chrome.runtime.sendMessage({channel: _audioChatChannel, cmd: 'getRoom'}, preLoad);
-    var room = audioChat.getRoom();
     preLoad(room);
     sniffDevices();
 }

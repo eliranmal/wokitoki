@@ -35,7 +35,7 @@ let config = {
         new CopyWebpackPlugin([{
             from: 'manifest.json',
             transform: function (content, path) {
-                // generate the manifest file using the package.json information
+                // enrich the manifest file with package.json information
                 return Buffer.from(JSON.stringify({
                     name: process.env.npm_package_name,
                     description: process.env.npm_package_description,

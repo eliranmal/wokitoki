@@ -41,17 +41,17 @@ function generateRoomName() {
         .replace(/-a-(a|e|i|o|u)/, '-an-$1');
 }
 
-function doJoin(room) {
+function doJoin(room, done) {
     webrtc.startLocalVideo();
     webrtc.createRoom(room, function (err, name) {
         if (!err) {
             // chrome.runtime.sendMessage({cmd: 'setRoom', args: [room]});
-            dom.setRoom(room);
+            done(room);
         } else {
             console.log('error', err, room);
             if (err === 'taken') {
                 room = generateRoomName();
-                doJoin(room);
+                doJoin(room, done);
             }
         }
     });
@@ -62,8 +62,11 @@ function doLeave() {
     webrtc.stopLocalVideo()
 }
 
-function muteLocal() {
+function toggleLocalEnabled() {
     localTrack.enabled = !localTrack.enabled;
+}
+
+function isLocalEnabled() {
     return localTrack.enabled;
 }
 
@@ -219,9 +222,9 @@ function onLeaveRoom() {
     room = null;
 }
 
-function onCreateRoom(roomName) {
+function createRoom(roomName, onCreated) {
     room = sanitize(roomName || generateRoomName());
-    doJoin(room);
+    doJoin(room, onCreated);
 }
 
 function getRoom() {
@@ -238,24 +241,26 @@ function togglePeerMuted(peerId) {
     peer.videoEl.muted = !peer.videoEl.muted;
 }
 
-function init() {
+function init(done) {
     storage.get('roomName', ({roomName}) => {
         console.log('got room name from storage');
         room = roomName;
         GUM();
+        done(roomName)
     });
 }
 
 
 export default {
-    init: init,
-    onSniffDevices: onSniffDevices,
-    onNickInput: onNickInput,
-    onLeaveRoom: onLeaveRoom,
-    onCreateRoom: onCreateRoom,
-    getRoom: getRoom,
-    isPeerMuted: isPeerMuted,
-    togglePeerMuted: togglePeerMuted,
-    muteLocal: muteLocal,
+    init,
+    onSniffDevices,
+    onNickInput,
+    onLeaveRoom,
+    createRoom,
+    getRoom,
+    isPeerMuted,
+    togglePeerMuted,
+    toggleLocalEnabled,
+    isLocalEnabled,
 };
 

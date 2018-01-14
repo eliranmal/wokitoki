@@ -4,5 +4,4 @@ import dom from './dom';
 import audioChat from '../lib/audio-chat';
 
 
-audioChat.init();
-dom.init();
+audioChat.init(dom.init);
