@@ -1,7 +1,8 @@
-import dom from '../popup/dom';
-import storage from '../lib/storage';
+
 import SimpleWebRTC from 'simplewebrtc';
 
+
+const noop = () => void 0;
 
 var room;
 var localTrack;
@@ -73,7 +74,12 @@ function sanitize(str) {
     return str.toLowerCase().replace(/\s/g, '-').replace(/[^A-Za-z0-9_\-]/g, '');
 }
 
-function GUM() {
+function GUM({
+                 onLocalStream = noop,
+                 onPeerConnectionStateChanged = noop,
+                 onPeerCreated = noop,
+                 onMessage = noop,
+             }) {
 
     webrtc = new SimpleWebRTC({
         // we don't do video
@@ -94,7 +100,7 @@ function GUM() {
     webrtc.on('localStream', function (stream) {
         localTrack = stream.getAudioTracks()[0];
         // chrome.runtime.sendMessage({cmd: 'webrtcOnLocalStream'});
-        dom.webrtcOnLocalStream();
+        onLocalStream();
     });
 
     webrtc.on('readyToCall', function () {
@@ -121,18 +127,12 @@ function GUM() {
             peer.firsttime = true;
             peer.pc.on('iceConnectionStateChange', function (event) {
                 var state = peer.pc.iceConnectionState;
-                // chrome.runtime.sendMessage({
-                //     cmd: 'setPeerContainerState',
-                //     args: [webrtc.getDomId(peer), state]
-                // });
-                dom.setPeerContainerState(webrtc.getDomId(peer), state);
+
+                onPeerConnectionStateChanged(webrtc.getDomId(peer), state);
 
                 switch (state) {
                     case 'connected':
                     case 'completed':
-                        // chrome.runtime.sendMessage({cmd: 'setPeerMuteVisible', args: [webrtc.getDomId(peer)]});
-                        dom.setPeerMuteVisible(webrtc.getDomId(peer));
-
                         if (peer.firsttime) {
                             peer.firsttime = false;
                             track('iceSuccess', {
@@ -144,16 +144,12 @@ function GUM() {
                         }
                         break;
                     case 'closed':
-                        // chrome.runtime.sendMessage({cmd: 'detachPeerContainer', args: [webrtc.getDomId(peer)]});
-                        dom.detachPeerContainer(webrtc.getDomId(peer));
-
                         break;
                 }
             });
         }
 
-        // chrome.runtime.sendMessage({cmd: 'webrtcOnCreatedPeer', args: [webrtc.getDomId(peer), peer.id]});
-        dom.webrtcOnCreatedPeer(webrtc.getDomId(peer), peer.id);
+        onPeerCreated(webrtc.getDomId(peer), peer.id);
     });
 
     webrtc.connection.on('message', function (message) {
@@ -170,9 +166,7 @@ function GUM() {
             }
         }
 
-        // chrome.runtime.sendMessage({cmd: 'webrtcOnMessage', args: [message, webrtc.getDomId(peer)]});
-        dom.webrtcOnMessage(message, webrtc.getDomId(peer));
-
+        onMessage(message, webrtc.getDomId(peer));
     });
 
     // local p2p/ice failure
@@ -225,6 +219,10 @@ function getRoom() {
     return room;
 }
 
+function setRoom(roomName) {
+    room = roomName;
+}
+
 function isPeerMuted(peerId) {
     var peer = webrtc.getPeers(peerId).shift();
     return peer.videoEl.muted;
@@ -235,13 +233,8 @@ function togglePeerMuted(peerId) {
     peer.videoEl.muted = !peer.videoEl.muted;
 }
 
-function init(done) {
-    storage.get('roomName', ({roomName}) => {
-        console.log('got room name from storage');
-        room = roomName;
-        GUM();
-        done(roomName)
-    });
+function init(options) {
+    GUM(options);
 }
 
 
@@ -252,6 +245,7 @@ export default {
     onLeaveRoom,
     createRoom,
     getRoom,
+    setRoom,
     isPeerMuted,
     togglePeerMuted,
     toggleLocalEnabled,

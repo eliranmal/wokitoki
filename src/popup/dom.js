@@ -29,7 +29,7 @@ function removeRoom() {
     storage.remove('roomName', () => console.log('removed room name from storage'));
 }
 
-function webrtcOnLocalStream() {
+function showLocalPeer() {
     var localAudio = document.getElementById('localAudio');
     localAudio.disabled = false;
     localAudio.volume = 0;
@@ -50,7 +50,7 @@ function webrtcOnLocalStream() {
 //     document.querySelector('#container_' + peerDomId + '>div.remote-details').appendChild(video);
 // }
 
-function webrtcOnCreatedPeer(peerDomId, peerId) {
+function addRemotePeerContainer(peerDomId, peerId) {
     var remotes = document.getElementById('remotes');
     if (!remotes) return;
 
@@ -94,11 +94,20 @@ function webrtcOnCreatedPeer(peerDomId, peerId) {
     remotes.appendChild(container);
 }
 
-function setPeerContainerState(peerDomId, state) {
+function updateRemotePeerContainer(peerDomId, state) {
     var container = document.querySelector('#container_' + peerDomId);
     container.className = 'peerContainer p2p' +
         state.substr(0, 1).toUpperCase() +
         state.substr(1);
+    switch (state) {
+        case 'connected':
+        case 'completed':
+            setPeerMuteVisible(peerDomId);
+            break;
+        case 'closed':
+            detachPeerContainer(peerDomId);
+            break;
+    }
 }
 
 function setPeerMuteVisible(peerDomId) {
@@ -112,7 +121,7 @@ function detachPeerContainer(peerDomId) {
 }
 
 
-function webrtcOnMessage(message, peerDomId) {
+function updatePeerDetails(message, peerDomId) {
     var container = document.getElementById('container_' + peerDomId);
     switch (message.type) {
         case 'nickname':
@@ -188,26 +197,27 @@ function initLeaveRoomButton() {
     };
 }
 
-function init(room) {
+function init() {
     initNicknameInput();
     initLeaveRoomButton();
-    // chrome.runtime.sendMessage({channel: _audioChatChannel, cmd: 'getRoom'}, preLoad);
-    preLoad(room);
-    sniffDevices();
+    storage.get('roomName', ({roomName}) => {
+        console.log('got room name from storage');
+        audioChat.setRoom(roomName);
+        audioChat.init({
+            onLocalStream: showLocalPeer,
+            onPeerConnectionStateChanged: updateRemotePeerContainer,
+            onPeerCreated: addRemotePeerContainer,
+            onMessage: updatePeerDetails,
+        });
+        preLoad(roomName);
+        sniffDevices();
+    });
 }
 
 
 export default {
     init: init,
-    preLoad: preLoad,
     setRoom: setRoom,
-    webrtcOnMessage: webrtcOnMessage,
-    webrtcOnLocalStream: webrtcOnLocalStream,
     // webrtcOnVideoAdded: webrtcOnVideoAdded,
-    webrtcOnCreatedPeer: webrtcOnCreatedPeer,
-    setPeerContainerState: setPeerContainerState,
-    setPeerMuteVisible: setPeerMuteVisible,
-    detachPeerContainer: detachPeerContainer,
-    sniffDevices: sniffDevices,
 };
 
