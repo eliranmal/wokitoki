@@ -68,12 +68,6 @@ function webrtcOnCreatedPeer(peerDomId, peerId) {
     nickname.className = 'nick';
     d.appendChild(nickname);
 
-    // avatar image
-    var avatar = document.createElement('img');
-    avatar.className = 'avatar';
-    avatar.src = 'img/avatar-default.png';
-    d.appendChild(avatar);
-
     // audio element
     // inserted later
 
@@ -86,17 +80,6 @@ function webrtcOnCreatedPeer(peerDomId, peerId) {
     d.appendChild(mute);
 
     mute.onclick = function () {
-        // chrome.runtime.sendMessage({
-        //     channel: audioChatChannel,
-        //     cmd: 'isPeerMuted',
-        //     args: [peerId]
-        // }, function (muted) {
-        //     if (muted) { // unmute
-        //         mute.className = 'button button-small button-mute';
-        //     } else { // mute
-        //         mute.className = 'button button-small button-mute muted';
-        //     }
-        // });
         var muted = audioChat.isPeerMuted(peerId);
         if (muted) { // unmute
             mute.className = 'button button-small button-mute';
@@ -131,10 +114,10 @@ function detachPeerContainer(peerDomId) {
 
 function webrtcOnMessage(message, peerDomId) {
     var container = document.getElementById('container_' + peerDomId);
-    if (message.type === 'nickname') {
-        container.querySelector('.nick').textContent = message.payload.nick;
-    } else if (message.type === 'avatar') {
-        container.querySelector('.avatar').src = message.payload.avatar;
+    switch (message.type) {
+        case 'nickname':
+            container.querySelector('.nick').textContent = message.payload.nick;
+            break;
     }
 }
 

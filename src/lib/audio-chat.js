@@ -6,7 +6,6 @@ import SimpleWebRTC from 'simplewebrtc';
 var room;
 var localTrack;
 var nick;
-var avatar;
 var webrtc;
 
 function track(name, info) {
@@ -103,9 +102,6 @@ function GUM() {
             webrtc.joinRoom(room, function (err, res) {
                 if (err) return;
                 window.setTimeout(function () {
-                    if (avatar) {
-                        webrtc.sendToAll('avatar', {avatar: avatar});
-                    }
                     if (nick) {
                         webrtc.sendToAll('nickname', {nick: nick});
                     }
@@ -162,17 +158,15 @@ function GUM() {
 
     webrtc.connection.on('message', function (message) {
         var peers = webrtc.getPeers(message.from, message.roomType);
+        // fixme - this condition looks suspicious
         if (!peers && peers.length > 0) return;
         var peer = peers[0];
 
-        // FIXME: also send current avatar and nick to newly joining participants
+        // FIXME: also send current nick to newly joining participants
         if (message.type === 'offer') {
             // update things
             if (nick) {
                 peer.send('nickname', {nick: nick});
-            }
-            if (avatar) {
-                peer.send('avatar', {avatar: avatar});
             }
         }
 

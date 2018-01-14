@@ -231,6 +231,11 @@ hr {
     vertical-align: middle;
 }
 
+.button-leave-room {
+    width: 200px;
+    margin: 1em 0;
+}
+
 /* Stream */
 
 .peerContainer.local {
@@ -244,7 +249,7 @@ hr {
     margin-bottom: 15px;
     padding: 5px;
     position: relative;
-    border: 1px solid #e6eaed;
+    border: 1px solid #ddd;
 }
 
 .nick {
@@ -252,23 +257,12 @@ hr {
     min-height: 28px;
 }
 
-.avatar {
-    width: 100%;
-    height: auto;
-    margin-top: 0;
-    display: block;
-    background: #eee;
-    border: none;
-    border-radius: 0;
-}
-
 .button-mute {
     width: 30px;
     position: absolute;
     bottom: 10px;
     right: 10px;
-    /*background: #828c8f url('../img/icons.svg') no-repeat center 5px;*/
-    text-indent: -9999em;
+    /*text-indent: -9999em;*/
     line-height: 1;
     visibility: hidden;
 }
@@ -283,7 +277,7 @@ hr {
     margin-bottom: 10px;
     padding: 5px;
     position: relative;
-    border: 1px solid #e6eaed;
+    border: 1px solid #ddd;
 }
 
 #nickInput {
