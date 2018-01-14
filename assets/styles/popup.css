@@ -278,19 +278,6 @@ hr {
     background-position: center -28px;
 }
 
-.local-controls {
-    visibility: hidden;
-    margin-top: 0;
-    padding: 15px 10px;
-    background: #f7f7f7;
-    text-align: center;
-}
-
-.local-controls p {
-    margin: 12px 0 10px;
-    font-size: .9em;
-}
-
 .remote-details {
     min-height: 183px;
     margin-bottom: 10px;
@@ -356,15 +343,6 @@ hr {
 }
 
 audio {
-    display: none;
-}
-
-/* mirroring for local snapshot */
-#snapshot {
-    transform: scaleX(-1)
-}
-
-#snapshotvideo {
     display: none;
 }
 

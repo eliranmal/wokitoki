@@ -2,7 +2,6 @@ import audioChat from '../lib/audio-chat';
 import storage from '../lib/storage';
 
 
-var hasCameras = false;
 var queryGum = false;
 
 function setRoom(name) {
@@ -34,9 +33,8 @@ function webrtcOnLocalStream() {
     var localAudio = document.getElementById('localAudio');
     localAudio.disabled = false;
     localAudio.volume = 0;
-    if (hasCameras) {
-        document.querySelector('.local-controls').style.visibility = 'visible';
-    }
+
+    document.querySelector('.local').style.display = 'block';
 
     var btn = document.querySelector('.local .button-mute');
     btn.style.visibility = 'visible';
@@ -167,14 +165,9 @@ function sniffDevices() {
     } else if (navigator && navigator.mediaDevices && navigator.mediaDevices.enumerateDevices) {
         navigator.mediaDevices.enumerateDevices()
             .then(function (devices) {
-                var cameras = devices.filter(function (device) {
-                    return device.kind === 'videoinput';
-                });
                 var mics = devices.filter(function (device) {
                     return device.kind === 'audioinput';
                 });
-                hasCameras = cameras.length;
-                console.log('hasCameras:', hasCameras)
                 var hasMics = mics.length;
                 if (hasMics) {
                     document.getElementById('requirements').style.display = 'none';
@@ -182,14 +175,6 @@ function sniffDevices() {
                     document.getElementById('microphoneWarning').style.display = 'block';
                     document.querySelector('form#createRoom>button').disabled = true;
                 }
-                // chrome.runtime.sendMessage({
-                //     channel: audioChatChannel, cmd: 'onSniffDevices', args: [
-                //         {
-                //             hasMics: hasMics,
-                //             queryGum: queryGum,
-                //         }
-                //     ]
-                // });
                 audioChat.onSniffDevices({
                     hasMics: hasMics,
                     queryGum: queryGum,
