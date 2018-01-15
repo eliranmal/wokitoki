@@ -1,0 +1,61 @@
+<template>
+    <div id="app">
+        <h1>{{ title }}</h1>
+        <!--<img src="../../assets/images/my-woki-toki.jpg">-->
+        <button v-on:click="enterRoom()">enter room</button>
+        <div v-if="!roomName">room form</div>
+        <div v-if="roomName">room container</div>
+    </div>
+</template>
+
+<script>
+    import storage from '../lib/storage';
+
+    export default {
+        name: 'app',
+        data() {
+            return {
+                title: 'wokitoki',
+                roomName: null,
+            };
+        },
+        methods: {
+            enterRoom() {
+                console.log('entered');
+                return storage.get('roomName', () => {
+                    console.log('got room name from storage');
+                    this.roomName = 'wat'
+                });
+            },
+        },
+    };
+</script>
+
+<style>
+    #app {
+        font-family: 'Avenir', Helvetica, Arial, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-align: center;
+        color: #2c3e50;
+        margin-top: 60px;
+    }
+
+    h1, h2 {
+        font-weight: normal;
+    }
+
+    ul {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    li {
+        display: inline-block;
+        margin: 0 10px;
+    }
+
+    a {
+        color: #42b983;
+    }
+</style>

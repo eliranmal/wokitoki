@@ -11,6 +11,7 @@ let config = {
         vendor: Object.keys(pkg.dependencies),
         background: './src/background/main.js',
         popup: './src/popup/main.js',
+        'vue-test': './src/vue-test/main.js',
     },
     output: {
         path: path.resolve(__dirname, 'dist'),
@@ -20,6 +21,7 @@ let config = {
     devServer: {
         overlay: true,
         historyApiFallback: true,
+        port: 9099,
         index: 'popup.html',
         contentBase: path.resolve(__dirname, 'dist'),
         headers: {
@@ -54,6 +56,11 @@ let config = {
             template: './background.html',
             chunks: ['background'],
         }),
+        new HtmlWebpackPlugin({
+            filename: 'vue-test.html',
+            template: './vue-test.html',
+            chunks: ['vue-test'],
+        }),
     ],
     module: {
         rules: [
@@ -61,9 +68,13 @@ let config = {
                 test: /\.css$/,
                 exclude: /node_modules/,
                 use: [
-                    'style-loader',
-                    'css-loader',
+                    'vue-style-loader',
+                    'css-loader'
                 ],
+            },
+            {
+                test: /\.vue$/,
+                loader: 'vue-loader',
             },
             {
                 test: /\.js$/,
@@ -84,9 +95,15 @@ let config = {
             {
                 test: /\.html$/,
                 exclude: /node_modules/,
-                use: 'html-loader'
+                use: 'html-loader',
             },
         ]
+    },
+    resolve: {
+        alias: {
+            'vue$': 'vue/dist/vue.esm.js'
+        },
+        extensions: ['*', '.js', '.vue', '.json']
     },
 };
 
@@ -94,9 +111,7 @@ if (process.env.NODE_ENV === 'production') {
     config.devtool = '#source-map';
     config.plugins = (config.plugins || []).concat([
         new webpack.DefinePlugin({
-            'process.env': {
-                NODE_ENV: '"production"'
-            }
+            'process.env.NODE_ENV': JSON.stringify('production'),
         }),
         new webpack.optimize.UglifyJsPlugin({
             sourceMap: true,
@@ -110,6 +125,9 @@ if (process.env.NODE_ENV === 'production') {
     ]);
 } else if (process.env.NODE_ENV === 'development') {
     config.plugins = (config.plugins || []).concat([
+        new webpack.DefinePlugin({
+            'process.env.NODE_ENV': JSON.stringify('development'),
+        }),
         // tell dev server to persist files - we need to be able to install the extension from the filesystem
         new WriteFileWebpackPlugin(),
     ]);
