@@ -1,4 +1,3 @@
-const pkg = require('./package.json');
 const path = require('path');
 const webpack = require('webpack');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
@@ -6,9 +5,9 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const WriteFileWebpackPlugin = require('write-file-webpack-plugin');
 
+
 let config = {
     entry: {
-        vendor: Object.keys(pkg.dependencies),
         background: './src/background/main.js',
         popup: './src/popup/main.js',
         'vue-test': './src/vue-test/main.js',
@@ -49,7 +48,7 @@ let config = {
         new HtmlWebpackPlugin({
             filename: 'popup.html',
             template: './popup.html',
-            chunks: ['vendor', 'popup'],
+            chunks: ['popup'],
         }),
         new HtmlWebpackPlugin({
             filename: 'background.html',
