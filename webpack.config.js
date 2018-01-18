@@ -64,8 +64,16 @@ let config = {
     module: {
         rules: [
             {
+                test: /(font-awesome|bulma)\/.*\.css$/,
+                // exclude: /node_modules/,
+                use: [
+                    'style-loader',
+                    'css-loader'
+                ],
+            },
+            {
                 test: /\.css$/,
-                exclude: /node_modules/,
+                exclude: /(font-awesome|bulma)\/.*\.css$/,
                 use: [
                     'vue-style-loader',
                     'css-loader'
@@ -88,6 +96,17 @@ let config = {
                     options: {
                         name: '[name].[ext]?[hash]',
                         outputPath: 'assets/images/',
+                    },
+                },
+            },
+            {
+                test: /\.(eot|svg|ttf|woff|woff2)(\?\S*)?$/,
+                include: /font-awesome/,
+                use: {
+                    loader: 'file-loader',
+                    options: {
+                        name: '[name].[ext]?[hash]',
+                        outputPath: 'assets/fonts/',
                     },
                 },
             },

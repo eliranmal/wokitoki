@@ -8,12 +8,17 @@
     "dev": "cross-env NODE_ENV=development webpack-dev-server --hot",
     "build": "cross-env NODE_ENV=production webpack --progress --hide-modules"
   },
+  "engines": {
+    "node": "^9.0.0"
+  },
   "browserslist": [
     "> 1%",
     "last 2 versions",
     "not ie <= 8"
   ],
   "dependencies": {
+    "bulma": "^0.6.2",
+    "font-awesome": "^4.7.0",
     "simplewebrtc": "^3.0.1",
     "vue": "^2.5.13"
   },

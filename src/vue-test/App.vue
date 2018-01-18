@@ -1,61 +1,42 @@
 <template>
-    <div id="app">
-        <h1>{{ title }}</h1>
-        <!--<img src="../../assets/images/my-woki-toki.jpg">-->
-        <button v-on:click="enterRoom()">enter room</button>
-        <div v-if="!roomName">room form</div>
-        <div v-if="roomName">room container</div>
+    <div id="app" class="hero is-fullheight">
+        <div class="hero-body">
+            <div class="container">
+                <room v-if="roomName" v-bind:room-name="roomName" v-on:leave="setRoom">room container</room>
+                <welcome v-else v-on:enter="setRoom">room form</welcome>
+            </div>
+        </div>
     </div>
 </template>
 
 <script>
-    import storage from '../lib/storage';
+    import Welcome from './components/Welcome';
+    import Room from './components/Room';
 
     export default {
         name: 'app',
+        components: {
+            Welcome,
+            Room,
+        },
         data() {
             return {
-                title: 'wokitoki',
                 roomName: null,
             };
         },
         methods: {
-            enterRoom() {
-                console.log('entered');
-                return storage.get('roomName', () => {
-                    console.log('got room name from storage');
-                    this.roomName = 'wat'
-                });
+            setRoom(name) {
+                console.log('setting room to ', name);
+                this.roomName = name;
             },
         },
     };
 </script>
 
 <style>
+
     #app {
+        min-width: 500px;
         font-family: 'Avenir', Helvetica, Arial, sans-serif;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-        text-align: center;
-        color: #2c3e50;
-        margin-top: 60px;
-    }
-
-    h1, h2 {
-        font-weight: normal;
-    }
-
-    ul {
-        list-style-type: none;
-        padding: 0;
-    }
-
-    li {
-        display: inline-block;
-        margin: 0 10px;
-    }
-
-    a {
-        color: #42b983;
     }
 </style>
