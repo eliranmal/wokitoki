@@ -17,25 +17,24 @@
                         </span>
                     </div>
                     <div class="control">
-                        <button class="button is-medium" type="button" v-on:click="mute">got it</button>
+                        <button class="button is-medium is-info" type="button" v-on:click="mute">got it</button>
                     </div>
                 </div>
                 <div class="field has-addons has-addons-right is-fullwidth">
                     <div class="control">
                         <button class="button is-medium" type="button" v-on:click="mute">
+                            <span>{{ muteLabel }}</span>
                             <span class="icon">
-                                <!-- todo - toggle mic classname by muted state -->
-                                <i class="fa fa-microphone-slash fa-sm"></i>
+                                <i class="fa fa-sm" v-bind:class="isMuted ? 'fa-microphone-slash' : 'fa-microphone'"></i>
                             </span>
-                            <span>mute</span>
                         </button>
                     </div>
                     <div class="control">
                         <button class="button is-medium" type="button" v-on:click="leave">
+                            <span>leave</span>
                             <span class="icon">
                                 <i class="fa fa-bicycle fa-sm"></i>
                             </span>
-                            <span>leave</span>
                         </button>
                     </div>
                 </div>
@@ -56,6 +55,7 @@
             return {
                 title: this.roomName,
                 nickName: null,
+                isMuted: false,
             }
         },
         methods: {
@@ -63,7 +63,13 @@
                 this.$emit('leave');
             },
             mute() {
-                this.$emit('mute');
+                this.isMuted = !this.isMuted;
+                this.$emit('mute', this.isMuted);
+            },
+        },
+        computed: {
+            muteLabel() {
+                return this.isMuted ? 'unmute' : 'mute';
             },
         },
         // todo - add watcher for nickName, debounce it and emit an event
