@@ -1,11 +1,7 @@
 <template>
-    <div id="app" class="hero is-fullheight">
-        <div class="hero-body">
-            <div class="container">
-                <room v-if="roomName" v-bind:room-name="roomName" v-on:leave="setRoom">room container</room>
-                <welcome v-else v-on:enter="setRoom">room form</welcome>
-            </div>
-        </div>
+    <div id="app">
+        <room v-if="roomName" v-bind:room-name="roomName" v-on:leave="setRoom">room container</room>
+        <welcome v-else v-on:enter="setRoom">room form</welcome>
     </div>
 </template>
 
@@ -36,7 +32,7 @@
 <style>
 
     #app {
-        min-width: 500px;
         font-family: 'Avenir', Helvetica, Arial, sans-serif;
     }
+
 </style>

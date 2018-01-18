@@ -1,39 +1,35 @@
 <template>
     <div class="room">
-        <div class="title has-text-centered">
-            <span class="icon">
-                <i class="fa fa-cube fa-3x"></i>
-            </span>
-            <h1 class="subtitle">{{ title }}</h1>
+        <div class="section field is-grouped is-fullwidth">
+            <h1 class="control title is-expanded">
+                <span class="icon is-large">
+                    <i class="fa fa-cube fa-md"></i>
+                </span>
+                <span>{{ title }}</span>
+            </h1>
+            <div class="control">
+                <button class="button is-large is-dark" type="button" title="leave" v-on:click="leave">
+                    <span class="icon">
+                        <i class="fa fa-bicycle fa-sm"></i>
+                    </span>
+                </button>
+            </div>
         </div>
         <div class="peerContainer local">
             <div class="local-details">
-                <div class="field has-addons is-fullwidth">
-                    <div class="control is-expanded has-icons-left">
-                        <input class="input is-medium" type="text" placeholder="find a cool nick name"
+                <div class="section field is-grouped is-fullwidth">
+                    <div class="control has-icons-left is-expanded">
+                        <input class="input is-large" type="text" placeholder="find a cool nick name"
                                v-model="nickName"/>
-                        <span class="icon">
-                            <i class="fa fa-asterisk fa-sm"></i>
+                        <span class="icon is-left">
+                            <i class="fa fa-user-circle-o fa-sm"></i>
                         </span>
                     </div>
                     <div class="control">
-                        <button class="button is-medium is-info" type="button" v-on:click="mute">got it</button>
-                    </div>
-                </div>
-                <div class="field has-addons has-addons-right is-fullwidth">
-                    <div class="control">
-                        <button class="button is-medium" type="button" v-on:click="mute">
-                            <span>{{ muteLabel }}</span>
+                        <button class="button is-large is-info" type="button"
+                                v-bind:title="muteLabel" v-on:click="toggleMute">
                             <span class="icon">
                                 <i class="fa fa-sm" v-bind:class="isMuted ? 'fa-microphone-slash' : 'fa-microphone'"></i>
-                            </span>
-                        </button>
-                    </div>
-                    <div class="control">
-                        <button class="button is-medium" type="button" v-on:click="leave">
-                            <span>leave</span>
-                            <span class="icon">
-                                <i class="fa fa-bicycle fa-sm"></i>
                             </span>
                         </button>
                     </div>
@@ -62,7 +58,7 @@
             leave() {
                 this.$emit('leave');
             },
-            mute() {
+            toggleMute() {
                 this.isMuted = !this.isMuted;
                 this.$emit('mute', this.isMuted);
             },
@@ -82,4 +78,11 @@
         display: none;
     }
 
+    .button {
+        border-radius: 50% !important;
+    }
+
+    .local {
+        margin-top: 3em;
+    }
 </style>
