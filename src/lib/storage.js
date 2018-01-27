@@ -1,20 +1,36 @@
 
 if (process.env.NODE_ENV === 'development') {
 
-    /**
-     * fake sync api polyfill
-     */
     if (!chrome || !chrome.storage || !chrome.storage.sync) {
-        const command = (...args) => setTimeout(args.pop(), 0);
+        const syncToLocalFnMap = {
+            get: 'getItem',
+            set: 'setItem',
+            remove: 'removeItem',
+            size: 'length',
+            clear: 'clear',
+        };
+        const buildCommand = (cmd) => (...args) => setTimeout(() => {
+            const cb = args.pop();
+            if (cmd === 'set') {
+                const data = args.shift();
+                for (let key in data) {
+                    if (data.hasOwnProperty(key)) {
+                        args = [key, data[key]];
+                        // assume there is a single entry
+                        break;
+                    }
+                }
+            }
+            cb(localStorage[syncToLocalFnMap[cmd]](...args));
+        }, 1000);
         window.chrome = window.chrome || {};
         window.chrome.storage = window.chrome.storage || {};
-        window.chrome.storage.sync = window.chrome.storage.sync || {
-            get: command,
-            set: command,
-            remove: command,
-            clear: command,
-            size: command,
-        };
+        window.chrome.storage.sync = window.chrome.storage.sync || {};
+        for (let fn in syncToLocalFnMap) {
+            if (syncToLocalFnMap.hasOwnProperty(fn)) {
+                window.chrome.storage.sync[fn] = buildCommand(fn);
+            }
+        }
     }
 }
 

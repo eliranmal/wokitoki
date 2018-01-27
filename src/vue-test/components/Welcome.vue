@@ -1,32 +1,20 @@
 <template>
-    <div class="hero is-fullheight">
-        <div class="hero-body">
-            <form class="welcome container">
-                <div class="title has-text-centered">
-                    <span class="icon">
-                        <i class="fa fa-magic fa-3x"></i>
-                    </span>
-                    <h1 class="subtitle">{{ title }}</h1>
-                    <label for="room-name" class="label">think of a nice name for a new room, or join an existing one</label>
-                </div>
-                <div class="field has-addons">
-                    <div class="control is-expanded has-icons-left has-info">
-                        <input id="room-name" class="input is-medium" type="text" placeholder="room name"
-                               v-bind:min="roomMinChars" v-model="roomName"/>
-                        <span class="icon">
-                    <i class="fa fa-cube fa-sm"></i>
-                </span>
-                    </div>
-                    <div class="control">
-                        <button class="button is-info is-medium" type="submit"
-                                v-bind:disabled="!isValid" v-on:click.prevent="enterRoom">enter room</button>
-                    </div>
-                </div>
-                <p class="help is-info" v-bind:class="isValid ? 'is-invisible' : ''">
-                    {{ roomMinChars }} characters or more, no spaces
-                </p>
-            </form>
-        </div>
+    <div class="welcome flexbox">
+        <div class="logo"></div>
+        <h1>{{ i18n.title }}</h1>
+        <label for="room-name">{{ i18n.roomNameLabel }}</label>
+        <form class="flexbox horizontal"
+              v-on:submit.prevent="enterRoom">
+            <!--<i class="fa fa-wifi fa-2x"></i>-->
+            <!--<i class="logo-icon"></i>-->
+            <input id="room-name" class="fill" type="text"
+                   v-bind:placeholder.once="i18n.roomNamePlaceholder"
+                   v-bind:minlength.once="roomMinChars" v-model="roomName"/>
+            <!-- todo - if input is empty, change button text -->
+            <button type="submit"
+                    v-bind:disabled="!isValid">{{ i18n.enterRoomLabel }}</button>
+        </form>
+        <p class="help" v-bind:class="isValid ? 'hidden' : ''">{{ i18n.helpMessage }}</p>
     </div>
 </template>
 
@@ -36,28 +24,35 @@
     export default {
         name: 'welcome',
         data() {
+            const roomMinChars = 3;
             return {
-                title: 'welcome',
+                i18n: {
+                    title: 'wokitoki',
+                    roomNameLabel: 'pick a nice name for a new channel, or join an existing one',
+                    roomNamePlaceholder: 'a nice channel name',
+                    enterRoomLabel: 'open',
+                    helpMessage: `${roomMinChars} characters or more`,
+                },
                 roomName: null,
-                roomMinChars: 10,
+                roomMinChars: roomMinChars,
             };
         },
         methods: {
             enterRoom() {
                 console.log('entered');
-                if (this.roomName) {
-                    this.$emit('enter', this.roomName);
-                } else {
-                    storage.get('roomName', () => {
-                        console.log('got room name from storage');
-                        this.$emit('enter', 'my-awesome-room');
-                    });
+                console.log('isValid', this.isValid);
+
+                if (this.isValid) {
+                    this.$emit('enter', this.sanitize(this.roomName));
                 }
+            },
+            sanitize(text) {
+                return String(text).trim().replace(/\s+/g, '-');
             },
         },
         computed: {
             isValid() {
-                return this.roomName && this.roomName.length >= this.roomMinChars && !this.roomName.includes(' ');
+                return this.roomName && String(this.roomName).trim().length >= this.roomMinChars;
             },
         },
     }
@@ -65,8 +60,51 @@
 
 <style scoped>
 
-    .welcome {
-        max-width: 500px;
+    form {
+        position: relative;
+    }
+
+    form > i {
+        position: absolute;
+        top: .8rem;
+        left: .8rem;
+        opacity: .25;
+    }
+
+    input {
+        /*padding: 0 1em 0 5rem;*/
+        padding: 0 1em;
+        border-right: 0 none;
+        /*background: transparent url("../../../../../Downloads/marine-radio.png") 1rem 1rem no-repeat;*/
+        /*background-size: 5em;*/
+    }
+
+    h1 {
+        font-weight: bold;
+        color: black;
+    }
+
+    .logo,
+    .logo-icon {
+        background: transparent url("../../../../../Downloads/marine-radio.png") no-repeat;
+    }
+
+    .logo {
+        position: relative;
+        top: 37px;
+        left: calc(50% - 8px);
+        /*left: calc(50% - 137px);*/
+        width: 100%;
+        height: 70px;
+        margin: 0;
+        padding: 0;
+        background-size: 150px;
+    }
+
+    .logo-icon {
+        width: 3rem;
+        height: 3rem;
+        background-size: 200%;
     }
 
 </style>

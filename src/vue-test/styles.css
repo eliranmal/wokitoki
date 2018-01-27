@@ -1,0 +1,143 @@
+
+/* layout */
+
+.flexbox {
+    display: flex;
+    flex-direction: column;
+}
+
+.flexbox:not(:last-of-type) {
+    border-bottom: 1px solid #ddd;
+}
+
+.flexbox > * {
+    /*transition: margin, flex-grow 1000ms;*/
+    margin: 0 0 2rem 0;
+}
+
+.flexbox > .flexbox > * {
+    margin-bottom: 0;
+}
+
+.flexbox > .fill {
+    flex-grow: 1;
+    /*margin-top: -.5em;*/
+    margin-bottom: -.5em;
+}
+
+.flexbox.horizontal {
+    flex-direction: row;
+}
+
+.flexbox.horizontal {
+    align-items: stretch;
+}
+
+/*.flexbox.horizontal > .flexbox.horizontal:not(:first-child) {*/
+.flexbox.horizontal > * {
+    margin: 0 2rem 0 0;
+}
+
+.flexbox.horizontal > :last-child {
+    margin-right: 0;
+}
+
+.flexbox.horizontal > .flexbox.horizontal > * {
+    margin-right: 0;
+}
+
+.flexbox.horizontal > .fill {
+    margin-right: -2rem;
+    /*margin-right: -.5em;*/
+}
+
+
+/* baseline styles */
+
+body {
+    font-family: 'Avenir', Helvetica, Arial, sans-serif;
+    font-size: 24px;
+    letter-spacing: 0.005em;
+    color: #555;
+    background-color: #fafafa;
+}
+
+h1 {
+    font-size: 3em;
+    font-weight: 100;
+    text-align: center;
+    margin-bottom: 2rem;
+    /*padding: 1rem;*/
+    line-height: 2;
+}
+
+button,
+input {
+    font-family: 'Avenir', Helvetica, Arial, sans-serif;
+    font-size: 100%;
+    font-weight: 100;
+    line-height: 3;
+    outline: 0 none;
+}
+
+button {
+    padding: 0 2em;
+    border: 1px solid #ef5575;
+    color: #fff;
+    background: #ef5575 none;
+    cursor: pointer;
+}
+
+button > i + span {
+    display: block;
+    margin-top: -.3rem;
+    font-size: 1.1rem;
+    color: #555;
+}
+
+/*button.big {*/
+    /*display: block;*/
+    /*margin-left: auto;*/
+    /*margin-right: auto;*/
+    /*font-size: 5rem;*/
+/*}*/
+
+button:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+}
+
+input {
+    padding: 0 1em;
+    border: 1px solid #999;
+}
+
+input:focus {
+    border-color: #ef5575;
+}
+
+
+/* components */
+
+.help {
+    font-size: 1.1rem;
+    color: #ef5575;
+}
+
+
+/* helper classes */
+
+.centered-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.hidden {
+    visibility: hidden;
+}
+
+.pull-right {
+    justify-content: flex-end;
+}
+

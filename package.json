@@ -19,6 +19,7 @@
   "dependencies": {
     "bulma": "^0.6.2",
     "font-awesome": "^4.7.0",
+    "minireset.css": "^0.0.3",
     "simplewebrtc": "^3.0.1",
     "vue": "^2.5.13"
   },
