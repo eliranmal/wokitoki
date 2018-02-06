@@ -5,10 +5,10 @@
             {{ i18n.title }}
         </h1>
         <!--<button type="button" class="big"-->
-                <!--v-bind:title="muteLabel" v-on:click="toggleMute">-->
-            <!--&lt;!&ndash;<i class="fa" v-bind:class="isMuted ? 'fa-microphone-slash' : 'fa-microphone'"></i>&ndash;&gt;-->
-            <!--<i class="fa" v-bind:class="isMuted ? 'fa-user-secret' : 'fa-microphone'"></i>-->
-            <!--<span>{{ muteLabel }}</span>-->
+        <!--v-bind:title="muteLabel" v-on:click="toggleMute">-->
+        <!--&lt;!&ndash;<i class="fa" v-bind:class="isMuted ? 'fa-microphone-slash' : 'fa-microphone'"></i>&ndash;&gt;-->
+        <!--<i class="fa" v-bind:class="isMuted ? 'fa-user-secret' : 'fa-microphone'"></i>-->
+        <!--<span>{{ muteLabel }}</span>-->
         <!--</button>-->
         <div class="flexbox horizontal controls pull-right">
             <!--<i class="fa fa-podcast fa-3x"></i>-->
@@ -32,7 +32,8 @@
                        v-model="nickName"/>
                 <button type="button"
                         v-bind:style="nickButtonStyle"
-                        v-on:click="refreshAvatarColor">ok</button>
+                        v-on:click="refreshAvatarColor">ok
+                </button>
                 <button type="button"
                         v-bind:title="muteLabel" v-on:click="toggleMute">
                     <i class="fa" v-bind:class="isMuted ? 'fa-microphone-slash' : 'fa-microphone'"></i>
@@ -45,13 +46,9 @@
         <div id="remotes" class="flexbox">
             <!--todo - this is a fake remote for dev-->
             <div class="flexbox horizontal remote-details">
-                <input type="text" class="fill"
-                       v-bind:style="nickInputStyle"
-                       v-bind:placeholder.once="i18n.nickNamePlaceholder"
-                       v-model="nickName"/>
-                <button type="button"
-                        v-bind:style="nickButtonStyle"
-                        v-on:click="refreshAvatarColor">ok</button>
+                <output class="fill"
+                        v-bind:style="nickInputStyle">{{ nickName }}
+                </output>
                 <button type="button"
                         v-bind:title="muteLabel" v-on:click="toggleMute">
                     <i class="fa" v-bind:class="isMuted ? 'fa-microphone-slash' : 'fa-microphone'"></i>
@@ -148,11 +145,11 @@
     }
 
     /*.avatar {*/
-        /*margin: 0 .5em;*/
+    /*margin: 0 .5em;*/
     /*}*/
 
     /*button.big {*/
-        /*margin-bottom: 5rem;*/
+    /*margin-bottom: 5rem;*/
     /*}*/
 
     input {
@@ -162,6 +159,9 @@
     .local-details,
     .remote-details {
         /*margin-top: 3em;*/
+    }
+
+    .remote-details {
     }
 
     .local-details {

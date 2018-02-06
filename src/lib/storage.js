@@ -22,7 +22,7 @@ if (process.env.NODE_ENV === 'development') {
                 }
             }
             cb(localStorage[syncToLocalFnMap[cmd]](...args));
-        }, 1000);
+        }, 300);
         window.chrome = window.chrome || {};
         window.chrome.storage = window.chrome.storage || {};
         window.chrome.storage.sync = window.chrome.storage.sync || {};

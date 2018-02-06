@@ -55,6 +55,7 @@
     .app {
         display: flex;
         justify-content: center;
+        overflow: hidden;
         min-height: 100vh;
         padding: 60px;
     }

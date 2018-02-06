@@ -1,4 +1,3 @@
-
 /* layout */
 
 .flexbox {
@@ -6,34 +5,28 @@
     flex-direction: column;
 }
 
-.flexbox:not(:last-of-type) {
-    border-bottom: 1px solid #ddd;
-}
-
-.flexbox > * {
-    /*transition: margin, flex-grow 1000ms;*/
-    margin: 0 0 2rem 0;
-}
-
-.flexbox > .flexbox > * {
-    margin-bottom: 0;
+.flexbox.horizontal {
+    flex-direction: row;
+    align-items: stretch;
 }
 
 .flexbox > .fill {
     flex-grow: 1;
-    /*margin-top: -.5em;*/
-    margin-bottom: -.5em;
 }
 
-.flexbox.horizontal {
-    flex-direction: row;
+.flexbox > * {
+    margin: 0 0 2rem 0;
 }
 
-.flexbox.horizontal {
-    align-items: stretch;
+.flexbox > :last-child {
+    margin-right: 0;
 }
 
-/*.flexbox.horizontal > .flexbox.horizontal:not(:first-child) {*/
+.flexbox > .fill,
+.flexbox > .flexbox > * {
+    margin-bottom: 0;
+}
+
 .flexbox.horizontal > * {
     margin: 0 2rem 0 0;
 }
@@ -42,13 +35,13 @@
     margin-right: 0;
 }
 
+.flexbox.horizontal > .fill,
 .flexbox.horizontal > .flexbox.horizontal > * {
     margin-right: 0;
 }
 
-.flexbox.horizontal > .fill {
-    margin-right: -2rem;
-    /*margin-right: -.5em;*/
+.flexbox:not(:last-of-type) {
+    border-bottom: 1px solid #ddd;
 }
 
 
@@ -72,12 +65,22 @@ h1 {
 }
 
 button,
-input {
+input,
+output {
     font-family: 'Avenir', Helvetica, Arial, sans-serif;
     font-size: 100%;
     font-weight: 100;
     line-height: 3;
+}
+
+button,
+input {
     outline: 0 none;
+}
+
+output {
+    word-wrap: break-word;
+    word-break: break-all;
 }
 
 button {
@@ -96,10 +99,10 @@ button > i + span {
 }
 
 /*button.big {*/
-    /*display: block;*/
-    /*margin-left: auto;*/
-    /*margin-right: auto;*/
-    /*font-size: 5rem;*/
+/*display: block;*/
+/*margin-left: auto;*/
+/*margin-right: auto;*/
+/*font-size: 5rem;*/
 /*}*/
 
 button:disabled {
@@ -107,8 +110,12 @@ button:disabled {
     cursor: not-allowed;
 }
 
-input {
+input,
+output {
     padding: 0 1em;
+}
+
+input {
     border: 1px solid #999;
 }
 
@@ -116,14 +123,12 @@ input:focus {
     border-color: #ef5575;
 }
 
-
 /* components */
 
 .help {
     font-size: 1.1rem;
     color: #ef5575;
 }
-
 
 /* helper classes */
 
