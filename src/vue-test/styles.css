@@ -54,7 +54,6 @@ h1 {
     font-weight: 100;
     text-align: center;
     margin-bottom: 2rem;
-    /*padding: 1rem;*/
     line-height: 2;
 }
 
@@ -64,6 +63,11 @@ output {
     font-family: 'Avenir', Helvetica, Arial, sans-serif;
     font-size: 100%;
     font-weight: 100;
+    line-height: 2;
+}
+
+button.big,
+input.big {
     line-height: 3;
 }
 
@@ -85,11 +89,24 @@ output {
 }
 
 button {
-    padding: 0 2em;
+    padding: 0 1em;
     border: 1px solid #ef5575;
     color: #fff;
     background: #ef5575 none;
     cursor: pointer;
+}
+
+button.big {
+    line-height: 3;
+    padding: 0 2em;
+}
+
+button.round {
+    width: 2.2em;
+    height: 2.2em;
+    line-height: 2.2;
+    padding: 0;
+    border-radius: 50%;
 }
 
 button > i + span {

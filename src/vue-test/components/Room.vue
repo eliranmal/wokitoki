@@ -1,20 +1,11 @@
 <template>
     <div class="room flexbox">
-        <h1>
-            <!--<i class="fa fa-wifi"></i>-->
-            {{ i18n.title }}
-        </h1>
-        <!--<button type="button" class="big"-->
-        <!--v-bind:title="muteLabel" v-on:click="toggleMute">-->
-        <!--&lt;!&ndash;<i class="fa" v-bind:class="isMuted ? 'fa-microphone-slash' : 'fa-microphone'"></i>&ndash;&gt;-->
-        <!--<i class="fa" v-bind:class="isMuted ? 'fa-user-secret' : 'fa-microphone'"></i>-->
-        <!--<span>{{ muteLabel }}</span>-->
-        <!--</button>-->
+        <h1>{{ i18n.title }}</h1>
         <div class="flexbox horizontal controls pull-right">
             <!--<i class="fa fa-podcast fa-3x"></i>-->
             <!--<i class="fa fa-wifi fa-3x"></i>-->
-            <button type="button"
-                    v-b-tooltip.hover.focus
+            <button type="button" class="round"
+                    v-b-tooltip.hover
                     v-bind:title.once="i18n.leaveRoomLabel"
                     v-on:click="leave">
                 <i class="fa fa-bicycle"></i>
@@ -35,12 +26,10 @@
                         v-bind:disabled="!isNickValid()"
                         v-on:click="refreshAvatarColor">ok
                 </button>
-                <button type="button"
-                        v-b-tooltip.hover.focus
+                <button type="button" class="round"
+                        v-b-tooltip.hover
                         v-bind:title="muteLabel" v-on:click="toggleMute">
                     <i class="fa" v-bind:class="isMuted ? 'fa-microphone-slash' : 'fa-microphone'"></i>
-                    <!--<i class="fa" v-bind:class="isMuted ? 'fa-user-secret' : 'fa-microphone'"></i>-->
-                    <!--<span>{{ muteLabel }}</span>-->
                 </button>
             </div>
             <audio id="localAudio" controls oncontextmenu="return false;" disabled style="display: none;"></audio>
@@ -50,12 +39,10 @@
             <div class="flexbox horizontal remote-details"
                  v-for="v in remotes">
                 <output class="fill">{{ nickName }}</output>
-                <button type="button"
-                        v-b-tooltip.hover.focus
+                <button type="button" class="round"
+                        v-b-tooltip.hover
                         v-bind:title="muteLabel" v-on:click="toggleMute">
                     <i class="fa" v-bind:class="isMuted ? 'fa-microphone-slash' : 'fa-microphone'"></i>
-                    <!--<i class="fa" v-bind:class="isMuted ? 'fa-user-secret' : 'fa-microphone'"></i>-->
-                    <!--<span>{{ muteLabel }}</span>-->
                 </button>
             </div>
         </div>
@@ -140,12 +127,7 @@
 
     .controls button,
     .avatar {
-        width: 2.2em;
-        height: 2.2em;
-        line-height: 2.2;
         margin: 0 .5em;
-        padding: 0;
-        border-radius: 50%;
     }
 
     /*.avatar {*/

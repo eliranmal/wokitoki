@@ -7,11 +7,11 @@
               v-on:submit.prevent="enterRoom">
             <!--<i class="fa fa-wifi fa-2x"></i>-->
             <!--<i class="logo-icon"></i>-->
-            <input id="room-name" class="fill" type="text"
+            <input id="room-name" class="fill big" type="text"
                    v-bind:placeholder.once="i18n.roomNamePlaceholder"
                    v-bind:minlength.once="roomMinChars" v-model="roomName"/>
             <!-- todo - if input is empty, change button text -->
-            <button type="submit"
+            <button type="submit" class="big"
                     v-bind:disabled="!isValid">{{ i18n.enterRoomLabel }}</button>
         </form>
         <p class="help" v-bind:class="isValid ? 'hidden' : ''">{{ i18n.helpMessage }}</p>
