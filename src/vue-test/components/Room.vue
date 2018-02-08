@@ -4,7 +4,7 @@
         <div class="flexbox horizontal controls pull-right">
             <!--<i class="fa fa-podcast fa-3x"></i>-->
             <!--<i class="fa fa-wifi fa-3x"></i>-->
-            <button type="button" class="round"
+            <button type="button" class="icon"
                     v-b-tooltip.hover
                     v-bind:title.once="i18n.leaveRoomLabel"
                     v-on:click="leave">
@@ -26,7 +26,7 @@
                         v-bind:disabled="!isNickValid()"
                         v-on:click="refreshAvatarColor">ok
                 </button>
-                <button type="button" class="round"
+                <button type="button" class="icon"
                         v-b-tooltip.hover
                         v-bind:title="muteLabel" v-on:click="toggleMute">
                     <i class="fa" v-bind:class="isMuted ? 'fa-microphone-slash' : 'fa-microphone'"></i>
@@ -39,7 +39,7 @@
             <div class="flexbox horizontal remote-details"
                  v-for="v in remotes">
                 <output class="fill">{{ nickName }}</output>
-                <button type="button" class="round"
+                <button type="button" class="icon"
                         v-b-tooltip.hover
                         v-bind:title="muteLabel" v-on:click="toggleMute">
                     <i class="fa" v-bind:class="isMuted ? 'fa-microphone-slash' : 'fa-microphone'"></i>
@@ -68,9 +68,6 @@
                 nickName: null,
                 isMuted: false,
                 avatarColor: '#555',
-                remotes: [
-                    'a', 'b'
-                ]
             }
         },
         methods: {
@@ -113,6 +110,10 @@
                     borderColor: this.avatarColor,
                     backgroundColor: this.avatarColor,
                 };
+            },
+            remotes() {
+                // todo - plug in real remotes
+                return [,,,];
             },
         },
         // todo - add watcher for nickName, debounce it and emit an event

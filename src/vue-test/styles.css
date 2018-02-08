@@ -101,11 +101,19 @@ button.big {
     padding: 0 2em;
 }
 
-button.round {
+button.icon {
     width: 2.2em;
     height: 2.2em;
     line-height: 2.2;
     padding: 0;
+    border-radius: 2px;
+}
+
+button.icon > i {
+    line-height: 2.2;
+}
+
+button.round {
     border-radius: 50%;
 }
 
@@ -116,15 +124,8 @@ button > i + span {
     color: #555;
 }
 
-/*button.big {*/
-/*display: block;*/
-/*margin-left: auto;*/
-/*margin-right: auto;*/
-/*font-size: 5rem;*/
-/*}*/
-
 button:disabled {
-    opacity: .5;
+    background-color: #ddd;
     cursor: not-allowed;
 }
 
@@ -162,5 +163,12 @@ input:focus {
 
 .pull-right {
     justify-content: flex-end;
+}
+
+
+/* bootstrap override */
+
+.tooltip-inner {
+    border-radius: 2px;
 }
 
