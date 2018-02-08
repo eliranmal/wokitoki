@@ -14,10 +14,10 @@
             <!--<i class="fa fa-podcast fa-3x"></i>-->
             <!--<i class="fa fa-wifi fa-3x"></i>-->
             <button type="button"
+                    v-b-tooltip.hover.focus
                     v-bind:title.once="i18n.leaveRoomLabel"
                     v-on:click="leave">
                 <i class="fa fa-bicycle"></i>
-                <span>{{ i18n.leaveRoomLabel }}</span>
             </button>
         </div>
         <div class="peerContainer local">
@@ -32,24 +32,26 @@
                        v-model="nickName"/>
                 <button type="button"
                         v-bind:style="nickButtonStyle"
+                        v-bind:disabled="!isNickValid()"
                         v-on:click="refreshAvatarColor">ok
                 </button>
                 <button type="button"
+                        v-b-tooltip.hover.focus
                         v-bind:title="muteLabel" v-on:click="toggleMute">
                     <i class="fa" v-bind:class="isMuted ? 'fa-microphone-slash' : 'fa-microphone'"></i>
                     <!--<i class="fa" v-bind:class="isMuted ? 'fa-user-secret' : 'fa-microphone'"></i>-->
                     <!--<span>{{ muteLabel }}</span>-->
                 </button>
             </div>
-            <audio id="localAudio" controls oncontextmenu="return false;" disabled></audio>
+            <audio id="localAudio" controls oncontextmenu="return false;" disabled style="display: none;"></audio>
         </div>
         <div id="remotes" class="flexbox">
             <!--todo - this is a fake remote for dev-->
-            <div class="flexbox horizontal remote-details">
-                <output class="fill"
-                        v-bind:style="nickInputStyle">{{ nickName }}
-                </output>
+            <div class="flexbox horizontal remote-details"
+                 v-for="v in remotes">
+                <output class="fill">{{ nickName }}</output>
                 <button type="button"
+                        v-b-tooltip.hover.focus
                         v-bind:title="muteLabel" v-on:click="toggleMute">
                     <i class="fa" v-bind:class="isMuted ? 'fa-microphone-slash' : 'fa-microphone'"></i>
                     <!--<i class="fa" v-bind:class="isMuted ? 'fa-user-secret' : 'fa-microphone'"></i>-->
@@ -79,6 +81,9 @@
                 nickName: null,
                 isMuted: false,
                 avatarColor: '#555',
+                remotes: [
+                    'a', 'b'
+                ]
             }
         },
         methods: {
@@ -101,6 +106,9 @@
             },
             refreshAvatarColor() {
                 this.avatarColor = this.randomHexColor();
+            },
+            isNickValid() {
+                return this.nickName && this.nickName.length > 0;
             },
         },
         computed: {
@@ -125,10 +133,6 @@
 </script>
 
 <style scoped>
-
-    audio {
-        display: none;
-    }
 
     h1 > i {
         opacity: .25;
@@ -161,22 +165,24 @@
         /*margin-top: 3em;*/
     }
 
+    .local-details {
+        border-bottom: 1px solid #ddd;
+        padding-bottom: 2rem;
+    }
+
     .remote-details {
     }
 
-    .local-details {
-        border-bottom: 1px solid #ccc;
-        padding-bottom: 2rem;
+    .local-details input,
+    .local-details button {
+        transition-property: border-color, background-color;
+        transition-duration: 1s;
     }
 
     .controls {
         position: absolute;
         top: 1rem;
         right: 1rem;
-        border-bottom: 0 none;
-
-        padding-bottom: 3rem;
-        margin-bottom: 2rem;
     }
 
     .controls button:last-of-type {

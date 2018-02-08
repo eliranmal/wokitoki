@@ -64,8 +64,11 @@ let config = {
     module: {
         rules: [
             {
-                test: /(font-awesome|bulma)\/.*\.css$/,
-                // exclude: /node_modules/,
+                test: /\.css$/,
+                include: [
+                    /font-awesome/,
+                    /bootstrap-vue/,
+                ],
                 use: [
                     'style-loader',
                     'css-loader'
@@ -73,20 +76,26 @@ let config = {
             },
             {
                 test: /\.css$/,
-                exclude: /(font-awesome|bulma)\/.*\.css$/,
+                exclude: [
+                    /font-awesome/,
+                    /bootstrap-vue/,
+                ],
                 use: [
                     'vue-style-loader',
                     'css-loader'
                 ],
             },
             {
-                test: /\.vue$/,
-                loader: 'vue-loader',
+                test: /\.js$/,
+                include: [
+                    path.resolve(__dirname, 'src'),
+                    require.resolve('bootstrap-vue'),
+                ],
+                use: 'babel-loader',
             },
             {
-                test: /\.js$/,
-                exclude: /node_modules/,
-                use: 'babel-loader',
+                test: /\.vue$/,
+                loader: 'vue-loader',
             },
             {
                 test: /\.(png|jpg|gif|svg)$/,

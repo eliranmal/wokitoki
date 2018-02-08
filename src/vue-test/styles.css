@@ -22,8 +22,7 @@
     margin-right: 0;
 }
 
-.flexbox > .fill,
-.flexbox > .flexbox > * {
+.flexbox > .fill {
     margin-bottom: 0;
 }
 
@@ -35,13 +34,8 @@
     margin-right: 0;
 }
 
-.flexbox.horizontal > .fill,
-.flexbox.horizontal > .flexbox.horizontal > * {
+.flexbox.horizontal > .fill {
     margin-right: 0;
-}
-
-.flexbox:not(:last-of-type) {
-    border-bottom: 1px solid #ddd;
 }
 
 
@@ -74,8 +68,15 @@ output {
 }
 
 button,
-input {
+input,
+button:focus,
+input:focus {
     outline: 0 none;
+}
+
+button:focus,
+input:focus {
+    border: 1px solid #555;
 }
 
 output {

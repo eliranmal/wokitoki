@@ -17,7 +17,7 @@
     "not ie <= 8"
   ],
   "dependencies": {
-    "bulma": "^0.6.2",
+    "bootstrap-vue": "^2.0.0-rc.1",
     "font-awesome": "^4.7.0",
     "minireset.css": "^0.0.3",
     "simplewebrtc": "^3.0.1",
