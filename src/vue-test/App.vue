@@ -67,7 +67,7 @@
         left: 0;
         right: 0;
         z-index: 1;
-        background-color: #fafafa;
+        background-color: #f6f6f6;
     }
 
 </style>

@@ -14,15 +14,15 @@
     flex-grow: 1;
 }
 
+.flexbox > .icon {
+    flex-shrink: 0;
+}
+
 .flexbox > * {
     margin: 0 0 2rem 0;
 }
 
 .flexbox > :last-child {
-    margin-right: 0;
-}
-
-.flexbox > .fill {
     margin-bottom: 0;
 }
 
@@ -34,10 +34,6 @@
     margin-right: 0;
 }
 
-.flexbox.horizontal > .fill {
-    margin-right: 0;
-}
-
 
 /* baseline styles */
 
@@ -46,7 +42,7 @@ body {
     font-size: 24px;
     letter-spacing: 0.005em;
     color: #555;
-    background-color: #fafafa;
+    background-color: #f6f6f6;
 }
 
 h1 {
@@ -59,11 +55,12 @@ h1 {
 
 button,
 input,
-output {
+output,
+[contenteditable] {
     font-family: 'Avenir', Helvetica, Arial, sans-serif;
     font-size: 100%;
     font-weight: 100;
-    line-height: 2;
+    line-height: calc(2em + 2px);
 }
 
 button.big,
@@ -73,19 +70,61 @@ input.big {
 
 button,
 input,
+[contenteditable],
 button:focus,
-input:focus {
+input:focus,
+[contenteditable]:focus {
     outline: 0 none;
 }
 
+button,
+input,
+[contenteditable] {
+    border-radius: 2px;
+}
+
 button:focus,
-input:focus {
+input:focus,
+[contenteditable]:focus {
     border: 1px solid #555;
 }
 
+input,
+[contenteditable],
 output {
+    padding: 0 1.5rem;
+}
+
+input,
+[contenteditable] {
+    border: 1px solid #999;
+}
+
+input:focus,
+[contenteditable]:focus {
+    border-color: #ef5575;
+}
+
+input.fill.glue {
+    margin-right: 0;
+    border-right-color: transparent;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+input.fill.glue + button {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+input.fill.glue:focus + button {
+    border-color: #ef5575 #ef5575 #ef5575 transparent;
+}
+
+output,
+[contenteditable] {
+    word-break: break-word;
     word-wrap: break-word;
-    word-break: break-all;
 }
 
 button {
@@ -101,46 +140,12 @@ button.big {
     padding: 0 2em;
 }
 
-button.icon {
-    width: 2.2em;
-    height: 2.2em;
-    line-height: 2.2;
-    padding: 0;
-    border-radius: 2px;
-}
-
-button.icon > i {
-    line-height: 2.2;
-}
-
-button.round {
-    border-radius: 50%;
-}
-
-button > i + span {
-    display: block;
-    margin-top: -.3rem;
-    font-size: 1.1rem;
-    color: #555;
-}
-
 button:disabled {
-    background-color: #ddd;
+    background-color: #ccc;
+    border-color: #ccc;
     cursor: not-allowed;
 }
 
-input,
-output {
-    padding: 0 1em;
-}
-
-input {
-    border: 1px solid #999;
-}
-
-input:focus {
-    border-color: #ef5575;
-}
 
 /* components */
 
@@ -148,6 +153,25 @@ input:focus {
     font-size: 1.1rem;
     color: #ef5575;
 }
+
+.icon {
+    width: 2.2em;
+    height: 2.2em;
+    line-height: 2.2;
+    padding: 0;
+    border-radius: 2px;
+    text-align: center;
+    color: #fff;
+}
+
+.icon > i {
+    line-height: 2.2;
+}
+
+.round {
+    border-radius: 50%;
+}
+
 
 /* helper classes */
 
