@@ -12,9 +12,10 @@
                    v-bind:minlength.once="roomMinChars" v-model="roomName"/>
             <!-- todo - if input is empty, change button text -->
             <button type="submit" class="big"
-                    v-bind:disabled="!isValid">{{ i18n.enterRoomLabel }}</button>
+                    v-bind:disabled="!isValid">{{ i18n.enterRoomLabel }}
+            </button>
         </form>
-        <p class="help" v-bind:class="isValid ? 'hidden' : ''">{{ i18n.helpMessage }}</p>
+        <p class="info">{{ helpMessage }}</p>
     </div>
 </template>
 
@@ -31,7 +32,10 @@
                     roomNameLabel: 'pick a nice name for a new channel, or join an existing one',
                     roomNamePlaceholder: 'a nice channel name',
                     enterRoomLabel: 'open',
-                    helpMessage: `${roomMinChars} characters or more`,
+                    help: {
+                        minChars: `${roomMinChars} characters or more :)`,
+                        replacedChars: 'spaces will be replaced with dashes, ok?'
+                    },
                 },
                 roomName: null,
                 roomMinChars: roomMinChars,
@@ -53,6 +57,14 @@
         computed: {
             isValid() {
                 return this.roomName && String(this.roomName).trim().length >= this.roomMinChars;
+            },
+            helpMessage() {
+                if (!this.isValid) {
+                    return this.i18n.help.minChars;
+                } else if (this.roomName && this.roomName.includes(' ')) {
+                    return this.i18n.help.replacedChars;
+                }
+                return '';
             },
         },
     }

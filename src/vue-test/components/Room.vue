@@ -1,16 +1,18 @@
 <template>
     <div class="room flexbox">
-        <h1>{{ i18n.title }}</h1>
-        <div class="flexbox horizontal controls pull-right">
-            <button type="button" class="icon"
-                    v-b-tooltip.hover="i18n.leaveRoomLabel"
-                    v-on:click="leave">
-                <i class="fa fa-bicycle"></i>
-            </button>
+        <div class="flexbox horizontal pull-right">
+            <h1 class="room-name fill">{{ i18n.title }}</h1>
+            <div class="controls flexbox horizontal pull-right">
+                <button type="button" class="icon"
+                        v-b-tooltip.hover="i18n.leaveRoomLabel"
+                        v-on:click="leave">
+                    <i class="fa fa-bicycle"></i>
+                </button>
+            </div>
         </div>
-        <peer />
+        <peer v-on:nickName="saveNickname($event)" />
         <div id="remotes" class="flexbox">
-            <peer v-for="remote in remotes" v-bind:user="remote" />
+            <peer v-for="(remote, index) in remotes" v-bind:user="remote" v-bind:index="index" />
         </div>
     </div>
 </template>
@@ -68,24 +70,21 @@
                     console.log('room name removed from storage')
                 });
             },
+            saveNickname(nickName) {
+                storage.set({ nickName }, () => {
+                    console.log('nick name saved to storage')
+                });
+            }
         },
     }
 </script>
 
 <style scoped>
 
-    .controls {
-        position: absolute;
-        top: 2rem;
-        right: 2rem;
-    }
-
-    .controls button {
-        margin: 0 1rem;
-    }
-
-    .controls button:last-of-type {
-        margin-right: 0;
+    h1.room-name {
+        line-height: 1.25;
+        margin: -1.5rem 2rem 1.5rem 0;
+        text-align: left;
     }
 
 </style>

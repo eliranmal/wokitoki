@@ -141,15 +141,14 @@ button.big {
 }
 
 button:disabled {
-    background-color: #ccc;
-    border-color: #ccc;
+    color: #ef5575;
     cursor: not-allowed;
 }
 
 
 /* components */
 
-.help {
+.info {
     font-size: 1.1rem;
     color: #ef5575;
 }

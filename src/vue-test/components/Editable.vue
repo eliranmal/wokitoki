@@ -1,7 +1,8 @@
 <template>
     <div contenteditable="true"
          v-bind:data-placeholder.once="placeholder"
-         v-on:input="update">
+         v-on:input="input"
+         v-on:blur="blur">
     </div>
 </template>
 
@@ -22,8 +23,11 @@
             this.$el.textContent = this.content;
         },
         methods: {
-            update: function (event) {
-                this.$emit('update', event.target.textContent);
+            input: function (event) {
+                this.$emit('input', event.target.textContent);
+            },
+            blur: function (event) {
+                this.$emit('blur', event.target.textContent);
             },
         },
     }
