@@ -4,7 +4,8 @@
             <h1 class="room-name fill">{{ roomName }}</h1>
             <div class="controls flexbox horizontal pull-right">
                 <button type="button" class="icon"
-                        v-b-tooltip.hover="i18n.leaveRoomLabel"
+                        v-b-tooltip.focus.active="leaveButtonTooltip"
+                        v-on:blur="leaveClicked = false"
                         v-on:click="leave">
                     <i class="fa fa-bicycle"></i>
                 </button>
@@ -31,7 +32,7 @@
         data() {
             return {
                 i18n: {
-                    leaveRoomLabel: 'leave',
+                    leaveRoomHelp: 'click again to leave',
                     nickNamePlaceholder: 'find a cool nick name'
                 },
                 // todo - plug in real remotes (use vuex?)
@@ -61,10 +62,11 @@
         },
         methods: {
             leave() {
-                const isConfirmed = window.confirm('really?');
-                if (!isConfirmed) {
+                if (!this.leaveClicked) {
+                    this.leaveClicked = true;
                     return;
                 }
+                this.leaveClicked = false;
                 storage.remove('roomId', () => {
                     console.log('room id removed from storage');
                     storage.remove('roomName', () => {
@@ -73,11 +75,14 @@
                     });
                 });
             },
+            leaveButtonTooltip() {
+                return this.i18n.leaveRoomHelp;
+            },
             saveNickname(nickName) {
                 storage.set({ nickName }, () => {
                     console.log('nick name saved to storage')
                 });
-            }
+            },
         },
     }
 </script>
