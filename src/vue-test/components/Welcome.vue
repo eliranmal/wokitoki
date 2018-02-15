@@ -2,18 +2,18 @@
     <div class="welcome flexbox">
         <div class="logo"></div>
         <h1>{{ i18n.title }}</h1>
-        <label for="room-name">{{ i18n.roomNameLabel }}</label>
-        <form class="flexbox horizontal"
-              v-on:submit.prevent="enterRoom">
+        <form class="flexbox" v-on:submit.prevent="enterRoom">
+            <label for="room-name">{{ i18n.roomNameLabel }}</label>
             <!--<i class="fa fa-wifi fa-2x"></i>-->
             <!--<i class="logo-icon"></i>-->
-            <input id="room-name" class="big fill glue" type="text"
-                   v-bind:placeholder.once="i18n.roomNamePlaceholder"
-                   v-bind:minlength.once="roomMinChars" v-model="roomName"/>
-            <!-- todo - if input is empty, change button text -->
-            <button type="submit" class="big"
-                    v-bind:disabled="!isValid">{{ i18n.enterRoomLabel }}
-            </button>
+            <div class="flexbox horizontal">
+                <input id="room-name" class="big fill glue" type="text"
+                       v-bind:placeholder.once="i18n.roomNamePlaceholder"
+                       v-bind:minlength.once="roomMinChars" v-model="roomName"/>
+                <button type="submit" class="big"
+                        v-bind:disabled="!isValid">{{ i18n.enterRoomLabel }}
+                </button>
+            </div>
         </form>
         <p class="info">{{ helpMessage }}</p>
     </div>
@@ -61,7 +61,7 @@
             helpMessage() {
                 if (!this.isValid) {
                     return this.i18n.help.minChars;
-                } else if (this.roomName && this.roomName.includes(' ')) {
+                } else if (this.roomName && this.roomName.trim().includes(' ')) {
                     return this.i18n.help.replacedChars;
                 }
                 return '';
@@ -84,8 +84,6 @@
     }
 
     input {
-        /*padding: 0 1em 0 5rem;*/
-        padding: 0 1em;
         border-right: 0 none;
         /*background: transparent url("../../../../../Downloads/marine-radio.png") 1rem 1rem no-repeat;*/
         /*background-size: 5em;*/

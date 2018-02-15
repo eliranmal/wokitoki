@@ -107,18 +107,20 @@ input:focus,
 
 input.fill.glue {
     margin-right: 0;
-    border-right-color: transparent;
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
+    border-right-color: transparent;
 }
 
 input.fill.glue + button {
+    margin-left: 0;
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
+    border-left-color: transparent;
 }
 
-input.fill.glue:focus + button {
-    border-color: #ef5575 #ef5575 #ef5575 transparent;
+input.fill.glue:not(:focus) + button {
+    border-color: #999 #999 #999 transparent;
 }
 
 output,
@@ -141,7 +143,7 @@ button.big {
 }
 
 button:disabled {
-    color: #ef5575;
+    color: transparent;
     cursor: not-allowed;
 }
 
