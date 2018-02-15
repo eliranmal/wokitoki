@@ -4,7 +4,7 @@
             <h1 class="room-name fill">{{ roomName }}</h1>
             <div class="controls flexbox horizontal pull-right">
                 <button type="button" class="icon"
-                        v-b-tooltip.focus.active="leaveButtonTooltip"
+                        v-b-tooltip.click.blur="leaveButtonTooltip"
                         v-on:blur="leaveClicked = false"
                         v-on:click="leave">
                     <i class="fa fa-bicycle"></i>
