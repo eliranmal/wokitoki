@@ -3,6 +3,7 @@
          v-bind:class="type">
         <div class="flexbox horizontal details">
             <div class="avatar icon round"
+                 v-on:click="toggleAvatarRotation"
                  v-bind:style="avatarStyle">
                 <i class="fa"
                    v-bind:class="avatarIconClass"></i>
@@ -63,6 +64,16 @@
             publishNickName(name) {
                 this.$emit('nickName', name);
             },
+            toggleAvatarRotation(e) {
+                const el = e.target;
+                if (this.isAvatarRotating) {
+                    el.classList.remove('fa-spin');
+                    this.isAvatarRotating = false;
+                } else {
+                    el.classList.add('fa-spin');
+                    this.isAvatarRotating = true;
+                }
+            },
         },
         computed: {
             color() {
@@ -113,6 +124,10 @@
 
     .details .avatar {
         margin-right: 1.5rem;
+    }
+
+    .details .avatar i {
+        pointer-events: none;
     }
 
     .local .details {

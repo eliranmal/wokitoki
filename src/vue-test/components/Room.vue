@@ -92,7 +92,6 @@
     h1.room-name {
         text-align: left;
         line-height: 3rem;
-        margin-right: 2rem;
     }
 
 </style>
