@@ -77,7 +77,7 @@
         justify-content: center;
         overflow: hidden;
         min-height: 100vh;
-        padding: 60px;
+        padding: 4rem;
     }
 
     .loader {

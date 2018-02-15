@@ -27,12 +27,11 @@
             return {
                 i18n: {
                     title: 'wokitoki',
-                    roomNameLabel: 'pick a nice name for a new channel, or join an existing one',
+                    roomNameLabel: 'join an existing channel, or pick a nice name for a new one',
                     roomNamePlaceholder: 'a nice channel name',
-                    enterRoomLabel: 'open',
+                    enterRoomLabel: 'join',
                     help: {
                         minChars: `${roomMinChars} characters or more :)`,
-                        replacedChars: 'spaces will be replaced with dashes, ok?'
                     },
                 },
                 roomName: null,
@@ -62,8 +61,6 @@
             helpMessage() {
                 if (!this.isValid) {
                     return this.i18n.help.minChars;
-                } else if (this.roomName && this.trim(this.roomName).includes(' ')) {
-                    return this.i18n.help.replacedChars;
                 }
                 return '';
             },

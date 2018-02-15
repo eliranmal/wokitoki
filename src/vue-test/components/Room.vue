@@ -1,7 +1,7 @@
 <template>
     <div class="room flexbox">
-        <div class="flexbox horizontal pull-right">
-            <h1 class="room-name fill">{{ i18n.title }}</h1>
+        <header class="flexbox horizontal">
+            <h1 class="room-name fill">{{ roomName }}</h1>
             <div class="controls flexbox horizontal pull-right">
                 <button type="button" class="icon"
                         v-b-tooltip.hover="i18n.leaveRoomLabel"
@@ -9,7 +9,7 @@
                     <i class="fa fa-bicycle"></i>
                 </button>
             </div>
-        </div>
+        </header>
         <peer v-on:nickName="saveNickname($event)" />
         <div id="remotes" class="flexbox">
             <peer v-for="(remote, index) in remotes" v-bind:user="remote" v-bind:index="index" />
@@ -31,7 +31,6 @@
         data() {
             return {
                 i18n: {
-                    title: this.roomName,
                     leaveRoomLabel: 'leave',
                     nickNamePlaceholder: 'find a cool nick name'
                 },
@@ -86,9 +85,9 @@
 <style scoped>
 
     h1.room-name {
-        line-height: 1.25;
-        margin: -1.5rem 2rem 1.5rem 0;
         text-align: left;
+        line-height: 3rem;
+        margin-right: 2rem;
     }
 
 </style>

@@ -15,6 +15,7 @@
                       v-bind:style="nickInputStyle"
                       v-bind:placeholder="i18n.nickNamePlaceholder"
                       v-on:input="nick = $event"
+                      v-on:keypress.native="onKeyPress"
                       v-on:blur="publishNickName($event)"/>
             <button type="button" class="icon"
                     v-b-tooltip.hover.html="muteButtonTooltip"
@@ -28,6 +29,10 @@
 </template>
 
 <script>
+
+    // todo - make all this color/icon change on input typing into an independent app of an association game:
+    // todo - you type in words, and press enter to push them to the list on the bottom and select all the input text, so next typing will clear the input
+
     import text from '../../lib/text';
     import Editable from './Editable';
 
@@ -58,6 +63,12 @@
             },
             publishNickName(name) {
                 this.$emit('nickName', name);
+            },
+            onKeyPress(e) {
+                if (e.charCode === 13) {
+                    e.preventDefault();
+                    e.target.blur();
+                }
             },
         },
         computed: {
