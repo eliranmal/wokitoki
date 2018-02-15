@@ -1,9 +1,10 @@
 <template>
     <div contenteditable="true"
          v-bind:data-placeholder.once="placeholder"
-         v-on:input="input"
-         v-on:paste="asPlainText"
-         v-on:blur="blur">
+         v-on:input="onInput"
+         v-on:paste="onPaste"
+         v-on:blur="onBlur"
+         v-on:keypress="onKeyPress">
     </div>
 </template>
 
@@ -24,20 +25,23 @@
             this.$el.textContent = this.content;
         },
         methods: {
-            input(e) {
+            onInput(e) {
                 this.$emit('input', e.target.textContent);
             },
-            blur(e) {
+            onBlur(e) {
                 this.$emit('blur', e.target.textContent);
             },
-            asPlainText(e) {
-                // cancel paste
+            onPaste(e) {
                 e.preventDefault();
-                // get text representation of clipboard
                 const text = e.clipboardData.getData('text/plain');
-                // insert text manually
                 document.execCommand('insertHTML', false, text);
-            }
+            },
+            onKeyPress(e) {
+                if (e.charCode === 13) {
+                    e.preventDefault();
+                    e.target.blur();
+                }
+            },
         },
     }
 </script>
