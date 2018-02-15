@@ -19,12 +19,13 @@
 
 <script>
     import storage from '../../lib/storage';
-    import Peer from "./Peer";
+    import Peer from './Peer';
 
     export default {
         components: {Peer},
         name: 'room',
         props: [
+            'roomId',
             'roomName',
         ],
         data() {
@@ -65,9 +66,12 @@
                 if (!isConfirmed) {
                     return;
                 }
-                this.$emit('leave');
-                storage.remove('roomName', () => {
-                    console.log('room name removed from storage')
+                storage.remove('roomId', () => {
+                    console.log('room id removed from storage');
+                    storage.remove('roomName', () => {
+                        console.log('room name removed from storage');
+                        this.$emit('leave');
+                    });
                 });
             },
             saveNickname(nickName) {

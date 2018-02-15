@@ -109,18 +109,18 @@ input.fill.glue {
     margin-right: 0;
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
-    border-right-color: transparent;
+    border-right: 0 none;
 }
 
 input.fill.glue + button {
     margin-left: 0;
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
-    border-left-color: transparent;
+    border-left: 0 none;
 }
 
 input.fill.glue:not(:focus) + button {
-    border-color: #999 #999 #999 transparent;
+    border-color: #999;
 }
 
 output,

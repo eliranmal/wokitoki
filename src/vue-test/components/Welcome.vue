@@ -4,8 +4,6 @@
         <h1>{{ i18n.title }}</h1>
         <form class="flexbox" v-on:submit.prevent="enterRoom">
             <label for="room-name">{{ i18n.roomNameLabel }}</label>
-            <!--<i class="fa fa-wifi fa-2x"></i>-->
-            <!--<i class="logo-icon"></i>-->
             <div class="flexbox horizontal">
                 <input id="room-name" class="big fill glue" type="text"
                        v-bind:placeholder.once="i18n.roomNamePlaceholder"
@@ -43,25 +41,28 @@
         },
         methods: {
             enterRoom() {
-                console.log('entered');
-                console.log('isValid', this.isValid);
-
                 if (this.isValid) {
-                    this.$emit('enter', this.sanitize(this.roomName));
+                    this.$emit('enter', {
+                        id: this.sanitize(this.roomName),
+                        name: this.trim(this.roomName),
+                    });
                 }
             },
+            trim(text) {
+                return String(text).trim();
+            },
             sanitize(text) {
-                return String(text).trim().replace(/\s+/g, '-');
+                return this.trim(text).replace(/\s+/g, '-');
             },
         },
         computed: {
             isValid() {
-                return this.roomName && String(this.roomName).trim().length >= this.roomMinChars;
+                return this.roomName && this.trim(this.roomName).length >= this.roomMinChars;
             },
             helpMessage() {
                 if (!this.isValid) {
                     return this.i18n.help.minChars;
-                } else if (this.roomName && this.roomName.trim().includes(' ')) {
+                } else if (this.roomName && this.trim(this.roomName).includes(' ')) {
                     return this.i18n.help.replacedChars;
                 }
                 return '';
@@ -84,8 +85,7 @@
     }
 
     input {
-        border-right: 0 none;
-        /*background: transparent url("../../../../../Downloads/marine-radio.png") 1rem 1rem no-repeat;*/
+        /*background: transparent url("/assets/images/marine-radio.png") 1rem 1rem no-repeat;*/
         /*background-size: 5em;*/
     }
 
@@ -94,27 +94,18 @@
         color: black;
     }
 
-    .logo,
-    .logo-icon {
-        background: transparent url("../../../../../Downloads/marine-radio.png") no-repeat;
-    }
-
     .logo {
         position: relative;
         top: 37px;
         left: calc(50% - 8px);
+        /* alternate positioning above the first 'i' character */
         /*left: calc(50% - 137px);*/
         width: 100%;
         height: 70px;
         margin: 0;
         padding: 0;
+        background: transparent url("/assets/images/marine-radio.png") no-repeat;
         background-size: 150px;
-    }
-
-    .logo-icon {
-        width: 3rem;
-        height: 3rem;
-        background-size: 200%;
     }
 
 </style>

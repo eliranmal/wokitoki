@@ -2,6 +2,7 @@
     <div contenteditable="true"
          v-bind:data-placeholder.once="placeholder"
          v-on:input="input"
+         v-on:paste="asPlainText"
          v-on:blur="blur">
     </div>
 </template>
@@ -23,12 +24,20 @@
             this.$el.textContent = this.content;
         },
         methods: {
-            input: function (event) {
-                this.$emit('input', event.target.textContent);
+            input(e) {
+                this.$emit('input', e.target.textContent);
             },
-            blur: function (event) {
-                this.$emit('blur', event.target.textContent);
+            blur(e) {
+                this.$emit('blur', e.target.textContent);
             },
+            asPlainText(e) {
+                // cancel paste
+                e.preventDefault();
+                // get text representation of clipboard
+                const text = e.clipboardData.getData('text/plain');
+                // insert text manually
+                document.execCommand('insertHTML', false, text);
+            }
         },
     }
 </script>

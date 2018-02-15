@@ -3,7 +3,9 @@
         <div v-show="isLoading" class="loader centered-content">
             <i class="fa fa-cog fa-spin fa-2x"></i>
         </div>
-        <room v-if="roomName" v-bind:room-name="roomName" v-on:leave="setRoom"/>
+
+        <!--fixme - no need to set room on both-->
+        <room v-if="room && room.id" v-bind:room-name="room.name" v-bind:room-id="room.id" v-on:leave="setRoom"/>
         <welcome v-else v-on:enter="setRoom"/>
     </div>
 </template>
@@ -21,30 +23,48 @@
         },
         data() {
             return {
-                roomName: null,
+                room: {
+                    id: null,
+                    name: null,
+                },
                 isLoading: true,
             };
         },
         methods: {
-            setRoom(name) {
-                console.log('setting room to ', name);
+            setRoom(room) {
+                // todo - find the bug here - why do i save an undefined value ?
+                console.log('setting room to ', room);
                 this.isLoading = true;
-                this.roomName = name;
-                storage.set({ roomName: name }, () => {
-                    console.log('saved room name to storage');
+                this.room = room;
+                if (room) {
+                    // todo - remove the nested calls when working with chrome sync storage
+                    storage.set({roomId: room.id}, () => {
+                        console.log('saved room id to storage');
+                        storage.set({roomName: room.name}, () => {
+                            console.log('saved room name to storage');
+                            this.isLoading = false;
+                        });
+                    });
+                } else {
                     this.isLoading = false;
-                });
+                }
             },
         },
         mounted() {
             this.isLoading = true;
-            storage.get('roomName', (roomName) => {
-                console.log('got room name from storage', roomName);
-                // roomName = 'my-awesome-audio-chat-room';
-                if (roomName) {
-                    this.roomName = roomName;
+            // todo - remove the nested calls when working with chrome sync storage
+            storage.get('roomId', (id) => {
+                console.log('got room id from storage', id);
+                if (id) {
+                    this.room.id = id;
                 }
-                this.isLoading = false;
+                storage.get('roomName', (name) => {
+                    console.log('got room name from storage', name);
+                    if (name) {
+                        this.room.name = name;
+                    }
+                    this.isLoading = false;
+                });
             });
         },
     };
