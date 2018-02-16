@@ -4,6 +4,7 @@
         <div class="flexbox horizontal details">
             <div class="avatar icon round"
                  v-on:click="toggleAvatarRotation"
+                 v-bind:class="isAvatarRotating ? 'fa-spin' : ''"
                  v-bind:style="avatarStyle">
                 <i class="fa"
                    v-bind:class="avatarIconClass"></i>
@@ -49,6 +50,7 @@
                     nickNamePlaceholder: 'find a cool nick name'
                 },
                 isMuted: false,
+                isAvatarRotating: false,
                 nick: (this.user || {}).nickName,
             };
             return Object.assign(defaultData, this.user);
@@ -64,13 +66,7 @@
             publishNickName(name) {
                 this.$emit('nickName', name);
             },
-            toggleAvatarRotation(e) {
-                const el = e.target;
-                if (this.isAvatarRotating) {
-                    el.classList.remove('fa-spin');
-                } else {
-                    el.classList.add('fa-spin');
-                }
+            toggleAvatarRotation() {
                 this.isAvatarRotating = !this.isAvatarRotating;
             },
         },
