@@ -38,7 +38,7 @@
                 // todo - plug in real remotes (use vuex?)
                 remotes: [
                     {
-                        nickName: 'a very very very very very very very very very long nickname',
+                        nickName: 'a very very very very very very very very very very very very long nickname',
                         isMuted: false,
                         // avatarColor: '#feb438',
                     },
@@ -48,12 +48,7 @@
                         avatarColor: '#feb438',
                     },
                     {
-                        nickName: 'eliahu bagbagon harelshvili ha-rishon',
-                        isMuted: false,
-                        avatarColor: '#206ead',
-                    },
-                    {
-                        nickName: 'banana',
+                        nickName: 'banana banana banana',
                         isMuted: false,
                         avatarColor: '#21e1e1',
                     },
