@@ -154,8 +154,7 @@ function GUM({
 
     webrtc.connection.on('message', function (message) {
         var peers = webrtc.getPeers(message.from, message.roomType);
-        // fixme - this condition looks suspicious
-        if (!peers && peers.length > 0) return;
+        if (!peers || !peers.length) return;
         var peer = peers[0];
 
         // FIXME: also send current nick to newly joining participants
