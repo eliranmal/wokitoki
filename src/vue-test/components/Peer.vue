@@ -68,11 +68,10 @@
                 const el = e.target;
                 if (this.isAvatarRotating) {
                     el.classList.remove('fa-spin');
-                    this.isAvatarRotating = false;
                 } else {
                     el.classList.add('fa-spin');
-                    this.isAvatarRotating = true;
                 }
+                this.isAvatarRotating = !this.isAvatarRotating;
             },
         },
         computed: {
