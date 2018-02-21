@@ -41,10 +41,7 @@
         methods: {
             enterRoom() {
                 if (this.isValid) {
-                    this.$emit('enter', {
-                        id: this.sanitize(this.roomName),
-                        name: this.trim(this.roomName),
-                    });
+                    this.$emit('enter', this.trim(this.roomName));
                 }
             },
             trim(text) {
@@ -101,7 +98,7 @@
         height: 70px;
         margin: 0;
         padding: 0;
-        background: transparent url("/assets/images/marine-radio.png") no-repeat;
+        background: transparent url("../../../assets/images/marine-radio.png") no-repeat;
         background-size: 150px;
     }
 

@@ -5,7 +5,7 @@
         </div>
 
         <!--fixme - no need to set room on both-->
-        <room v-if="room && room.id" v-bind:room-name="room.name" v-bind:room-id="room.id" v-on:leave="setRoom"/>
+        <room v-if="roomName" v-bind:room-name="roomName" v-on:leave="setRoom"/>
         <welcome v-else v-on:enter="setRoom"/>
     </div>
 </template>
@@ -23,27 +23,19 @@
         },
         data() {
             return {
-                room: {
-                    id: null,
-                    name: null,
-                },
+                roomName: null,
                 isLoading: true,
             };
         },
         methods: {
-            setRoom(room) {
-                // todo - find the bug here - why do i save an undefined value ?
-                console.log('setting room to ', room);
+            setRoom(roomName) {
+                console.log('setting room name to ', roomName);
                 this.isLoading = true;
-                this.room = room;
-                if (room) {
-                    // todo - remove the nested calls when working with chrome sync storage
-                    storage.set({roomId: room.id}, () => {
-                        console.log('saved room id to storage');
-                        storage.set({roomName: room.name}, () => {
-                            console.log('saved room name to storage');
-                            this.isLoading = false;
-                        });
+                this.roomName = roomName;
+                if (roomName) {
+                    storage.set({roomName: roomName}, () => {
+                        console.log('saved room name to storage');
+                        this.isLoading = false;
                     });
                 } else {
                     this.isLoading = false;
@@ -52,19 +44,12 @@
         },
         mounted() {
             this.isLoading = true;
-            // todo - remove the nested calls when working with chrome sync storage
-            storage.get('roomId', (id) => {
-                console.log('got room id from storage', id);
-                if (id) {
-                    this.room.id = id;
+            storage.get('roomName', (name) => {
+                console.log('got room name from storage:', name);
+                if (name) {
+                    this.roomName = name;
                 }
-                storage.get('roomName', (name) => {
-                    console.log('got room name from storage', name);
-                    if (name) {
-                        this.room.name = name;
-                    }
-                    this.isLoading = false;
-                });
+                this.isLoading = false;
             });
         },
     };

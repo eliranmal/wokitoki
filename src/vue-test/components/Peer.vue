@@ -12,20 +12,24 @@
             <output class="fill"
                     v-if="isRemote">{{ nick }}
             </output>
+            <!--fixme - get two way binding on the model AND an initial value for the editable.
+                fixme - find out why how to avoid v-bind:content.once="nick" - it breaks stuff-->
             <editable class="nick fill"
                       v-else
                       v-bind:style="nickInputStyle"
                       v-bind:placeholder="i18n.nickNamePlaceholder"
-                      v-on:input="nick = $event"
-                      v-on:blur="publishNickName($event)"/>
+                      v-bind:content.once="nick"
+                      v-model="nick"
+                      v-on:blur="saveNickName($event)"/>
             <button type="button" class="icon"
                     v-b-tooltip.hover.html="muteButtonTooltip"
                     v-on:click="toggleMute()">
+                <!--todo - remote peer icon should be a speaker-->
                 <i class="fa" v-bind:class="isMuted ? 'fa-microphone-slash' : 'fa-microphone'"></i>
             </button>
         </div>
-        <audio controls oncontextmenu="return false;" disabled style="display: none;"
-               v-if="!isRemote"></audio>
+        <audio id="localAudio" controls oncontextmenu="return false;" disabled style="display: none;"
+               v-if="isLocal"></audio>
     </div>
 </template>
 
@@ -35,36 +39,60 @@
     // todo - you type in words, and press enter to push them to the list on the bottom and select all the input text, so next typing will clear the input
 
     import text from '../../lib/text';
+    import storage from '../../lib/storage';
     import Editable from './Editable';
 
     export default {
         name: 'peer',
         components: {Editable},
         props: {
-            user: Object,
-            index: Number,
+            type: {
+                type: String,
+                default: 'local',
+            },
+            id: String,
+            nickName: String,
+            isMuted: {
+                type: Boolean,
+                default: false,
+            },
+            avatarColor: String,
+            avatarIcon: String,
+            onMute: Function,
         },
         data() {
-            const defaultData = {
+            return {
                 i18n: {
                     nickNamePlaceholder: 'find a cool nick name'
                 },
-                isMuted: false,
+                nick: this.nickName,
                 isAvatarRotating: false,
-                nick: (this.user || {}).nickName,
             };
-            return Object.assign(defaultData, this.user);
+        },
+        mounted() {
+            if (this.isLocal && !this.nickName) {
+                storage.get('nickName', (name) => {
+                    console.log('got nick name from storage:', name);
+                    if (name) {
+                        this.nick = name;
+                    }
+                });
+            }
         },
         methods: {
             toggleMute() {
-                this.isMuted = !this.isMuted;
+                // fixme - onMute is not a function, obviously
+                const isMuted = this.onMute();
+                this.isMuted = isMuted;
                 this.$emit('mute', {
-                    isMuted: this.isMuted,
-                    user: this.user,
+                    isMuted: isMuted,
                 });
             },
-            publishNickName(name) {
-                this.$emit('nickName', name);
+            saveNickName(nickName) {
+                this.$emit('nickName', nickName);
+                storage.set({nickName}, () => {
+                    console.log('nick name saved to storage:', nickName)
+                });
             },
             toggleAvatarRotation() {
                 this.isAvatarRotating = !this.isAvatarRotating;
@@ -72,16 +100,16 @@
         },
         computed: {
             color() {
-                return (this.user || {}).avatarColor || text.asHexColor(this.nick);
+                return this.avatarColor || this.nick ? text.asHexColor(this.nick) : '#555555';
             },
             icon() {
-                return (this.user || {}).icon || text.asIcon(this.nick);
+                return this.avatarIcon || this.nick ? text.asIcon(this.nick) : 'user-secret';
             },
-            type() {
-                return this.isRemote ? 'remote' : 'local';
+            isLocal() {
+                return this.type === 'local';
             },
             isRemote() {
-                return !!this.user;
+                return this.type === 'remote';
             },
             avatarStyle() {
                 return {
@@ -105,6 +133,12 @@
 //     <kbd>CMD</kbd>+<kbd>M</kbd>${typeof this.index !== 'undefined' ? '+<kbd>' + (this.index + 1) + '</kbd>' : ''}
 // </div>
 // `;
+            },
+        },
+        watch: {
+            nickName(newValue, oldValue) {
+                console.log('nickName updated:', newValue);
+                this.nick = newValue;
             },
         },
     }

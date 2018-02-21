@@ -1,7 +1,9 @@
 
+window.chrome = window.chrome || {};
+
 if (process.env.NODE_ENV === 'development') {
 
-    if (!chrome || !chrome.storage || !chrome.storage.sync) {
+    if (!chrome.storage || !chrome.storage.sync) {
         const syncToLocalFnMap = {
             get: 'getItem',
             set: 'setItem',
@@ -23,7 +25,6 @@ if (process.env.NODE_ENV === 'development') {
             }
             cb(localStorage[syncToLocalFnMap[cmd]](...args));
         }, 300);
-        window.chrome = window.chrome || {};
         window.chrome.storage = window.chrome.storage || {};
         window.chrome.storage.sync = window.chrome.storage.sync || {};
         for (let fn in syncToLocalFnMap) {

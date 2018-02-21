@@ -10,6 +10,8 @@ import bTooltipDirective from 'bootstrap-vue/es/directives/tooltip/tooltip';
 
 Vue.directive('b-tooltip', bTooltipDirective);
 
+Vue.filter('json', value => JSON.stringify(value, null, 2));
+
 new Vue({
     el: '#app',
     render: h => h(App),

@@ -128,7 +128,7 @@ function GUM({
             peer.pc.on('iceConnectionStateChange', function (event) {
                 var state = peer.pc.iceConnectionState;
 
-                onPeerConnectionStateChanged(webrtc.getDomId(peer), state);
+                onPeerConnectionStateChanged(webrtc.getDomId(peer), state, peer.id);
 
                 switch (state) {
                     case 'connected':
@@ -165,7 +165,7 @@ function GUM({
             }
         }
 
-        onMessage(message, webrtc.getDomId(peer));
+        onMessage(message, webrtc.getDomId(peer), peer.id);
     });
 
     // local p2p/ice failure
@@ -195,6 +195,8 @@ function GUM({
 }
 
 function onSniffDevices(data) {
+    console.log('onSniffDevices', data);
+    // todo - find out why this is necessary
     if (data.hasMics && data.queryGum) webrtc.startLocalVideo();
 }
 
@@ -210,6 +212,8 @@ function onLeaveRoom() {
 }
 
 function createRoom(roomName, onCreated) {
+    // todo - put a unique prefix here (app name? tab id? hashed roomName? all together?)
+    // room = 'wokitoki___' + sanitize(roomName || generateRoomName());
     room = sanitize(roomName || generateRoomName());
     doJoin(room, onCreated);
 }

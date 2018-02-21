@@ -11,6 +11,10 @@
 <script>
     export default {
         name: 'editable',
+        model: {
+            prop: 'textContent',
+            event: 'input',
+        },
         props: {
             'content': {
                 type: String,
@@ -22,7 +26,9 @@
             },
         },
         mounted: function () {
-            this.$el.textContent = this.content;
+            if (this.content) {
+                this.$el.textContent = this.content;
+            }
         },
         methods: {
             onInput(e) {
@@ -43,10 +49,21 @@
                 }
             },
         },
+        watch: {
+            content(newValue, oldValue) {
+                if (newValue !== oldValue) {
+                    this.$el.textContent = newValue;
+                }
+            },
+        },
     }
 </script>
 
 <style scoped>
+
+    div[contenteditable="true"] {
+        min-width: 15em;
+    }
 
     div[contenteditable="true"]:empty:not(:focus):before {
         content: attr(data-placeholder);
