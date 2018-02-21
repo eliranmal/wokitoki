@@ -1,5 +1,3 @@
-
-
 /* layout */
 
 .flexbox {
@@ -36,7 +34,6 @@
     margin-right: 0;
 }
 
-
 /* baseline styles */
 
 body {
@@ -48,6 +45,7 @@ body {
 }
 
 header.flexbox {
+    margin-top: 1rem;
     margin-bottom: 4rem;
 }
 
@@ -153,7 +151,6 @@ button:disabled {
     cursor: not-allowed;
 }
 
-
 /* components */
 
 .info {
@@ -179,7 +176,6 @@ button:disabled {
     border-radius: 50%;
 }
 
-
 /* helper classes */
 
 .centered-content {
@@ -195,7 +191,6 @@ button:disabled {
 .pull-right {
     justify-content: flex-end;
 }
-
 
 /* bootstrap override */
 
