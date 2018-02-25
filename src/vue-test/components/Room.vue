@@ -4,7 +4,7 @@
             <h1 class="room-name fill">{{ roomName }}</h1>
             <div class="controls flexbox horizontal pull-right">
                 <button type="button" class="icon"
-                        v-b-tooltip.click.blur="leaveButtonTooltip"
+                        v-b-tooltip.click.blur="i18n.leaveRoomHelp"
                         v-on:blur="leaveClicked = false"
                         v-on:click="leave">
                     <i class="fa fa-bicycle"></i>
@@ -12,18 +12,20 @@
             </div>
         </header>
         <peer v-bind.sync="local"
-              v-on:nickName="nickNameUpdated($event)"
+              v-on:nickName="publishNickName($event)"
               v-on:mute="setMuteState($event)"/>
         <div id="remotes" class="flexbox">
             <peer v-for="(remote, key) in remotes" v-bind.sync="remote"/>
         </div>
-        <pre v-if="showLogger">{{ remotes | json }}</pre>
+
+        <!--todo - debugging... remove this later-->
+        <pre>{{ remotes | json }}</pre>
     </div>
 </template>
 
 <script>
     import audioChat from '../../lib/audio-chat';
-    import storage from '../../lib/storage';
+    import devices from '../../lib/devices';
     import Peer from './Peer';
 
     export default {
@@ -31,12 +33,12 @@
         name: 'room',
         props: [
             'roomName',
+            'action',
         ],
         data() {
             return {
                 i18n: {
                     leaveRoomHelp: 'click again to leave',
-                    nickNamePlaceholder: 'find a cool nick name'
                 },
                 local: {
                     isMuted: false,
@@ -44,23 +46,49 @@
                 remotes: {},
             }
         },
-        methods: {
-            create(roomName) {
-                if (!roomName) {
+        mounted() {
+            this.sniffDevices(err => {
+                if (err) {
+                    console.error(err);
                     return;
                 }
-                audioChat.setRoom(roomName);
+                this.init();
+            });
+        },
+        methods: {
+            init() {
+                // todo - is this redundant now? get rid of all the state inside audio-chat
+                audioChat.setRoom(this.roomName);
                 audioChat.init({
-                    onLocalStream: this.showLocalPeer,
-                    onPeerConnectionStateChanged: this.updateRemotePeerContainer,
-                    onPeerCreated: this.addRemotePeerContainer,
+                    onReady: this.invokeAction,
+                    onLocalStream: this.showLocal,
+                    onPeerConnectionStateChanged: this.updateRemote,
+                    onPeerCreated: this.addRemote,
                     onMessage: this.updatePeerDetails,
                 });
-
-                audioChat.createRoom(roomName, () => {
-                    console.log('room created:', roomName)
+                audioChat.start();
+            },
+            invokeAction() {
+                console.log('> ready > action:', this.action);
+                if (this.action) {
+                    console.log('invoking action');
+                    this[this.action]();
+                }
+            },
+            create() {
+                audioChat.createRoom(this.roomName, () => {
+                    console.log('room created:', this.roomName);
+                    this.$emit('created', this.roomName);
                 });
-                this.sniffDevices();
+            },
+            join() {
+                audioChat.joinRoom(this.roomName, () => {
+                    console.log('room joined:', this.roomName);
+                    if (this.local.nickName) {
+                        console.log('publishing local nick:', this.local.nickName);
+                        audioChat.publishNickName(this.local.nickName);
+                    }
+                });
             },
             leave() {
                 if (!this.leaveClicked) {
@@ -69,26 +97,21 @@
                 }
                 this.leaveClicked = false;
 
-                audioChat.onLeaveRoom();
-                storage.remove('roomName', () => {
-                    console.log('room name removed from storage');
-                    this.$emit('leave');
-                });
+                audioChat.leaveRoom();
+                delete this.roomName;
+                this.$emit('leave');
             },
-            leaveButtonTooltip() {
-                return this.i18n.leaveRoomHelp;
-            },
-            nickNameUpdated(nickName) {
+            publishNickName(nickName) {
                 console.log('room: nickName updated:', nickName);
-                audioChat.onNickInput(nickName);
+                audioChat.updateNick(nickName);
             },
             setMuteState() {
                 audioChat.toggleLocalEnabled();
                 this.local.isMuted = !audioChat.isLocalEnabled();
             },
-            updateRemotePeerContainer(peerDomId, state, peerId) {
-                console.log('remote peer updated', peerDomId, state);
-                // todo - should i implement this? look for clues in the css. or maybe simplewebrtc needs this?!
+            updateRemote(peerId, state) {
+                console.log('remote peer updated', peerId, state);
+                // todo - should i implement this? look for clues in the css
                 // const container = document.querySelector('#container_' + peerDomId);
                 // container.className = 'peerContainer p2p' +
                 //     state.substr(0, 1).toUpperCase() +
@@ -97,29 +120,23 @@
                     case 'connected':
                     case 'completed':
                         // todo - implement this with disabled state instead of visibility
-                        // setPeerMuteVisible(peerDomId);
+                        // setPeerMuteVisible(peerId);
                         break;
                     case 'closed':
                         this.$delete(this.remotes, peerId);
                         break;
                 }
             },
-            addRemotePeerContainer(peerDomId, peerId) {
-                console.log('remote peer added', peerDomId, peerId);
-
-                // todo - should i implement this?
-                // container.id = 'container_' + peerDomId;
+            addRemote(peerId) {
+                console.log('remote peer added', peerId);
 
                 const remote = {
                     type: 'remote',
                     id: peerId,
-                    domId: peerDomId,
                 };
 
                 // todo - should i implement this?
                 // mute.style.visibility = 'hidden';
-                // todo - should i implement this?
-                // mute.id = 'mute_' + peerDomId;
 
                 remote.onMute = () => {
                     // todo - wire audioChat.isPeerMuted to event binding on remote peer components, put it someplace better
@@ -130,7 +147,7 @@
 
                 this.$set(this.remotes, remote.id, remote);
             },
-            updatePeerDetails(message, peerDomId, peerId) {
+            updatePeerDetails(peerId, message) {
                 console.log('message from peer', peerId, message);
                 switch (message.type) {
                     case 'nickname':
@@ -138,36 +155,29 @@
                         break;
                 }
             },
-            sniffDevices() {
-                if (!(navigator && navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.RTCPeerConnection)) {
-                    // // FIXME: show "sorry, get a modern browser" (recommending Edge)
-                    // document.getElementById('supportWarning').style.display = 'block';
-                    // document.querySelector('form#createRoom>button').disabled = true;
+            sniffDevices(done) {
+                // todo - move this to App
+                if (!devices.hasBrowserSupport()) {
+                    // fixme - show 'sorry, get a modern browser'
                     console.error('no bananas. get a better browser!');
-                } else if (navigator && navigator.mediaDevices && navigator.mediaDevices.enumerateDevices) {
-                    navigator.mediaDevices.enumerateDevices()
-                        .then(function (devices) {
-                            var mics = devices.filter(function (device) {
-                                return device.kind === 'audioinput';
-                            });
-                            var hasMics = mics.length;
-                            console.log('mics:', hasMics);
-                            // todo - implement this in the app view
-                            // if (hasMics) {
-                            //     document.getElementById('requirements').style.display = 'none';
-                            // } else {
-                            //     document.getElementById('microphoneWarning').style.display = 'block';
-                            //     document.querySelector('form#createRoom>button').disabled = true;
-                            // }
-                            audioChat.onSniffDevices({
-                                hasMics: hasMics,
-                                // todo - find out why does it need to be a variable, and what to put in it
-                                queryGum: true,
-                            });
-                        });
+                    return done(new Error('no support'));
                 }
+                devices.hasMics((err, hasMics) => {
+                    console.log('hasMics:', hasMics);
+                    // todo - implement this in the app view
+                    // if (hasMics) {
+                    //     document.getElementById('requirements').style.display = 'none';
+                    // } else {
+                    //     document.getElementById('microphoneWarning').style.display = 'block';
+                    //     document.querySelector('form#createRoom>button').disabled = true;
+                    // }
+                    if (!hasMics) {
+                        return done(new Error('no mics'));
+                    }
+                    done();
+                });
             },
-            showLocalPeer() {
+            showLocal() {
                 var localAudio = document.getElementById('localAudio');
                 localAudio.disabled = false;
                 localAudio.volume = 0;
@@ -176,32 +186,17 @@
                 // document.querySelector('.local').style.display = 'block';
             },
         },
-        computed: {
-            showLogger() {
-                return process.env.NODE_ENV === 'development';
-            }
-        },
-        watch: {
-            // todo - this could be useful if i move the audio api outside
-            // roomName(newValue, oldValue) {
-            //     console.log('roomName changed:', newValue);
-            //     if (newValue !== oldValue) {
-            //         this.create(newValue);
-            //     }
-            // },
-        },
-        mounted() {
-            console.log('mounted. roomName:', this.roomName);
-            this.create(this.roomName);
-        },
     }
 </script>
 
 <style scoped>
 
     h1.room-name {
+        margin-top: -1rem;
+        line-height: 4.5rem;
         text-align: left;
-        line-height: 3rem;
+        word-break: break-word;
+        word-wrap: break-word;
     }
 
 </style>

@@ -130,7 +130,7 @@ let config = {
         alias: {
             'vue$': 'vue/dist/vue.esm.js',
             // todo - do i really need this? probably not. what is this adapter for anyway?
-            'simplewebrtc': 'simplewebrtc/out/simplewebrtc-with-adapter.bundle.js',
+            // 'simplewebrtc': 'simplewebrtc/out/simplewebrtc-with-adapter.bundle.js',
         },
         extensions: ['*', '.js', '.vue', '.json']
     },

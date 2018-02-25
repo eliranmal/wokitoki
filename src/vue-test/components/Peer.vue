@@ -38,13 +38,16 @@
     // todo - make all this color/icon change on input typing into an independent app of an association game:
     // todo - you type in words, and press enter to push them to the list on the bottom and select all the input text, so next typing will clear the input
 
+    // todo - pass avatar icon explicitly to peers to ignore issues with different nickname due text-sanitation
+
     import text from '../../lib/text';
-    import storage from '../../lib/storage';
+    import storageMixin from '../mixins/storage';
     import Editable from './Editable';
 
     export default {
         name: 'peer',
         components: {Editable},
+        mixins: [storageMixin],
         props: {
             type: {
                 type: String,
@@ -71,32 +74,13 @@
         },
         mounted() {
             if (this.isLocal && !this.nickName) {
-                storage.get('nickName', (name) => {
-                    console.log('got nick name from storage:', name);
+                this.retrieve('nickName', (name) => {
                     if (name) {
                         this.nick = name;
+                        this.$emit('nickName', name);
                     }
                 });
             }
-        },
-        methods: {
-            toggleMute() {
-                // fixme - onMute is not a function, obviously
-                const isMuted = this.onMute();
-                this.isMuted = isMuted;
-                this.$emit('mute', {
-                    isMuted: isMuted,
-                });
-            },
-            saveNickName(nickName) {
-                this.$emit('nickName', nickName);
-                storage.set({nickName}, () => {
-                    console.log('nick name saved to storage:', nickName)
-                });
-            },
-            toggleAvatarRotation() {
-                this.isAvatarRotating = !this.isAvatarRotating;
-            },
         },
         computed: {
             color() {
@@ -141,7 +125,25 @@
                 this.nick = newValue;
             },
         },
-    }
+        methods: {
+            toggleMute() {
+                // fixme - onMute is not a function, obviously
+                const isMuted = this.onMute();
+                this.isMuted = isMuted;
+                this.$emit('mute', {
+                    isMuted: isMuted,
+                });
+            },
+            saveNickName(nickName) {
+                this.$emit('nickName', nickName);
+                // adding a noop function to avoid mutating the local value
+                this.save('nickName', nickName, () => void 0);
+            },
+            toggleAvatarRotation() {
+                this.isAvatarRotating = !this.isAvatarRotating;
+            },
+        },
+    };
 </script>
 
 <style scoped>

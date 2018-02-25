@@ -25,7 +25,7 @@ function removeRoom() {
     }
     document.getElementById('subtitle').textContent = '';
 
-    audioChat.onLeaveRoom();
+    audioChat.leaveRoom();
     storage.remove('roomName', () => console.log('removed room name from storage'));
 }
 
@@ -167,10 +167,6 @@ function sniffDevices() {
                     document.getElementById('microphoneWarning').style.display = 'block';
                     document.querySelector('form#createRoom>button').disabled = true;
                 }
-                audioChat.onSniffDevices({
-                    hasMics: hasMics,
-                    queryGum: queryGum,
-                });
             });
     }
 }
@@ -182,8 +178,8 @@ function initNicknameInput() {
         if (e.keyCode !== 13) return;
         var el = document.getElementById('nickInput');
         el.disabled = true;
-        // chrome.runtime.sendMessage({channel: audioChatChannel, cmd: 'onNickInput', args: [el.value]});
-        audioChat.onNickInput(el.value);
+        // chrome.runtime.sendMessage({channel: audioChatChannel, cmd: 'updateNick', args: [el.value]});
+        audioChat.updateNick(el.value);
         return false;
     };
 }

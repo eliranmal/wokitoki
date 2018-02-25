@@ -14,5 +14,6 @@ Vue.filter('json', value => JSON.stringify(value, null, 2));
 
 new Vue({
     el: '#app',
+    // bus: new Vue(),
     render: h => h(App),
 });

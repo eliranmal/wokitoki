@@ -1,19 +1,28 @@
 <template>
-    <div class="app">
-        <loader v-bind:is-loading="isLoading" />
-        <room v-if="roomName" v-bind:room-name="roomName" v-on:leave="leave"/>
-        <welcome v-else v-on:enter="enter"/>
+    <div class="app"
+         v-bind:class="wrapperClassName">
+        <loader v-bind:is-loading="isLoading"/>
+        <room v-if="showRoom"
+              v-bind:action="roomAction"
+              v-bind:room-name="roomName"
+              v-on:created="roomCreated"
+              v-on:leave="leaveRoom"/>
+        <welcome v-else
+                 v-on:enter="enterRoom"/>
     </div>
 </template>
 
 <script>
-    import storage from '../lib/storage';
+    import storageMixin from './mixins/storage';
     import Loader from './components/Loader';
     import Welcome from './components/Welcome';
     import Room from './components/Room';
 
     export default {
         name: 'app',
+        mixins: [
+            storageMixin
+        ],
         components: {
             Loader,
             Welcome,
@@ -22,47 +31,38 @@
         data() {
             return {
                 roomName: null,
+                roomAction: null,
                 isLoading: true,
-                showRoom: false,
             };
         },
         mounted() {
-            this.retrieveRoom();
+            this.retrieve('roomAction');
+            this.retrieve('roomName');
+        },
+        computed: {
+            showRoom() {
+                return this.roomAction && this.roomName;
+            },
+            wrapperClassName() {
+                return this.showRoom ? '' : 'flexbox horizontal pack';
+            },
         },
         methods: {
-            enter(roomName) {
-                if (!roomName) {
-                    return;
+            enterRoom({name, action}) {
+                if (action) {
+                    this.save('roomAction', action);
                 }
-                this.saveRoom(roomName);
+                if (name) {
+                    this.save('roomName', name);
+                }
             },
-            leave() {
-                this.clearRoom();
+            leaveRoom() {
+                this.clear('roomName');
+                this.clear('roomAction');
             },
-            saveRoom(name) {
-                this.isLoading = true;
-                storage.set({roomName: name}, () => {
-                    console.log('saved room name to storage', name);
-                    this.roomName = name;
-                    this.isLoading = false;
-                });
-            },
-            retrieveRoom() {
-                this.isLoading = true;
-                storage.get('roomName', (name) => {
-                    console.log('got room name from storage:', name);
-                    this.roomName = name;
-                    this.isLoading = false;
-                });
-            },
-            clearRoom() {
-                this.isLoading = true;
-                storage.remove('roomName', () => {
-                    console.log('removed room name from storage');
-                    this.roomName = null;
-                    this.isLoading = false;
-                });
-            },
+            roomCreated() {
+                this.save('roomAction', 'join');
+            }
         },
     };
 </script>
@@ -70,9 +70,6 @@
 <style>
 
     .app {
-        /* todo - i'm not sure i like this effect. decide what to do here */
-        /*display: flex;*/
-        /*justify-content: center;*/
         overflow: hidden;
         min-height: 100vh;
         padding: 4rem;

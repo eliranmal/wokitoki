@@ -9,16 +9,19 @@
                        v-bind:placeholder.once="i18n.roomNamePlaceholder"
                        v-bind:minlength.once="roomMinChars" v-model="roomName"/>
                 <button type="submit" class="big"
-                        v-bind:disabled="!isValid">{{ i18n.enterRoomLabel }}
+                        v-bind:disabled="!isValid">{{ enterRoomLabel }}
                 </button>
             </div>
         </form>
-        <p class="info">{{ helpMessage }}</p>
+        <p class="info"
+           v-if="!isValid">{{ helpMessage }}</p>
+        <a href="#" class="info"
+           v-if="isValid"
+           v-on:click.prevent="toggleAction">{{ actionMessage }}</a>
     </div>
 </template>
 
 <script>
-    import storage from '../../lib/storage';
 
     export default {
         name: 'welcome',
@@ -29,37 +32,49 @@
                     title: 'wokitoki',
                     roomNameLabel: 'join an existing channel, or pick a nice name for a new one',
                     roomNamePlaceholder: 'a nice channel name',
-                    enterRoomLabel: 'join',
+                    createRoomLabel: 'create',
+                    joinRoomLabel: 'join',
+                    action: {
+                        join: 'i want to join an existing channel',
+                        create: 'i want to create a new channel',
+                    },
                     help: {
                         minChars: `${roomMinChars} characters or more :)`,
                     },
                 },
+                action: 'join',
                 roomName: null,
                 roomMinChars: roomMinChars,
             };
-        },
-        methods: {
-            enterRoom() {
-                if (this.isValid) {
-                    this.$emit('enter', this.trim(this.roomName));
-                }
-            },
-            trim(text) {
-                return String(text).trim();
-            },
-            sanitize(text) {
-                return this.trim(text).replace(/\s+/g, '-');
-            },
         },
         computed: {
             isValid() {
                 return this.roomName && this.trim(this.roomName).length >= this.roomMinChars;
             },
+            enterRoomLabel() {
+                return this.action === 'create' ? this.i18n.createRoomLabel : this.i18n.joinRoomLabel;
+            },
             helpMessage() {
-                if (!this.isValid) {
-                    return this.i18n.help.minChars;
+                return this.i18n.help.minChars;
+            },
+            actionMessage() {
+                return this.action === 'create' ? this.i18n.action.join : this.i18n.action.create;
+            },
+        },
+        methods: {
+            enterRoom() {
+                if (this.isValid) {
+                    this.$emit('enter', {
+                        name: this.trim(this.roomName),
+                        action: this.action,
+                    });
                 }
-                return '';
+            },
+            trim(text) {
+                return String(text).trim();
+            },
+            toggleAction() {
+                this.action = this.action === 'create' ? 'join' : 'create';
             },
         },
     }
@@ -78,14 +93,13 @@
         opacity: .25;
     }
 
-    input {
-        /*background: transparent url("/assets/images/marine-radio.png") 1rem 1rem no-repeat;*/
-        /*background-size: 5em;*/
-    }
-
     h1 {
         font-weight: bold;
         color: black;
+    }
+
+    a.info {
+        align-self: center;
     }
 
     .logo {
