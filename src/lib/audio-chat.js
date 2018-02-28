@@ -41,7 +41,7 @@ const joinRoom = (roomName, done) => {
 
 const doCreate = (room, done) => {
     if (!started) {
-        webrtc.startLocalVideo();
+        start();
     }
     webrtc.createRoom(room, (err, name) => {
         if (!err) {
@@ -66,7 +66,7 @@ const doLeave = () => {
 
 const doJoin = (room, done) => {
     if (!started) {
-        webrtc.startLocalVideo();
+        start();
     }
     webrtc.joinRoom(room, (err, res) => {
         if (err) {
@@ -80,11 +80,24 @@ const doJoin = (room, done) => {
 };
 
 const toggleLocalEnabled = () => {
+    if (!localTrack) {
+        return;
+    }
     localTrack.enabled = !localTrack.enabled;
 };
 
 const isLocalEnabled = () => {
+    if (!localTrack) {
+        return;
+    }
     return localTrack.enabled;
+};
+
+const setLocalEnabled = (state) => {
+    if (!localTrack) {
+        return;
+    }
+    localTrack.enabled = !!state;
 };
 
 const sanitize = (str) => {
@@ -243,6 +256,7 @@ export default {
     isPeerMuted,
     togglePeerMuted,
     toggleLocalEnabled,
+    setLocalEnabled,
     isLocalEnabled,
 };
 

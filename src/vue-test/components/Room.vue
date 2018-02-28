@@ -11,9 +11,7 @@
                 </button>
             </div>
         </header>
-        <peer v-bind.sync="local"
-              v-on:nickName="publishNickName($event)"
-              v-on:mute="setMuteState($event)"/>
+        <peer v-bind.sync="local"/>
         <div id="remotes" class="flexbox">
             <peer v-for="(remote, key) in remotes" v-bind.sync="remote"/>
         </div>
@@ -41,7 +39,8 @@
                     leaveRoomHelp: 'click again to leave',
                 },
                 local: {
-                    isMuted: false,
+                    isMuted: true,
+                    nickName: '',
                 },
                 remotes: {},
             }
@@ -55,12 +54,28 @@
                 this.init();
             });
         },
+        watch: {
+            'local.nickName': {
+                handler(newValue, oldValue) {
+                    if (newValue !== oldValue) {
+                        this.publishNickName(newValue);
+                    }
+                },
+                deep: true,
+            },
+            'local.isMuted': {
+                handler(newValue, oldValue) {
+                    this.setMuteState(newValue);
+                },
+                deep: true,
+            },
+        },
         methods: {
             init() {
                 // todo - is this redundant now? get rid of all the state inside audio-chat
                 audioChat.setRoom(this.roomName);
                 audioChat.init({
-                    onReady: this.invokeAction,
+                    onReady: this.open,
                     onLocalStream: this.showLocal,
                     onPeerConnectionStateChanged: this.updateRemote,
                     onPeerCreated: this.addRemote,
@@ -68,10 +83,9 @@
                 });
                 audioChat.start();
             },
-            invokeAction() {
-                console.log('> ready > action:', this.action);
+            open() {
                 if (this.action) {
-                    console.log('invoking action');
+                    console.log(`invoking ${this.action}()`);
                     this[this.action]();
                 }
             },
@@ -85,8 +99,7 @@
                 audioChat.joinRoom(this.roomName, () => {
                     console.log('room joined:', this.roomName);
                     if (this.local.nickName) {
-                        console.log('publishing local nick:', this.local.nickName);
-                        audioChat.publishNickName(this.local.nickName);
+                        this.publishNickName(this.local.nickName);
                     }
                 });
             },
@@ -98,37 +111,19 @@
                 this.leaveClicked = false;
 
                 audioChat.leaveRoom();
-                delete this.roomName;
+                this.roomName = '';
                 this.$emit('leave');
             },
             publishNickName(nickName) {
-                console.log('room: nickName updated:', nickName);
+                console.log('> publishing nickName:', nickName);
                 audioChat.updateNick(nickName);
             },
-            setMuteState() {
-                audioChat.toggleLocalEnabled();
-                this.local.isMuted = !audioChat.isLocalEnabled();
-            },
-            updateRemote(peerId, state) {
-                console.log('remote peer updated', peerId, state);
-                // todo - should i implement this? look for clues in the css
-                // const container = document.querySelector('#container_' + peerDomId);
-                // container.className = 'peerContainer p2p' +
-                //     state.substr(0, 1).toUpperCase() +
-                //     state.substr(1);
-                switch (state) {
-                    case 'connected':
-                    case 'completed':
-                        // todo - implement this with disabled state instead of visibility
-                        // setPeerMuteVisible(peerId);
-                        break;
-                    case 'closed':
-                        this.$delete(this.remotes, peerId);
-                        break;
-                }
+            setMuteState(state) {
+                console.log('> setting mute state:', state);
+                audioChat.setLocalEnabled(!state);
             },
             addRemote(peerId) {
-                console.log('remote peer added', peerId);
+                console.log('> remote peer added', peerId);
 
                 const remote = {
                     type: 'remote',
@@ -146,6 +141,24 @@
                 };
 
                 this.$set(this.remotes, remote.id, remote);
+            },
+            updateRemote(peerId, state) {
+                console.log('> remote peer updated', peerId, state);
+                // todo - should i implement this? look for clues in the css
+                // const container = document.querySelector('#container_' + peerDomId);
+                // container.className = 'peerContainer p2p' +
+                //     state.substr(0, 1).toUpperCase() +
+                //     state.substr(1);
+                switch (state) {
+                    case 'connected':
+                    case 'completed':
+                        // todo - implement this with disabled state instead of visibility
+                        // setPeerMuteVisible(peerId);
+                        break;
+                    case 'closed':
+                        this.$delete(this.remotes, peerId);
+                        break;
+                }
             },
             updatePeerDetails(peerId, message) {
                 console.log('message from peer', peerId, message);

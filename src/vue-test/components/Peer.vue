@@ -7,25 +7,22 @@
                  v-bind:class="isAvatarRotating ? 'fa-spin' : ''"
                  v-bind:style="avatarStyle">
                 <i class="fa"
-                   v-bind:class="avatarIconClass"></i>
+                   v-bind:class="avatarIconClassName"></i>
             </div>
             <output class="fill"
                     v-if="isRemote">{{ nick }}
             </output>
-            <!--fixme - get two way binding on the model AND an initial value for the editable.
-                fixme - find out why how to avoid v-bind:content.once="nick" - it breaks stuff-->
             <editable class="nick fill"
                       v-else
                       v-bind:style="nickInputStyle"
                       v-bind:placeholder="i18n.nickNamePlaceholder"
-                      v-bind:content.once="nick"
                       v-model="nick"
-                      v-on:blur="saveNickName($event)"/>
+                      v-on:blur="updateNickName($event)"/>
             <button type="button" class="icon"
                     v-b-tooltip.hover.html="muteButtonTooltip"
                     v-on:click="toggleMute()">
                 <!--todo - remote peer icon should be a speaker-->
-                <i class="fa" v-bind:class="isMuted ? 'fa-microphone-slash' : 'fa-microphone'"></i>
+                <i class="fa" v-bind:class="muteClassName"></i>
             </button>
         </div>
         <audio id="localAudio" controls oncontextmenu="return false;" disabled style="display: none;"
@@ -49,11 +46,11 @@
         components: {Editable},
         mixins: [storageMixin],
         props: {
+            id: String,
             type: {
                 type: String,
                 default: 'local',
             },
-            id: String,
             nickName: String,
             isMuted: {
                 type: Boolean,
@@ -61,7 +58,6 @@
             },
             avatarColor: String,
             avatarIcon: String,
-            onMute: Function,
         },
         data() {
             return {
@@ -69,15 +65,17 @@
                     nickNamePlaceholder: 'find a cool nick name'
                 },
                 nick: this.nickName,
+                muted: this.isMuted,
                 isAvatarRotating: false,
             };
         },
         mounted() {
+            console.log('> mounted. this.nickName:', this.nickName);
             if (this.isLocal && !this.nickName) {
                 this.retrieve('nickName', (name) => {
                     if (name) {
                         this.nick = name;
-                        this.$emit('nickName', name);
+                        this.$emit('update:nickName', name);
                     }
                 });
             }
@@ -101,19 +99,25 @@
                     backgroundColor: this.color,
                 };
             },
-            avatarIconClass() {
-                return this.icon ? `fa-${this.icon}` : 'fa-star-o';
-            },
             nickInputStyle() {
                 return {
                     borderColor: this.color,
                 };
             },
+            avatarIconClassName() {
+                return this.icon ? `fa-${this.icon}` : 'fa-star-o';
+            },
+            muteClassName() {
+                // if (this.isRemote) {
+                //     return this.muted ? 'fa-volume-off' : 'fa-volume-up';
+                // }
+                return this.muted ? 'fa-microphone-slash' : 'fa-microphone';
+            },
             muteButtonTooltip() {
-                return this.isMuted ? 'unmute' : 'mute';
+                return this.muted ? 'unmute' : 'mute';
 //                 return `
 // <div style="padding: .2em .2em .5em .2em; line-height: 2;">
-//     ${this.isMuted ? 'unmute' : 'mute'}<br/>
+//     ${this.muted ? 'unmute' : 'mute'}<br/>
 //     <kbd>CMD</kbd>+<kbd>M</kbd>${typeof this.index !== 'undefined' ? '+<kbd>' + (this.index + 1) + '</kbd>' : ''}
 // </div>
 // `;
@@ -121,22 +125,18 @@
         },
         watch: {
             nickName(newValue, oldValue) {
-                console.log('nickName updated:', newValue);
+                console.log('> nickName updated:', newValue);
                 this.nick = newValue;
+                this.$emit('update:nickName', newValue);
             },
         },
         methods: {
             toggleMute() {
-                // fixme - onMute is not a function, obviously
-                const isMuted = this.onMute();
-                this.isMuted = isMuted;
-                this.$emit('mute', {
-                    isMuted: isMuted,
-                });
+                this.muted = !this.muted;
+                this.$emit('update:isMuted', this.muted, () => void 0);
             },
-            saveNickName(nickName) {
-                this.$emit('nickName', nickName);
-                // adding a noop function to avoid mutating the local value
+            updateNickName(nickName) {
+                this.$emit('update:nickName', nickName);
                 this.save('nickName', nickName, () => void 0);
             },
             toggleAvatarRotation() {

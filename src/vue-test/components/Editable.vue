@@ -1,9 +1,9 @@
 <template>
     <div contenteditable="true"
          v-bind:data-placeholder.once="placeholder"
-         v-on:input="onInput"
-         v-on:paste="onPaste"
          v-on:blur="onBlur"
+         v-on:input="onInput"
+         v-on:paste.prevent="onPaste"
          v-on:keypress="onKeyPress">
     </div>
 </template>
@@ -12,7 +12,7 @@
     export default {
         name: 'editable',
         model: {
-            prop: 'textContent',
+            prop: 'content',
             event: 'input',
         },
         props: {
@@ -26,9 +26,18 @@
             },
         },
         mounted: function () {
+            console.log('> > > mounted. content:', this.content);
             if (this.content) {
-                this.$el.textContent = this.content;
+                this.updateText(this.content);
             }
+        },
+        watch: {
+            content(newValue, oldValue) {
+                console.log(`> > > content updated. new: ${newValue}, old: ${oldValue}`);
+                if (newValue !== oldValue) {
+                    this.updateText(newValue);
+                }
+            },
         },
         methods: {
             onInput(e) {
@@ -38,22 +47,18 @@
                 this.$emit('blur', e.target.textContent);
             },
             onPaste(e) {
-                e.preventDefault();
                 const text = e.clipboardData.getData('text/plain');
-                document.execCommand('insertHTML', false, text);
+                document.execCommand('insertText', false, text);
             },
             onKeyPress(e) {
-                if (e.charCode === 13) {
+                if (e.keyCode === 13) {
                     e.preventDefault();
                     e.target.blur();
                 }
             },
-        },
-        watch: {
-            content(newValue, oldValue) {
-                if (newValue !== oldValue) {
-                    this.$el.textContent = newValue;
-                }
+            updateText(text) {
+                this.$el.textContent = text;
+                this.$emit('input', text);
             },
         },
     }
@@ -61,9 +66,9 @@
 
 <style scoped>
 
-    div[contenteditable="true"] {
-        min-width: 15em;
-    }
+    /*div[contenteditable="true"] {*/
+        /*min-width: 15em;*/
+    /*}*/
 
     div[contenteditable="true"]:empty:not(:focus):before {
         content: attr(data-placeholder);
