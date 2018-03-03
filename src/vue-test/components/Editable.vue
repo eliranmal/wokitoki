@@ -1,5 +1,5 @@
 <template>
-    <div contenteditable="true"
+    <div v-bind:contenteditable.native="isEditable"
          v-bind:data-placeholder.once="placeholder"
          v-on:blur="onBlur"
          v-on:input="onInput"
@@ -24,16 +24,23 @@
                 type: String,
                 default: '',
             },
+            'disabled': {
+                type: Boolean,
+                default: false,
+            },
         },
         mounted: function () {
-            console.log('> > > mounted. content:', this.content);
             if (this.content) {
                 this.updateText(this.content);
             }
         },
+        computed: {
+            isEditable() {
+                return !this.disabled;
+            },
+        },
         watch: {
             content(newValue, oldValue) {
-                console.log(`> > > content updated. new: ${newValue}, old: ${oldValue}`);
                 if (newValue !== oldValue) {
                     this.updateText(newValue);
                 }
@@ -66,11 +73,7 @@
 
 <style scoped>
 
-    /*div[contenteditable="true"] {*/
-        /*min-width: 15em;*/
-    /*}*/
-
-    div[contenteditable="true"]:empty:not(:focus):before {
+    div[contenteditable]:read-write:empty:not(:focus):before {
         content: attr(data-placeholder);
         color: #999;
     }
