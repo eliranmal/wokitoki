@@ -156,10 +156,18 @@ button.big {
     padding: 0 2em;
 }
 
-button:disabled {
+button:disabled,
+[contenteditable]:read-only {
     color: transparent;
     cursor: not-allowed;
 }
+
+/* todo - resolve all this read-only/disabled state inside the components (make button etc. into components) */
+/* todo - introduce an internal loader for each such component  */
+/*button:disabled:before,*/
+/*[contenteditable]:read-only:before {*/
+    /*content: 'wat';*/
+/*}*/
 
 /* components */
 

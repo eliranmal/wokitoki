@@ -14,14 +14,16 @@
             </output>
             <editable class="nick fill"
                       v-else
+                      v-bind:disabled="nickInputDisabled"
                       v-bind:style="nickInputStyle"
                       v-bind:placeholder="i18n.nickNamePlaceholder"
                       v-model="nick"
                       v-on:blur="updateNickName($event)"/>
             <button type="button" class="icon"
+                    v-bind:disabled="muteButtonDisabled"
                     v-b-tooltip.hover.html="muteButtonTooltip"
                     v-on:click="toggleMute()">
-                <!--todo - remote peer icon should be a speaker-->
+                <!--todo - remote peer icon should be a speaker?-->
                 <i class="fa" v-bind:class="muteClassName"></i>
             </button>
         </div>
@@ -38,13 +40,13 @@
     // todo - pass avatar icon explicitly to peers to ignore issues with different nickname due text-sanitation
 
     import text from '../../lib/text';
-    import storageMixin from '../mixins/storage';
     import Editable from './Editable';
 
     export default {
         name: 'peer',
-        components: {Editable},
-        mixins: [storageMixin],
+        components: {
+            Editable,
+        },
         props: {
             id: String,
             type: {
@@ -52,10 +54,7 @@
                 default: 'local',
             },
             nickName: String,
-            isMuted: {
-                type: Boolean,
-                default: false,
-            },
+            isMuted: Boolean,
             avatarColor: String,
             avatarIcon: String,
         },
@@ -68,17 +67,6 @@
                 muted: this.isMuted,
                 isAvatarRotating: false,
             };
-        },
-        mounted() {
-            console.log('> mounted. this.nickName:', this.nickName);
-            if (this.isLocal && !this.nickName) {
-                this.retrieve('nickName', (name) => {
-                    if (name) {
-                        this.nick = name;
-                        this.$emit('update:nickName', name);
-                    }
-                });
-            }
         },
         computed: {
             color() {
@@ -122,22 +110,31 @@
 // </div>
 // `;
             },
+            muteButtonDisabled() {
+                console.log('> > > > > peer > muteButtonDisabled:', this.muted === null);
+                return this.muted === null;
+            },
+            nickInputDisabled() {
+                console.log('> > > > > peer > nickInputDisabled:', this.nick === null);
+                return this.nick === null;
+            },
         },
         watch: {
             nickName(newValue, oldValue) {
-                console.log('> nickName updated:', newValue);
-                this.nick = newValue;
-                this.$emit('update:nickName', newValue);
+                this.updateNickName(newValue);
+            },
+            isMuted(newValue, oldValue) {
+                this.toggleMute(newValue);
             },
         },
         methods: {
-            toggleMute() {
-                this.muted = !this.muted;
+            toggleMute(state = !this.muted) {
+                this.muted = state;
                 this.$emit('update:isMuted', this.muted, () => void 0);
             },
             updateNickName(nickName) {
+                this.nick = nickName;
                 this.$emit('update:nickName', nickName);
-                this.save('nickName', nickName, () => void 0);
             },
             toggleAvatarRotation() {
                 this.isAvatarRotating = !this.isAvatarRotating;

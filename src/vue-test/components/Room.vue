@@ -1,7 +1,7 @@
 <template>
     <div class="room flexbox">
         <header class="flexbox horizontal">
-            <h1 class="room-name fill">{{ roomName }}</h1>
+            <h1 class="room-name fill">{{ name }}</h1>
             <div class="controls flexbox horizontal pull-right">
                 <button type="button" class="icon"
                         v-b-tooltip.click.blur="i18n.leaveRoomHelp"
@@ -13,15 +13,18 @@
         </header>
         <peer v-bind.sync="local"/>
         <div id="remotes" class="flexbox">
-            <peer v-for="(remote, key) in remotes" v-bind.sync="remote"/>
+            <peer v-for="(remote, key) in remotes"
+                  v-bind.sync="remote"
+                  v-bind:key="key"/>
         </div>
 
         <!--todo - debugging... remove this later-->
-        <pre>{{ remotes | json }}</pre>
+        <!--<pre>{{ remotes | json }}</pre>-->
     </div>
 </template>
 
 <script>
+    import {mapState} from 'vuex';
     import audioChat from '../../lib/audio-chat';
     import devices from '../../lib/devices';
     import Peer from './Peer';
@@ -30,22 +33,25 @@
         components: {Peer},
         name: 'room',
         props: [
-            'roomName',
-            'action',
+            'name',
         ],
         data() {
             return {
                 i18n: {
                     leaveRoomHelp: 'click again to leave',
                 },
-                local: {
-                    isMuted: true,
-                    nickName: '',
-                },
+                // todo - move remotes to vuex store?
                 remotes: {},
             }
         },
         mounted() {
+            this.$store.dispatch('retrieve', {
+                key: 'local.nickName',
+            });
+            this.$store.dispatch('retrieve', {
+                key: 'local.isMuted',
+            });
+
             this.sniffDevices(err => {
                 if (err) {
                     console.error(err);
@@ -54,18 +60,35 @@
                 this.init();
             });
         },
+        computed: {
+            ...mapState({
+                local: 'local',
+                action: 'roomAction',
+            }),
+        },
         watch: {
             'local.nickName': {
                 handler(newValue, oldValue) {
-                    if (newValue !== oldValue) {
-                        this.publishNickName(newValue);
+                    if (newValue === oldValue) {
+                        return;
                     }
+                    this.publishNickName(newValue);
+                    this.$store.dispatch('save', {
+                        key: 'local.nickName',
+                        value: newValue,
+                        commit: false,
+                    });
                 },
                 deep: true,
             },
             'local.isMuted': {
                 handler(newValue, oldValue) {
                     this.setMuteState(newValue);
+                    this.$store.dispatch('save', {
+                        key: 'local.isMuted',
+                        value: newValue,
+                        commit: false,
+                    });
                 },
                 deep: true,
             },
@@ -73,7 +96,7 @@
         methods: {
             init() {
                 // todo - is this redundant now? get rid of all the state inside audio-chat
-                audioChat.setRoom(this.roomName);
+                audioChat.setRoom(this.name);
                 audioChat.init({
                     onReady: this.open,
                     onLocalStream: this.showLocal,
@@ -90,14 +113,14 @@
                 }
             },
             create() {
-                audioChat.createRoom(this.roomName, () => {
-                    console.log('room created:', this.roomName);
-                    this.$emit('created', this.roomName);
+                audioChat.createRoom(this.name, () => {
+                    console.log('room created:', this.name);
+                    this.$emit('created', this.name);
                 });
             },
             join() {
-                audioChat.joinRoom(this.roomName, () => {
-                    console.log('room joined:', this.roomName);
+                audioChat.joinRoom(this.name, () => {
+                    console.log('room joined:', this.name);
                     if (this.local.nickName) {
                         this.publishNickName(this.local.nickName);
                     }
@@ -111,7 +134,6 @@
                 this.leaveClicked = false;
 
                 audioChat.leaveRoom();
-                this.roomName = '';
                 this.$emit('leave');
             },
             publishNickName(nickName) {

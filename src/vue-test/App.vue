@@ -4,7 +4,7 @@
         <loader v-bind:is-loading="isLoading"/>
         <room v-if="showRoom"
               v-bind:action="roomAction"
-              v-bind:room-name="roomName"
+              v-bind:name="roomName"
               v-on:created="roomCreated"
               v-on:leave="leaveRoom"/>
         <welcome v-else
@@ -13,16 +13,14 @@
 </template>
 
 <script>
-    import storageMixin from './mixins/storage';
+    import {mapState} from 'vuex';
     import Loader from './components/Loader';
     import Welcome from './components/Welcome';
     import Room from './components/Room';
+    import Promise from 'bluebird';
 
     export default {
         name: 'app',
-        mixins: [
-            storageMixin
-        ],
         components: {
             Loader,
             Welcome,
@@ -30,39 +28,79 @@
         },
         data() {
             return {
-                roomName: null,
-                roomAction: null,
-                isLoading: true,
+                isLoading: false,
             };
         },
         mounted() {
-            this.retrieve('roomAction');
-            this.retrieve('roomName');
+            this.withLoader([
+                done => this.$store.dispatch('retrieve', {
+                    key: 'roomAction',
+                    done,
+                }),
+                done => this.$store.dispatch('retrieve', {
+                    key: 'roomName',
+                    done,
+                }),
+            ]);
         },
         computed: {
             showRoom() {
-                return this.roomAction && this.roomName;
+                return !this.isLoading && this.roomAction && this.roomName;
             },
             wrapperClassName() {
                 return this.showRoom ? '' : 'flexbox horizontal pack';
             },
+            ...mapState([
+                'roomName',
+                'roomAction',
+            ]),
         },
         methods: {
             enterRoom({name, action}) {
+                const fns = [];
                 if (action) {
-                    this.save('roomAction', action);
+                    fns.push(done => this.$store.dispatch('save', {
+                        key: 'roomAction',
+                        value: action,
+                        done,
+                    }));
                 }
                 if (name) {
-                    this.save('roomName', name);
+                    fns.push(done => this.$store.dispatch('save', {
+                        key: 'roomName',
+                        value: name,
+                        done,
+                    }));
+                }
+                if (fns.length) {
+                    this.withLoader(fns);
                 }
             },
             leaveRoom() {
-                this.clear('roomName');
-                this.clear('roomAction');
+                this.withLoader([
+                    done => this.$store.dispatch('clear', {
+                        key: 'roomName',
+                        done,
+                    }),
+                    done => this.$store.dispatch('clear', {
+                        key: 'roomAction',
+                        done,
+                    }),
+                ]);
             },
             roomCreated() {
-                this.save('roomAction', 'join');
-            }
+                this.$store.dispatch('save', {
+                    key: 'roomAction',
+                    value: 'join',
+                });
+            },
+            withLoader(nodeFns) {
+                this.isLoading = true;
+                const promises = nodeFns.map(fn => {
+                    return Promise.promisify(fn)();
+                });
+                Promise.all(promises).then(v => this.isLoading = false);
+            },
         },
     };
 </script>

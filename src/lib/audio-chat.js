@@ -101,7 +101,7 @@ const setLocalEnabled = (state) => {
 };
 
 const sanitize = (str) => {
-    // todo - why is sanitize necessary? it breaks the nick-name/avatar relation in remotes
+    // todo - is sanitize necessary? it breaks the nick-name/avatar relation in remotes
     // return str.toLowerCase().replace(/\s/g, '-').replace(/[^A-Za-z0-9_\-]/g, '');
     return str;
 };
@@ -110,13 +110,23 @@ const setNick = (value) => {
     nick = sanitize(value);
 };
 
-const publishNick = () => {
-    webrtc.sendToAll('nickname', {nick: nick});
+const broadcastNick = () => {
+    if (webrtc && nick) {
+        console.log('broadcasting nickname to all peers');
+        webrtc.sendToAll('nickname', {nick: nick});
+    }
+};
+
+const unicastNick = (peer) => {
+    if (peer && nick) {
+        console.log('unicasting nickname to peer:', peer.id);
+        peer.send('nickname', {nick: nick});
+    }
 };
 
 const updateNick = (value) => {
     setNick(value);
-    publishNick();
+    broadcastNick();
 };
 
 const setRoom = (roomName) => {
@@ -202,12 +212,8 @@ const GUM = ({
         if (!peers || !peers.length) return;
         var peer = peers[0];
 
-        // FIXME: also send current nick to newly joining participants
         if (message.type === 'offer') {
-            // update things
-            if (nick) {
-                peer.send('nickname', {nick: nick});
-            }
+            unicastNick(peer);
         }
 
         onMessage(peer.id, message);
