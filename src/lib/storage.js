@@ -17,14 +17,26 @@ if (process.env.NODE_ENV === 'development') {
                 const data = args.shift();
                 for (let key in data) {
                     if (data.hasOwnProperty(key)) {
-                        args = [key, data[key]];
+                        let value = data[key];
+                        if (typeof value !== 'string') {
+                            value = JSON.stringify(value);
+                        }
+                        args = [key, value];
                         // assume there is a single entry
                         break;
                     }
                 }
             }
-            cb(localStorage[syncToLocalFnMap[cmd]](...args));
-        }, 300);
+            let result = localStorage[syncToLocalFnMap[cmd]](...args);
+            if (cmd === 'get') {
+                try {
+                    result = JSON.parse(result);
+                } catch (ex) {
+                    console.debug('failed parsing result, returning it as-is');
+                }
+            }
+            cb(result);
+        }, 3000);
         window.chrome.storage = window.chrome.storage || {};
         window.chrome.storage.sync = window.chrome.storage.sync || {};
         for (let fn in syncToLocalFnMap) {
