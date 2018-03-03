@@ -22,6 +22,8 @@
         left: 0;
         right: 0;
         z-index: 1;
+        margin: 0;
+        padding: 0;
         background-color: #f6f6f6;
     }
 
