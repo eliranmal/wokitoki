@@ -36,7 +36,7 @@ if (process.env.NODE_ENV === 'development') {
                 }
             }
             cb(result);
-        }, 3000);
+        }, 300);
         window.chrome.storage = window.chrome.storage || {};
         window.chrome.storage.sync = window.chrome.storage.sync || {};
         for (let fn in syncToLocalFnMap) {
