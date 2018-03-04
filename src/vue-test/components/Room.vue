@@ -19,7 +19,10 @@
         </div>
 
         <!--todo - debugging... remove this later-->
-        <!--<pre>{{ remotes | json }}</pre>-->
+        <div class="flexbox">
+            <pre>{{ local | json }}</pre>
+            <pre>{{ remotes | json }}</pre>
+        </div>
     </div>
 </template>
 
@@ -40,16 +43,21 @@
                 i18n: {
                     leaveRoomHelp: 'click again to leave',
                 },
-                // todo - move remotes to vuex store?
-                remotes: {},
             }
         },
         mounted() {
+            // todo - think about moving all the retrieve operations to app load time, to do it all at once.
+            // todo - create a new method in the store to refresh the persisted state from storage (will retrieve
+            // todo - everything at once using async.all)
+            this.$set(this.local, 'nickDisabled', true);
             this.$store.dispatch('retrieve', {
                 key: 'local.nickName',
+                done: () => this.$set(this.local, 'nickDisabled', false),
             });
+            this.$set(this.local, 'muteDisabled', true);
             this.$store.dispatch('retrieve', {
                 key: 'local.isMuted',
+                done: () => this.$set(this.local, 'muteDisabled', false),
             });
 
             this.sniffDevices(err => {
@@ -63,6 +71,7 @@
         computed: {
             ...mapState({
                 local: 'local',
+                remotes: 'remotes',
                 action: 'roomAction',
             }),
         },
@@ -95,10 +104,9 @@
         },
         methods: {
             init() {
-                // todo - is this redundant now? get rid of all the state inside audio-chat
-                audioChat.setRoom(this.name);
                 audioChat.init({
                     onReady: this.open,
+                    onConnectionReady: this.setLocalId,
                     onLocalStream: this.showLocal,
                     onPeerConnectionStateChanged: this.updateRemote,
                     onPeerCreated: this.addRemote,
@@ -148,16 +156,16 @@
                 console.log('> remote peer added', peerId);
 
                 const remote = {
-                    type: 'remote',
                     id: peerId,
+                    type: 'remote',
+                    nickDisabled: true,
+                    muteDisabled: true,
                 };
 
                 // todo - should i implement this?
                 // mute.style.visibility = 'hidden';
 
                 remote.onMute = () => {
-                    // todo - wire audioChat.isPeerMuted to event binding on remote peer components, put it someplace better
-                    // chrome.runtime.sendMessage({channel: audioChatChannel, cmd: 'togglePeerMuted', args: [peerId]});
                     audioChat.togglePeerMuted(peerId);
                     return audioChat.isPeerMuted(peerId);
                 };
@@ -174,8 +182,7 @@
                 switch (state) {
                     case 'connected':
                     case 'completed':
-                        // todo - implement this with disabled state instead of visibility
-                        // setPeerMuteVisible(peerId);
+                        this.$set(this.remotes[peerId], 'muteDisabled', false);
                         break;
                     case 'closed':
                         this.$delete(this.remotes, peerId);
@@ -187,6 +194,9 @@
                 switch (message.type) {
                     case 'nickname':
                         this.$set(this.remotes[peerId], 'nickName', message.payload.nick);
+                        if (this.remotes[peerId].nickDisabled) {
+                            this.$set(this.remotes[peerId], 'nickDisabled', false);
+                        }
                         break;
                 }
             },
@@ -212,13 +222,20 @@
                     done();
                 });
             },
-            showLocal() {
+
+            showLocal(stream) {
+                console.log('> local stream', stream);
+
                 var localAudio = document.getElementById('localAudio');
                 localAudio.disabled = false;
                 localAudio.volume = 0;
 
                 // todo - should i implement this?
                 // document.querySelector('.local').style.display = 'block';
+            },
+
+            setLocalId(sessionId) {
+                this.$set(this.local, 'id', sessionId);
             },
         },
     }
@@ -232,6 +249,10 @@
         text-align: left;
         word-break: break-word;
         word-wrap: break-word;
+    }
+
+    pre {
+        font-size: 14px;
     }
 
 </style>

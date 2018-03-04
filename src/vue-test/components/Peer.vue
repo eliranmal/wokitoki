@@ -3,9 +3,11 @@
          v-bind:class="type">
         <div class="flexbox horizontal details">
             <div class="avatar icon round"
-                 v-on:click="toggleAvatarRotation"
-                 v-bind:class="isAvatarRotating ? 'fa-spin' : ''"
-                 v-bind:style="avatarStyle">
+                 v-on:click="toggleAvatarSpin"
+                 v-bind:class="isAvatarSpinning ? 'fa-spin' : ''"
+                 v-bind:style="avatarStyle"
+                 v-b-tooltip.hover="id"
+            >
                 <i class="fa"
                    v-bind:class="avatarIconClassName"></i>
             </div>
@@ -14,30 +16,25 @@
             </output>
             <editable class="nick fill"
                       v-else
-                      v-bind:disabled="nickInputDisabled"
+                      v-bind:disabled="nickDisabled"
                       v-bind:style="nickInputStyle"
                       v-bind:placeholder="i18n.nickNamePlaceholder"
                       v-model="nick"
                       v-on:blur="updateNickName($event)"/>
             <button type="button" class="icon"
-                    v-bind:disabled="muteButtonDisabled"
+                    v-bind:disabled="muteDisabled"
                     v-b-tooltip.hover.html="muteButtonTooltip"
                     v-on:click="toggleMute()">
-                <!--todo - remote peer icon should be a speaker?-->
                 <i class="fa" v-bind:class="muteClassName"></i>
             </button>
         </div>
+        <!--todo - don't use id like that, it could be duplicated-->
         <audio id="localAudio" controls oncontextmenu="return false;" disabled style="display: none;"
                v-if="isLocal"></audio>
     </div>
 </template>
 
 <script>
-
-    // todo - make all this color/icon change on input typing into an independent app of an association game:
-    // todo - you type in words, and press enter to push them to the list on the bottom and select all the input text, so next typing will clear the input
-
-    // todo - pass avatar icon explicitly to peers to ignore issues with different nickname due text-sanitation
 
     import text from '../../lib/text';
     import Editable from './Editable';
@@ -49,14 +46,11 @@
         },
         props: {
             id: String,
-            type: {
-                type: String,
-                default: 'local',
-            },
+            type: String,
             nickName: String,
             isMuted: Boolean,
-            avatarColor: String,
-            avatarIcon: String,
+            nickDisabled: Boolean,
+            muteDisabled: Boolean,
         },
         data() {
             return {
@@ -65,15 +59,21 @@
                 },
                 nick: this.nickName,
                 muted: this.isMuted,
-                isAvatarRotating: false,
+                isAvatarSpinning: false,
             };
         },
         computed: {
             color() {
-                return this.avatarColor || this.nick ? text.asHexColor(this.nick) : '#555555';
+                if (this.nickDisabled) {
+                    return '#555555';
+                }
+                return this.nick ? text.asHexColor(this.nick) : '#555555';
             },
             icon() {
-                return this.avatarIcon || this.nick ? text.asIcon(this.nick) : 'user-secret';
+                if (this.nickDisabled) {
+                    return '';
+                }
+                return this.nick ? text.asIcon(this.nick) : 'user-secret';
             },
             isLocal() {
                 return this.type === 'local';
@@ -93,9 +93,11 @@
                 };
             },
             avatarIconClassName() {
-                return this.icon ? `fa-${this.icon}` : 'fa-star-o';
+                return this.icon ? `fa-${this.icon}` : '';
             },
             muteClassName() {
+                // todo - remote peer icon should be a speaker, but volume-off does not look like 'off' state.
+                // todo - uncomment this after i have a proper icon (perhaps when switching to font-awesome 5)
                 // if (this.isRemote) {
                 //     return this.muted ? 'fa-volume-off' : 'fa-volume-up';
                 // }
@@ -110,14 +112,6 @@
 // </div>
 // `;
             },
-            muteButtonDisabled() {
-                console.log('> > > > > peer > muteButtonDisabled:', this.muted === null);
-                return this.muted === null;
-            },
-            nickInputDisabled() {
-                console.log('> > > > > peer > nickInputDisabled:', this.nick === null);
-                return this.nick === null;
-            },
         },
         watch: {
             nickName(newValue, oldValue) {
@@ -130,14 +124,14 @@
         methods: {
             toggleMute(state = !this.muted) {
                 this.muted = state;
-                this.$emit('update:isMuted', this.muted, () => void 0);
+                this.$emit('update:isMuted', this.muted);
             },
             updateNickName(nickName) {
                 this.nick = nickName;
                 this.$emit('update:nickName', nickName);
             },
-            toggleAvatarRotation() {
-                this.isAvatarRotating = !this.isAvatarRotating;
+            toggleAvatarSpin() {
+                this.isAvatarSpinning = !this.isAvatarSpinning;
             },
         },
     };

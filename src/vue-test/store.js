@@ -5,17 +5,16 @@ import storage from '../lib/storage';
 
 const debug = process.env.NODE_ENV === 'development';
 
-// using null values indicates an 'unset' state,
-// so i can disable views before data arrives from the persistent storage
 const state = {
     roomName: '',
     roomAction: 'join',
     local: {
-        isMuted: null,
-        nickName: null,
-        avatarIcon: '',
-        avatarColor: '',
+        id: '',
+        type: 'local',
+        isMuted: true,
+        nickName: '',
     },
+    remotes: {},
 };
 
 const defaults = Object.freeze(Object.assign({}, state));
@@ -40,7 +39,7 @@ const mutations = {
 };
 
 const actions = {
-    retrieve({commit}, {key, commit: doCommit = true, done = () => 1, type}) {
+    retrieve({commit}, {key, commit: doCommit = true, done = () => 1}) {
         trace(`> vuex store > action [retrieve] > key: '${key}'.`);
         storage.get(key, (value) => {
             if (value === null || typeof value === 'undefined') {

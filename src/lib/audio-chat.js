@@ -24,8 +24,8 @@ const start = () => {
 
 const createRoom = (roomName, onCreated) => {
     // todo - put a unique prefix here (app name? tab id? hashed roomName? all together?)
-    // room = 'wokitoki___' + sanitize(roomName);
-    room = sanitize(roomName);
+    // room = 'wokitoki___' + roomName;
+    room = roomName;
     doCreate(room, onCreated);
 };
 
@@ -35,7 +35,7 @@ const leaveRoom = () => {
 };
 
 const joinRoom = (roomName, done) => {
-    room = sanitize(roomName);
+    room = roomName;
     doJoin(room, done);
 };
 
@@ -45,7 +45,6 @@ const doCreate = (room, done) => {
     }
     webrtc.createRoom(room, (err, name) => {
         if (!err) {
-            // chrome.runtime.sendMessage({cmd: 'setRoom', args: [room]});
             done(room);
         } else {
             console.log('error', err, room);
@@ -100,37 +99,23 @@ const setLocalEnabled = (state) => {
     localTrack.enabled = !!state;
 };
 
-const sanitize = (str) => {
-    // todo - is sanitize necessary? it breaks the nick-name/avatar relation in remotes
-    // return str.toLowerCase().replace(/\s/g, '-').replace(/[^A-Za-z0-9_\-]/g, '');
-    return str;
-};
-
-const setNick = (value) => {
-    nick = sanitize(value);
-};
-
 const broadcastNick = () => {
     if (webrtc && nick) {
         console.log('broadcasting nickname to all peers');
-        webrtc.sendToAll('nickname', {nick: nick});
+        webrtc.sendToAll('nickname', {nick});
     }
 };
 
 const unicastNick = (peer) => {
     if (peer && nick) {
         console.log('unicasting nickname to peer:', peer.id);
-        peer.send('nickname', {nick: nick});
+        peer.send('nickname', {nick});
     }
 };
 
 const updateNick = (value) => {
-    setNick(value);
+    nick = value;
     broadcastNick();
-};
-
-const setRoom = (roomName) => {
-    room = roomName;
 };
 
 const isPeerMuted = (peerId) => {
@@ -145,6 +130,7 @@ const togglePeerMuted = (peerId) => {
 
 const GUM = ({
                  onReady = noop,
+                 onConnectionReady = noop,
                  onLocalStream = noop,
                  onPeerConnectionStateChanged = noop,
                  onPeerCreated = noop,
@@ -161,22 +147,18 @@ const GUM = ({
             audio: true,
             video: false
         },
-        receiveMedia: { // FIXME: remove old chrome <= 37 constraints format
-            offerToReceiveAudio: 1,
-            offerToReceiveVideo: 0
-        },
     });
 
     webrtc.on('localStream', (stream) => {
         localTrack = stream.getAudioTracks()[0];
         // chrome.runtime.sendMessage({cmd: 'webrtcOnLocalStream'});
-        onLocalStream();
+        onLocalStream(stream);
     });
 
     webrtc.on('readyToCall', () => {
         onReady();
     });
-    // called when a peer is created
+
     webrtc.on('createdPeer', (peer) => {
         if (peer && peer.pc) {
             peer.firsttime = true;
@@ -205,6 +187,10 @@ const GUM = ({
         }
 
         onPeerCreated(peer.id);
+    });
+
+    webrtc.on('connectionReady', (sessionId) => {
+        onConnectionReady(sessionId);
     });
 
     webrtc.connection.on('message', (message) => {
@@ -256,8 +242,6 @@ export default {
     createRoom,
     joinRoom,
     leaveRoom,
-    setRoom,
-    setNick,
     updateNick,
     isPeerMuted,
     togglePeerMuted,

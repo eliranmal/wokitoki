@@ -14,10 +14,10 @@
 
 <script>
     import {mapState} from 'vuex';
+    import async from '../lib/async';
     import Loader from './components/Loader';
     import Welcome from './components/Welcome';
     import Room from './components/Room';
-    import Promise from 'bluebird';
 
     export default {
         name: 'app',
@@ -96,10 +96,7 @@
             },
             withLoader(nodeFns) {
                 this.isLoading = true;
-                const promises = nodeFns.map(fn => {
-                    return Promise.promisify(fn)();
-                });
-                Promise.all(promises).then(v => this.isLoading = false);
+                async.all(nodeFns, () => this.isLoading = false);
             },
         },
     };
