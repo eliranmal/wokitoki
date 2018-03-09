@@ -5,6 +5,7 @@
   "author": "eliranmal <eliranmal@gmail.com>",
   "private": true,
   "scripts": {
+    "start": "npm run svg && npm run dev",
     "dev": "cross-env NODE_ENV=development webpack-dev-server --hot",
     "build": "cross-env NODE_ENV=production webpack --progress --hide-modules",
     "svg": "vsvg -s ./resources/svg/icons -t ./src/vue-test/icons",
