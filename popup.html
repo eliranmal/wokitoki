@@ -1,46 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>wokitoki</title>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="wokitoki">
-
-    <!-- todo - replace this with some proper styles of my own! -->
-    <link rel="stylesheet" href="https://edgeportal.blob.core.windows.net/media/demotemplate.css" />
+    <title>app</title>
 </head>
 <body>
-<div class="content cf">
-    <section>
-        <h1>wokitoki</h1>
-        <div id="requirements">
-            <p>To run this App, you'll need the most recent version of Chrome, Firefox or Edge, and an internal or external microphone.</p>
-        </div>
-        <div id="supportWarning" class="block-note--error">
-            <p>Warning - Your browser does not support the ORTC or WebRTC APIs. Please follow the requirements and try again.</p>
-        </div>
-        <div id="microphoneWarning" class="block-note--error">
-            <p>Error - we can't find a microphone attached to your PC. Please switch to a PC with a microphone attached and try again.</p>
-        </div>
-    </section>
-    <section id="roomContainer" class="cf">
-        <h4 id="subtitle"></h4>
-        <form id="createRoom">
-            <input class="form-input" placeholder="Room name"/>
-            <button disabled type="submit" class="button">Create room</button>
-        </form>
-        <a class="button button-small button-leave-room">Leave room</a>
-        <div class="peerContainer local">
-            <div class="local-details">
-                <input id="nickInput" placeholder="Add your name"/>
-                <audio id="localAudio" controls oncontextmenu="return false;" disabled></audio>
-                <a class="button button-small button-mute">Mute</a>
-            </div>
-        </div>
-        <div id="remotes"></div>
-    </section>
-</div>
+<div id="app"></div>
 </body>
 </html>
-

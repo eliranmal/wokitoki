@@ -10,7 +10,6 @@ let config = {
     entry: {
         background: './src/background/main.js',
         popup: './src/popup/main.js',
-        'vue-test': './src/vue-test/main.js',
     },
     output: {
         path: path.resolve(__dirname, 'dist'),
@@ -54,11 +53,6 @@ let config = {
             filename: 'background.html',
             template: './background.html',
             chunks: ['background'],
-        }),
-        new HtmlWebpackPlugin({
-            filename: 'vue-test.html',
-            template: './vue-test.html',
-            chunks: ['vue-test'],
         }),
     ],
     module: {
