@@ -66,7 +66,6 @@ let config = {
             {
                 test: /\.css$/,
                 include: [
-                    /font-awesome/,
                     /bootstrap-vue/,
                 ],
                 use: [
@@ -77,7 +76,6 @@ let config = {
             {
                 test: /\.css$/,
                 exclude: [
-                    /font-awesome/,
                     /bootstrap-vue/,
                 ],
                 use: [
@@ -105,17 +103,6 @@ let config = {
                     options: {
                         name: '[name].[ext]?[hash]',
                         outputPath: 'assets/images/',
-                    },
-                },
-            },
-            {
-                test: /\.(eot|svg|ttf|woff|woff2)(\?\S*)?$/,
-                include: /font-awesome/,
-                use: {
-                    loader: 'file-loader',
-                    options: {
-                        name: '[name].[ext]?[hash]',
-                        outputPath: 'assets/fonts/',
                     },
                 },
             },

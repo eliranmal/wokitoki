@@ -1,14 +1,29 @@
 <template>
     <div v-show="isLoading" class="loader centered-content">
-        <i class="fa fa-cog fa-spin fa-2x"></i>
+        <svgicon class="spin" v-bind:name="icon" width="60" height="60" />
     </div>
 </template>
 
 <script>
+    import icons from '../../lib/icons';
+
     export default {
         name: 'loader',
         props: {
             isLoading: Boolean,
+        },
+        data() {
+            return {
+                iconName: 'empty',
+            };
+        },
+        computed: {
+            icon() {
+                if (this.isLoading) {
+                    this.iconName = icons.random();
+                }
+                return this.iconName;
+            },
         },
     }
 </script>

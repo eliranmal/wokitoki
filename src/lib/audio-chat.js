@@ -120,12 +120,14 @@ const updateNick = (value) => {
 
 const isPeerMuted = (peerId) => {
     var peer = webrtc.getPeers(peerId).shift();
-    return peer.videoEl.muted;
+    return peer && peer.videoEl && peer.videoEl.muted;
 };
 
-const togglePeerMuted = (peerId) => {
+const setPeerMuted = (peerId, muted) => {
     var peer = webrtc.getPeers(peerId).shift();
-    peer.videoEl.muted = !peer.videoEl.muted;
+    if (peer && peer.videoEl) {
+        peer.videoEl.muted = !!muted;
+    }
 };
 
 const GUM = ({
@@ -244,7 +246,7 @@ export default {
     leaveRoom,
     updateNick,
     isPeerMuted,
-    togglePeerMuted,
+    setPeerMuted,
     toggleLocalEnabled,
     setLocalEnabled,
     isLocalEnabled,

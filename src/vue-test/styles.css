@@ -14,6 +14,10 @@
     justify-content: center;
 }
 
+.flexbox.pull-right {
+    justify-content: flex-end;
+}
+
 .flexbox > .fill {
     flex-grow: 1;
 }
@@ -184,15 +188,18 @@ button:disabled,
 .icon {
     width: 2.2em;
     height: 2.2em;
-    line-height: 2.2;
+    line-height: 0;
     padding: 0;
     border-radius: 2px;
     text-align: center;
     color: #fff;
 }
 
-.icon > i {
-    line-height: 2.2;
+.icon.round {
+    /* calculate the inscribed square for the inner element content */
+    padding: calc((2.2em - 1.555em) / 2 + 5px);
+    /*             ^ circle diameter                */
+    /*                     ^ square vertex length   */
 }
 
 .round {
@@ -211,8 +218,17 @@ button:disabled,
     visibility: hidden;
 }
 
-.pull-right {
-    justify-content: flex-end;
+.spin {
+    animation: spin 2s infinite linear;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 /* bootstrap override */
@@ -221,3 +237,19 @@ button:disabled,
     border-radius: 2px;
 }
 
+/* vue-svgicon */
+
+.svg-icon {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    color: inherit;
+    vertical-align: middle;
+    fill: none;
+    stroke: currentColor;
+}
+
+.svg-fill {
+    fill: currentColor;
+    stroke: none;
+}

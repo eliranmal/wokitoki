@@ -6,7 +6,9 @@
   "private": true,
   "scripts": {
     "dev": "cross-env NODE_ENV=development webpack-dev-server --hot",
-    "build": "cross-env NODE_ENV=production webpack --progress --hide-modules"
+    "build": "cross-env NODE_ENV=production webpack --progress --hide-modules",
+    "svg": "vsvg -s ./resources/svg/icons -t ./src/vue-test/icons",
+    "_TODO_": "activate svg script on git pre-commit hook (if there are changes in the resources/icons dir)"
   },
   "engines": {
     "node": "^9.0.0"
@@ -19,10 +21,10 @@
   "dependencies": {
     "bluebird": "^3.5.1",
     "bootstrap-vue": "^2.0.0-rc.1",
-    "font-awesome": "^4.7.0",
     "minireset.css": "^0.0.3",
     "simplewebrtc": "^3.0.1",
     "vue": "^2.5.13",
+    "vue-svgicon": "^2.1.2",
     "vuex": "^3.0.1"
   },
   "devDependencies": {

@@ -30,6 +30,9 @@ const mutations = {
                     case 2:
                         state[seg[0]][seg[1]] = value;
                         break;
+                    case 3:
+                        state[seg[0]][seg[1]][seg[2]] = value;
+                        break;
                 }
                 return;
             }

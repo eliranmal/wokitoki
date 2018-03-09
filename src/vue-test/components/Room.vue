@@ -7,21 +7,16 @@
                         v-b-tooltip.click.blur="i18n.leaveRoomHelp"
                         v-on:blur="leaveClicked = false"
                         v-on:click="leave">
-                    <i class="fa fa-bicycle"></i>
+                    <svgicon name="flaticon/misc/011-bicycle" width="36" height="36" />
                 </button>
             </div>
         </header>
         <peer v-bind.sync="local"/>
         <div id="remotes" class="flexbox">
-            <peer v-for="(remote, key) in remotes"
+            <peer v-for="(remote, id) in remotes"
                   v-bind.sync="remote"
-                  v-bind:key="key"/>
-        </div>
-
-        <!--todo - debugging... remove this later-->
-        <div class="flexbox">
-            <pre>{{ local | json }}</pre>
-            <pre>{{ remotes | json }}</pre>
+                  v-bind:key="id"
+                  v-on:muteToggled="setRemoteMuteState"/>
         </div>
     </div>
 </template>
@@ -152,23 +147,23 @@
                 console.log('> setting mute state:', state);
                 audioChat.setLocalEnabled(!state);
             },
+            setRemoteMuteState({id, muted}) {
+                console.log(' > updating remote mute state', id, muted);
+                audioChat.setPeerMuted(id, muted);
+            },
             addRemote(peerId) {
                 console.log('> remote peer added', peerId);
 
                 const remote = {
                     id: peerId,
                     type: 'remote',
+                    isMuted: audioChat.isPeerMuted(peerId),
                     nickDisabled: true,
                     muteDisabled: true,
                 };
 
                 // todo - should i implement this?
                 // mute.style.visibility = 'hidden';
-
-                remote.onMute = () => {
-                    audioChat.togglePeerMuted(peerId);
-                    return audioChat.isPeerMuted(peerId);
-                };
 
                 this.$set(this.remotes, remote.id, remote);
             },
