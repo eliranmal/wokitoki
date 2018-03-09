@@ -17,7 +17,7 @@ if (process.env.NODE_ENV === 'development') {
         const buildCommand = (cmd) => (...args) => setTimeout(() => {
             const cb = args.pop();
             const req = args.shift();
-            let lsArgs = args;
+            let lsArgs;
             if (typeof req === 'object') {
                 // assume there is a single entry
                 lsArgs = Object.entries(req)[0];
@@ -32,6 +32,8 @@ if (process.env.NODE_ENV === 'development') {
                         }
                         break;
                 }
+            } else {
+                lsArgs = req;
             }
             console.debug(`invoking localStorage.${syncToLocalFnMap[cmd]}(${JSON.stringify(lsArgs)})`);
             let result = localStorage[syncToLocalFnMap[cmd]](...lsArgs);
