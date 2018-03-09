@@ -25,7 +25,7 @@ const mutations = {
             trace(`> vuex store > mutation > key: '${key}', value: '${value}'`);
             if (key.includes('.')) {
                 const seg = key.split('.');
-                // naive implementation - i only have to support one use-case at the moment
+                // naive implementation - few use-cases
                 switch (seg.length) {
                     case 2:
                         state[seg[0]][seg[1]] = value;
@@ -44,14 +44,8 @@ const mutations = {
 const actions = {
     retrieve({commit}, {key, commit: doCommit = true, done = () => 1}) {
         trace(`> vuex store > action [retrieve] > key: '${key}'.`);
-        storage.get(key, (value) => {
-            if (value === null || typeof value === 'undefined') {
-                done();
-                return;
-            }
-            if (doCommit) {
-                commit('update', {[key]: value});
-            }
+        storage.get({[key]: defaults[key]}, (data) => {
+            doCommit && commit('update', {[key]: data[key]});
             done();
         });
     },

@@ -1,9 +1,11 @@
-
 window.chrome = window.chrome || {};
 
 if (process.env.NODE_ENV === 'development') {
 
+    // stub the chrome storage sync api with local storage implementation
+
     if (!chrome.storage || !chrome.storage.sync) {
+
         const syncToLocalFnMap = {
             get: 'getItem',
             set: 'setItem',
@@ -11,32 +13,47 @@ if (process.env.NODE_ENV === 'development') {
             size: 'length',
             clear: 'clear',
         };
+
         const buildCommand = (cmd) => (...args) => setTimeout(() => {
             const cb = args.pop();
-            if (cmd === 'set') {
-                const data = args.shift();
-                for (let key in data) {
-                    if (data.hasOwnProperty(key)) {
-                        let value = data[key];
-                        if (typeof value !== 'string') {
-                            value = JSON.stringify(value);
-                        }
-                        args = [key, value];
-                        // assume there is a single entry
+            const req = args.shift();
+            let lsArgs = args;
+            if (typeof req === 'object') {
+                // assume there is a single entry
+                lsArgs = Object.entries(req)[0];
+                switch (cmd) {
+                    case 'get':
+                        lsArgs.pop();
                         break;
-                    }
+                    case 'set':
+                        const value = lsArgs[1];
+                        if (typeof value !== 'string') {
+                            lsArgs[1] = JSON.stringify(value);
+                        }
+                        break;
                 }
             }
-            let result = localStorage[syncToLocalFnMap[cmd]](...args);
+            console.debug(`invoking localStorage.${syncToLocalFnMap[cmd]}(${JSON.stringify(lsArgs)})`);
+            let result = localStorage[syncToLocalFnMap[cmd]](...lsArgs);
+            console.debug('   result:', result);
+            let data, res;
             if (cmd === 'get') {
                 try {
-                    result = JSON.parse(result);
+                    data = JSON.parse(result);
                 } catch (ex) {
-                    console.debug('failed parsing result, returning it as-is');
+                    data = result;
+                }
+                if (typeof data === 'undefined') {
+                    data = lsArgs[1];
+                }
+                res = {
+                    [lsArgs[0]]: data,
                 }
             }
-            cb(result);
+            console.debug('   response:', res);
+            cb(res);
         }, 300);
+
         window.chrome.storage = window.chrome.storage || {};
         window.chrome.storage.sync = window.chrome.storage.sync || {};
         for (let fn in syncToLocalFnMap) {
