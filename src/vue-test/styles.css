@@ -185,6 +185,10 @@ button:disabled,
     color: #ef5575;
 }
 
+.round {
+    border-radius: 50%;
+}
+
 .icon {
     width: 2.2em;
     height: 2.2em;
@@ -196,14 +200,10 @@ button:disabled,
 }
 
 .icon.round {
-    /* calculate the inscribed square for the inner element content */
+    /* calculate the area of the inscribed square to reserve it for the inner element */
     padding: calc((2.2em - 1.555em) / 2 + 5px);
     /*             ^ circle diameter                */
     /*                     ^ square vertex length   */
-}
-
-.round {
-    border-radius: 50%;
 }
 
 /* helper classes */

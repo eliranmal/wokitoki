@@ -72,7 +72,7 @@ const actions = {
 };
 
 const trace = (...msg) => {
-    debug && console.log(...msg);
+    debug && console.debug(...msg);
 };
 
 
