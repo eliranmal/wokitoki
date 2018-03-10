@@ -8,7 +8,7 @@
                  v-bind:class="isAvatarSpinning ? 'spin' : ''"
                  v-bind:style="avatarStyle"
                  v-b-tooltip.hover.html="avatarTooltip">
-                <svgicon v-bind="avatarIcon" v-bind:style="avatarIconStyle"/>
+                <icon v-bind="avatarIcon"/>
             </div>
             <output class="fill"
                     v-if="isRemote">{{ nick }}</output>
@@ -23,7 +23,7 @@
                     v-bind:disabled="muteDisabled"
                     v-b-tooltip.hover.html="muteButtonTooltip"
                     v-on:click="toggleMute()">
-                <svgicon v-bind="muteIcon"/>
+                <icon v-bind="muteIcon"/>
             </button>
         </div>
         <!--todo - don't use id like that, it could be duplicated-->
@@ -36,11 +36,13 @@
 
     import icons from '../../lib/icons';
     import colors from '../../lib/colors';
+    import Icon from './Icon';
     import Editable from './Editable';
 
     export default {
         name: 'peer',
         components: {
+            Icon,
             Editable,
         },
         props: {
@@ -76,7 +78,7 @@
             },
             icon() {
                 if (this.nickDisabled) {
-                    return 'empty';
+                    return '';
                 }
                 // todo - get a proper icon for the anonymous mode
                 return this.nick ? icons.fromText(this.nick) : 'flaticon/nerd/039-nerd-1';
@@ -98,13 +100,8 @@
             },
             avatarIcon() {
                 return {
+                    theme: this.isDark ? 'light' : 'dark',
                     name: this.icon
-                };
-            },
-            avatarIconStyle() {
-                return {
-                    fill: this.isDark ? '#ffffff' : '#000000',
-                    stroke: this.isDark ? '#000000' : '#ffffff',
                 };
             },
             muteIcon() {

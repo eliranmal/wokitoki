@@ -1,21 +1,20 @@
 <template>
     <div v-show="isLoading" class="loader centered-content">
-        <svgicon class="spin" v-bind:name="icon" width="60" height="60" />
+        <icon class="spin" v-bind:name="icon" width="70" height="70" theme="dark" />
     </div>
 </template>
 
 <script>
+    import Icon from './Icon';
     import icons from '../../lib/icons';
 
     export default {
         name: 'loader',
+        components: {
+            Icon,
+        },
         props: {
             isLoading: Boolean,
-        },
-        data() {
-            return {
-                iconName: 'empty',
-            };
         },
         computed: {
             icon() {

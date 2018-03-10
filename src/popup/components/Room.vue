@@ -7,7 +7,7 @@
                         v-b-tooltip.click.blur="i18n.leaveRoomHelp"
                         v-on:blur="leaveClicked = false"
                         v-on:click="leave">
-                    <svgicon name="flaticon/misc/011-bicycle" width="36" height="36" />
+                    <icon name="flaticon/misc/011-bicycle" width="36" height="36" />
                 </button>
             </div>
         </header>
@@ -25,11 +25,15 @@
     import {mapState} from 'vuex';
     import audioChat from '../../lib/audio-chat';
     import devices from '../../lib/devices';
+    import Icon from './Icon';
     import Peer from './Peer';
 
     export default {
-        components: {Peer},
         name: 'room',
+        components: {
+            Icon,
+            Peer,
+        },
         props: [
             'name',
         ],
