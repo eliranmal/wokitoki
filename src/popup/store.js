@@ -1,6 +1,6 @@
 // todo - make this into a store factory, extract all store sections into their own modules
 
-import storage from '../lib/storage';
+import storage from '../lib/syncStorage';
 import namespace from '../lib/namespace';
 
 
