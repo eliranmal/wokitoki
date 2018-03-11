@@ -1,10 +1,27 @@
 window.chrome = window.chrome || {};
 
+const trace = (ctx, cmd) => {
+    return (...args) => {
+        const cb = args.pop();
+        console.debug(`> storage > ${cmd}`, ...args);
+        args.push((...args) => {
+            console.debug(`> storage > ${cmd} > done`, ...args);
+            if (chrome.runtime && chrome.runtime.lastError) {
+                console.debug('> storage > chrome runtime invocation failed. error message:\n' + chrome.runtime.lastError.message);
+            }
+            cb(...args);
+        });
+        return ctx[cmd](...args);
+    };
+};
+
 if (process.env.NODE_ENV === 'development') {
 
     // stub the chrome storage sync api with local storage implementation
 
     if (!chrome.storage || !chrome.storage.sync) {
+
+        console.debug('> storage > chrome sync storage not found, faking it with local storage');
 
         const syncToLocalFnMap = {
             get: 'getItem',
@@ -16,67 +33,72 @@ if (process.env.NODE_ENV === 'development') {
 
         const buildCommand = (cmd) => (...args) => setTimeout(() => {
             const cb = args.pop();
-            const req = args.shift();
-            let lsArgs;
-            if (typeof req === 'object') {
+            const request = args.shift();
+            let key;
+            let setValue;
+            if (typeof request === 'object') {
                 // assume there is a single entry
-                lsArgs = Object.entries(req)[0];
-                switch (cmd) {
-                    case 'get':
-                        lsArgs.pop();
-                        break;
-                    case 'set':
-                        const value = lsArgs[1];
-                        if (typeof value !== 'string') {
-                            lsArgs[1] = JSON.stringify(value);
-                        }
-                        break;
+                key = Object.keys(request)[0];
+                setValue = Object.values(request)[0];
+                if (cmd === 'set') {
+                    if (typeof setValue !== 'string') {
+                        setValue = JSON.stringify(setValue);
+                    }
                 }
-            } else {
-                lsArgs = req;
+            } else if (typeof request === 'string') {
+                key = request;
+                // no need to set the value here, the only use case for a string request
+                // is the remove operation, which does not have a value.
             }
-            console.debug(`invoking localStorage.${syncToLocalFnMap[cmd]}(${JSON.stringify(lsArgs)})`);
-            let result = localStorage[syncToLocalFnMap[cmd]](...lsArgs);
-            console.debug('   result:', result);
-            let data, res;
+
+            const lsReqArgs = [key];
+            if (setValue) {
+                lsReqArgs.push(setValue);
+            }
+            console.debug(`> storage > invoking localStorage.${syncToLocalFnMap[cmd]}(${JSON.stringify(lsReqArgs)})`);
+            let result = localStorage[syncToLocalFnMap[cmd]](...lsReqArgs);
+            console.debug('> storage > result:', result);
+
+            let resValue, response;
             if (cmd === 'get') {
                 try {
-                    data = JSON.parse(result);
+                    resValue = JSON.parse(result);
                 } catch (ex) {
-                    data = result;
+                    resValue = result;
                 }
-                if (typeof data === 'undefined') {
-                    data = lsArgs[1];
+                if (typeof request === 'object') {
+                    if (typeof resValue === 'undefined' || resValue === null) {
+                        // request object has a default value as the property value, use it
+                        resValue = Object.values(request)[0];
+                    }
                 }
-                res = {
-                    [lsArgs[0]]: data,
+                response = {
+                    [key]: resValue,
                 }
             }
-            console.debug('   response:', res);
-            cb(res);
+            console.debug('> storage > calling callback with response:', response);
+            cb(response);
         }, 300);
 
         window.chrome.storage = window.chrome.storage || {};
         window.chrome.storage.sync = window.chrome.storage.sync || {};
-        for (let fn in syncToLocalFnMap) {
-            if (syncToLocalFnMap.hasOwnProperty(fn)) {
-                window.chrome.storage.sync[fn] = buildCommand(fn);
+        for (let fnName in syncToLocalFnMap) {
+            if (syncToLocalFnMap.hasOwnProperty(fnName)) {
+                window.chrome.storage.sync[fnName] = buildCommand(fnName);
             }
         }
     }
 }
 
+const get = trace(chrome.storage.sync, 'get');
+const set = trace(chrome.storage.sync, 'set');
+const remove = trace(chrome.storage.sync, 'remove');
+const clear = trace(chrome.storage.sync, 'clear');
+const size = trace(chrome.storage.sync, 'getBytesInUse');
 
-const get = chrome.storage.sync.get;
-
-const set = chrome.storage.sync.set;
-
-const remove = chrome.storage.sync.remove;
-
-const clear = chrome.storage.sync.clear;
-
-const size = chrome.storage.sync.getBytesInUse;
-
+if (chrome && chrome.storage && chrome.storage.onChanged) {
+    chrome.storage.onChanged.addListener((...args) => console.log(`> storage > onChange`, ...args));
+}
 
 export default {
     get,
