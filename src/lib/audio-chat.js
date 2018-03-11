@@ -24,6 +24,7 @@ const start = () => {
 
 const createRoom = (roomName, onCreated) => {
     // todo - put a unique prefix here (app name? tab id? hashed roomName? all together?)
+    // todo - i can use chrome.runtime.id here
     // room = 'wokitoki___' + roomName;
     room = roomName;
     doCreate(room, onCreated);
