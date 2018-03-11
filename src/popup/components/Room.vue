@@ -92,6 +92,9 @@
             'local.isMuted': {
                 handler(newValue, oldValue) {
                     this.setMuteState(newValue);
+                    if (newValue === oldValue) {
+                        return;
+                    }
                     this.$store.dispatch('save', {
                         key: 'local.isMuted',
                         value: newValue,
@@ -115,19 +118,19 @@
             },
             open() {
                 if (this.action) {
-                    console.log(`invoking ${this.action}()`);
+                    console.log(`> invoking ${this.action}()`);
                     this[this.action]();
                 }
             },
             create() {
                 audioChat.createRoom(this.name, () => {
-                    console.log('room created:', this.name);
+                    console.log('> room created:', this.name);
                     this.$emit('created', this.name);
                 });
             },
             join() {
                 audioChat.joinRoom(this.name, () => {
-                    console.log('room joined:', this.name);
+                    console.log('> room joined:', this.name);
                     if (this.local.nickName) {
                         this.publishNickName(this.local.nickName);
                     }
@@ -189,7 +192,7 @@
                 }
             },
             updatePeerDetails(peerId, message) {
-                console.log('message from peer', peerId, message);
+                console.log('> message from peer', peerId, message);
                 switch (message.type) {
                     case 'nickname':
                         this.$set(this.remotes[peerId], 'nickName', message.payload.nick);
@@ -203,7 +206,7 @@
                 // todo - move this to App
                 if (!devices.hasBrowserSupport()) {
                     // fixme - show 'sorry, get a modern browser'
-                    console.error('no bananas. get a better browser!');
+                    console.error('> no bananas. get a better browser!');
                     return done(new Error('no support'));
                 }
                 devices.hasMics((err, hasMics) => {
