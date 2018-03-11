@@ -1,5 +1,17 @@
 
-const get = (key, obj) => {
+const safe = (fn) => {
+    return (...args) => {
+        let res;
+        try {
+            res = fn(...args);
+        } catch (ex) {
+            // don't judge me. i want to return undefined here
+        }
+        return res;
+    };
+};
+
+const get = (key, obj = global) => {
     if (key.includes('.')) {
         const ns = key.split('.');
         switch (ns.length) {
@@ -29,7 +41,10 @@ const set = (key, val, obj) => {
     }
 };
 
+
 export default {
     get,
     set,
+    safeGet: safe(get),
+    safeSet: safe(set),
 };

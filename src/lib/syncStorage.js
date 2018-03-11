@@ -1,3 +1,6 @@
+import ns from './namespace';
+
+
 window.chrome = window.chrome || {};
 
 const trace = (ctx, cmd) => {
@@ -6,7 +9,7 @@ const trace = (ctx, cmd) => {
         console.debug(`> storage > ${cmd}`, ...args);
         args.push((...args) => {
             console.debug(`> storage > ${cmd} > done`, ...args);
-            if (chrome.runtime && chrome.runtime.lastError) {
+            if (ns.safeGet('chrome.runtime.lastError')) {
                 console.debug('> storage > chrome runtime invocation failed. error message:\n' + chrome.runtime.lastError.message);
             }
             cb(...args);
@@ -19,7 +22,7 @@ if (process.env.NODE_ENV === 'development') {
 
     // stub the chrome storage sync api with local storage implementation
 
-    if (!chrome.storage || !chrome.storage.sync) {
+    if (!ns.safeGet('chrome.storage.sync')) {
 
         console.debug('> storage > chrome sync storage not found, faking it with local storage');
 
@@ -96,9 +99,10 @@ const remove = trace(chrome.storage.sync, 'remove');
 const clear = trace(chrome.storage.sync, 'clear');
 const size = trace(chrome.storage.sync, 'getBytesInUse');
 
-if (chrome && chrome.storage && chrome.storage.onChanged) {
+if (ns.safeGet('chrome.storage.onChanged')) {
     chrome.storage.onChanged.addListener((...args) => console.log(`> storage > onChange`, ...args));
 }
+
 
 export default {
     get,
