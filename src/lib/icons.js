@@ -1,7 +1,7 @@
-import svgicon from 'vue-svgicon';
+import {icons as svgicons} from 'vue-svgicon';
 
 
-const icons = Object.keys(svgicon.icons)
+const names = Object.keys(svgicons)
     .filter(icon => icon !== 'empty');
 
 const fromText = (str = '') => {
@@ -13,17 +13,18 @@ const fromText = (str = '') => {
             accum += val;
             return accum;
         }, 0);
-    const iconIndex = charCodeSum % icons.length;
-    return icons[iconIndex];
+    const iconIndex = charCodeSum % names.length;
+    return names[iconIndex];
 };
 
 const random = () => {
-    const iconIndex = Math.floor(Math.random() * icons.length);
-    return icons[iconIndex];
+    const iconIndex = Math.floor(Math.random() * names.length);
+    return names[iconIndex];
 };
 
 
 export default {
+    names,
     fromText,
     random,
 };
