@@ -11,7 +11,7 @@ const safe = (fn) => {
     };
 };
 
-const get = (key, obj = global) => {
+const get = (key, obj) => {
     if (key.includes('.')) {
         const ns = key.split('.');
         switch (ns.length) {
@@ -41,10 +41,24 @@ const set = (key, val, obj) => {
     }
 };
 
+const ensure = (key, obj) => {
+    if (key.includes('.')) {
+        const ns = key.split('.');
+        return ns.reduce((ac, k, i) => {
+            const val = ac[k];
+            if (typeof val === 'undefined' || !(val instanceof Object)) {
+                ac[k] = {};
+            }
+            ac = ac[k];
+            return ac;
+        }, obj);
+    }
+};
+
 
 export default {
     get,
     set,
+    ensure,
     safeGet: safe(get),
-    safeSet: safe(set),
 };
