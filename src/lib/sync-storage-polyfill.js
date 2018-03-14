@@ -83,15 +83,15 @@ const buildResponse = (cmd, request, lsResult) => {
 };
 
 const use = () => {
-    if (!namespace.safeGet('chrome.storage.sync', global)) {
-        console.debug('> sync-storage-polyfill > chrome sync storage not found, faking it with local storage');
-        namespace.ensure('chrome.storage.sync', global);
-        for (let fnName in cmdMap) {
-            if (cmdMap.hasOwnProperty(fnName)) {
-                chrome.storage.sync[fnName] = buildCommand(fnName);
-            }
-        }
+    if (namespace.safeGet('chrome.storage.sync', global)) {
+        console.debug('> sync-storage-polyfill > chrome sync storage found, no need to fake it');
+        return;
     }
+    console.debug('> sync-storage-polyfill > chrome sync storage not found, faking it with local storage');
+    namespace.ensure('chrome.storage.sync', global);
+    Object.keys(cmdMap).forEach(fnName => {
+        chrome.storage.sync[fnName] = buildCommand(fnName);
+    });
 };
 
 
