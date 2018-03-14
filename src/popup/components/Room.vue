@@ -124,13 +124,13 @@
             },
             create() {
                 audioChat.createRoom(this.name, () => {
-                    console.log('> room created:', this.name);
+                    console.log('> room > created:', this.name);
                     this.$emit('created', this.name);
                 });
             },
             join() {
                 audioChat.joinRoom(this.name, () => {
-                    console.log('> room joined:', this.name);
+                    console.log('> room > joined:', this.name);
                     if (this.local.nickName) {
                         this.publishNickName(this.local.nickName);
                     }
@@ -147,24 +147,25 @@
                 this.$emit('leave');
             },
             publishNickName(nickName) {
-                console.log('> publishing nickName:', nickName);
+                console.log('> room > publishing nickName:', nickName);
                 audioChat.updateNick(nickName);
             },
             setMuteState(state) {
-                console.log('> setting mute state:', state);
+                console.log('> room > setting mute state:', state);
                 audioChat.setLocalEnabled(!state);
             },
             setRemoteMuteState({id, muted}) {
-                console.log(' > updating remote mute state', id, muted);
+                console.log(' > room > updating remote mute state', id, muted);
                 audioChat.setPeerMuted(id, muted);
             },
             addRemote(peerId) {
-                console.log('> remote peer added', peerId);
+                console.log('> room > remote peer added', peerId);
 
                 const remote = {
                     id: peerId,
                     type: 'remote',
                     isMuted: audioChat.isPeerMuted(peerId),
+                    nickName: '',
                     nickDisabled: true,
                     muteDisabled: true,
                 };
@@ -175,7 +176,7 @@
                 this.$set(this.remotes, remote.id, remote);
             },
             updateRemote(peerId, state) {
-                console.log('> remote peer updated', peerId, state);
+                console.log('> room > remote peer updated', peerId, state);
                 // todo - should i implement this? look for clues in the css
                 // const container = document.querySelector('#container_' + peerDomId);
                 // container.className = 'peerContainer p2p' +
@@ -192,7 +193,7 @@
                 }
             },
             updatePeerDetails(peerId, message) {
-                console.log('> message from peer', peerId, message);
+                console.log('> room > message from peer', peerId, message);
                 switch (message.type) {
                     case 'nickname':
                         this.$set(this.remotes[peerId], 'nickName', message.payload.nick);
@@ -226,7 +227,7 @@
             },
 
             showLocal(stream) {
-                console.log('> local stream', stream);
+                console.log('> room > local stream', stream);
 
                 var localAudio = document.getElementById('localAudio');
                 localAudio.disabled = false;
