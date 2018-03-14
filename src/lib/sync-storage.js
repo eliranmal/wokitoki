@@ -2,11 +2,7 @@ import namespace from './namespace';
 import SyncStoragePolyfill from './sync-storage-polyfill';
 
 
-
-if (process.env.NODE_ENV === 'development') {
-    // stub the chrome storage sync api with local storage implementation
-    SyncStoragePolyfill.use();
-}
+SyncStoragePolyfill.use();
 
 
 const trace = (ctx, cmd) => {
