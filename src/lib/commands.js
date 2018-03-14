@@ -1,5 +1,5 @@
 const createPopup = () => chrome.tabs.create({
-    url: '../popup.html?c=' + Date.now(),
+    url: '../popup.html',
 });
 
 export default {
