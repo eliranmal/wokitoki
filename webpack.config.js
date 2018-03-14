@@ -110,19 +110,23 @@ let config = {
     resolve: {
         alias: {
             'vue$': 'vue/dist/vue.esm.js',
-            // todo - do i really need this? probably not. what is this adapter for anyway?
-            // 'simplewebrtc': 'simplewebrtc/out/simplewebrtc-with-adapter.bundle.js',
         },
         extensions: ['*', '.js', '.vue', '.json']
     },
 };
 
+
+if (['production', 'development'].includes(process.env.NODE_ENV)) {
+    config.plugins = (config.plugins || []).concat([
+        new webpack.DefinePlugin({
+            'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+        }),
+    ]);
+}
+
 if (process.env.NODE_ENV === 'production') {
     config.devtool = '#source-map';
     config.plugins = (config.plugins || []).concat([
-        new webpack.DefinePlugin({
-            'process.env.NODE_ENV': JSON.stringify('production'),
-        }),
         new webpack.optimize.UglifyJsPlugin({
             sourceMap: true,
             compress: {
@@ -135,9 +139,6 @@ if (process.env.NODE_ENV === 'production') {
     ]);
 } else if (process.env.NODE_ENV === 'development') {
     config.plugins = (config.plugins || []).concat([
-        new webpack.DefinePlugin({
-            'process.env.NODE_ENV': JSON.stringify('development'),
-        }),
         // tell dev server to persist files - we need to be able to install the extension from the filesystem
         new WriteFileWebpackPlugin(),
     ]);
