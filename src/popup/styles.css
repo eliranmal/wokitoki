@@ -53,13 +53,12 @@ body {
 }
 
 header.flexbox {
-    margin-top: 1rem;
-    margin-bottom: 4rem;
+    margin-bottom: 5rem;
 }
 
 h1 {
-    font-size: 3em;
-    font-weight: 100;
+    font-size: 4.5rem;
+    font-weight: bold;
     text-align: center;
     margin-bottom: 2rem;
     line-height: 2;
@@ -219,7 +218,7 @@ button:disabled,
 }
 
 .spin {
-    animation: spin 2s infinite linear;
+    animation: spin 5s infinite linear;
 }
 
 @keyframes spin {

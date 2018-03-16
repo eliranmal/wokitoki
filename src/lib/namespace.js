@@ -41,6 +41,22 @@ const set = (key, val, obj) => {
     }
 };
 
+const remove = (key, obj) => {
+    if (key.includes('.')) {
+        const ns = key.split('.');
+        switch (ns.length) {
+            case 2:
+                delete obj[ns[0]][ns[1]];
+                break;
+            case 3:
+                delete obj[ns[0]][ns[1]][ns[2]];
+                break;
+        }
+    } else {
+        delete obj[key];
+    }
+};
+
 const ensure = (key, obj) => {
     if (key.includes('.')) {
         const ns = key.split('.');
@@ -59,6 +75,7 @@ const ensure = (key, obj) => {
 export default {
     get,
     set,
+    remove,
     ensure,
     safeGet: safe(get),
 };

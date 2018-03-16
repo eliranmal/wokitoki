@@ -1,6 +1,7 @@
 <template>
-    <div v-show="isLoading" class="loader centered-content">
-        <icon class="spin" v-bind:name="icon" width="70" height="70" theme="dark" />
+    <div v-show="isLoading" class="loader flexbox centered-content">
+        <icon class="spin" v-bind:name="icon" width="66" height="66" fill="currentColor" />
+        <p class="text" v-if="text" v-text="text"></p>
     </div>
 </template>
 
@@ -15,13 +16,18 @@
         },
         props: {
             isLoading: Boolean,
+            text: String,
         },
-        computed: {
-            icon() {
-                if (this.isLoading) {
-                    this.iconName = icons.random();
+        data() {
+            return {
+                icon: icons.random(),
+            };
+        },
+        watch: {
+            isLoading(newValue, oldValue) {
+                if (newValue) {
+                    this.icon = icons.random();
                 }
-                return this.iconName;
             },
         },
     }
@@ -38,7 +44,12 @@
         z-index: 1;
         margin: 0;
         padding: 0;
+        color: #bbb;
         background-color: #f6f6f6;
+    }
+
+    p {
+        font-size: 1.3rem;
     }
 
 </style>

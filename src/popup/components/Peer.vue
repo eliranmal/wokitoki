@@ -80,7 +80,7 @@
                 if (this.nickDisabled) {
                     return '';
                 }
-                // todo - get a proper icon for the anonymous mode
+                // todo - get a proper icon for the anonymous mode? or stick with this one? i dunno.
                 return this.nick ? icons.fromText(this.nick) : 'flaticon/nerd/039-nerd-1';
                 // return this.nick ? icons.fromText(this.nick) : 'flaticon/nerd/050-nerd';
             },
@@ -100,7 +100,7 @@
             },
             avatarIcon() {
                 return {
-                    theme: this.isDark ? 'light' : 'dark',
+                    theme: this.isDark ? 'dark' : 'light',
                     name: this.icon
                 };
             },
@@ -115,6 +115,7 @@
                     name,
                     width: '26',
                     height: '26',
+                    theme: 'dark',
                 };
             },
             muteButtonTooltip() {

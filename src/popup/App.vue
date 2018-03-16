@@ -1,6 +1,5 @@
 <template>
-    <div class="app"
-         v-bind:class="wrapperClassName">
+    <div class="app flexbox horizontal pack">
         <loader v-bind:is-loading="isLoading"/>
         <room v-if="showRoom"
               v-bind:action="roomAction"
@@ -46,9 +45,6 @@
         computed: {
             showRoom() {
                 return !this.isLoading && this.roomAction && this.roomName;
-            },
-            wrapperClassName() {
-                return this.showRoom ? '' : 'flexbox horizontal pack';
             },
             ...mapState([
                 'roomName',

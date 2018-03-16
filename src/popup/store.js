@@ -15,7 +15,6 @@ const state = {
         isMuted: true,
         nickName: '',
     },
-    remotes: {},
 };
 
 const defaults = Object.freeze(Object.assign({}, state));
@@ -23,12 +22,20 @@ const defaults = Object.freeze(Object.assign({}, state));
 const mutations = {
     update(state, payload) {
         for (let [key, value] of Object.entries(payload)) {
-            trace(`> store > mutation > key: '${key}', value: '${value}'`);
+            trace(`> store > mutation > update > key: '${key}', value: '${value}'`);
             const oldValue = namespace.get(key, state);
-            if (namespace.get(key, state) !== value) {
+            if (oldValue !== value) {
                 namespace.set(key, value, state);
-                trace(`> store > mutation done > key: '${key}', old value: '${oldValue}', new value: '${namespace.get(key, state)}'`);
+                trace(`> store > mutation done > update > key: '${key}', old value: '${oldValue}', new value: '${namespace.get(key, state)}'`);
             }
+        }
+    },
+    delete(state, {key}) {
+        trace(`> store > mutation > delete > key: '${key}'`);
+        const value = namespace.get(key, state);
+        if (value) {
+            namespace.remove(key, state);
+            trace(`> store > mutation done > delete > key: '${key}'`);
         }
     },
 };
