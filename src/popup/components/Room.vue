@@ -1,7 +1,7 @@
 <template>
     <div class="room flexbox">
         <header class="flexbox horizontal">
-            <h1 class="room-name fill">{{ name }}</h1>
+            <h1 class="fill">{{ name }}</h1>
             <div class="controls flexbox horizontal pull-right">
                 <button type="button" class="icon"
                         v-b-tooltip.click.blur="i18n.leaveRoomHelp"
@@ -283,8 +283,8 @@
 
 <style scoped>
 
-    h1.room-name {
-        margin-right: 6rem;
+    h1 {
+        padding-right: 6rem;
         line-height: 4.5rem;
         text-align: left;
         word-break: break-word;
@@ -298,6 +298,24 @@
 
     pre {
         font-size: 14px;
+    }
+
+    @media screen and (max-width: 800px) {
+        h1 {
+            padding-right: 2rem;
+        }
+    }
+
+    @media screen and (max-width: 600px) {
+        h1 {
+            padding-right: 1rem;
+        }
+    }
+
+    @media screen and (max-width: 400px) {
+        h1 {
+            padding-right: 0;
+        }
     }
 
 </style>

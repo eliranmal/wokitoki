@@ -104,6 +104,35 @@
         overflow: hidden;
         min-height: 100vh;
         padding: 4rem;
+        transition: padding 300ms;
+    }
+
+    .app > * {
+        min-width: 40rem;
+    }
+
+    @media screen and (max-width: 800px) {
+        .app > * {
+            flex-grow: 1;
+        }
+    }
+
+    @media screen and (max-width: 600px) {
+        .app {
+            padding: 3rem;
+        }
+    }
+
+    @media screen and (max-width: 400px) {
+        .app {
+            padding: 2rem;
+        }
+    }
+
+    @media screen and (orientation: portrait) {
+        .app > * {
+            min-width: 80%;
+        }
     }
 
 </style>
