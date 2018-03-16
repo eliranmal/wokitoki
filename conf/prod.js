@@ -1,3 +1,3 @@
 export default {
-    remotesLookupTimeout: 1000 * 30,
+    remotesLookupTimeout: 1000 * 45,
 };
