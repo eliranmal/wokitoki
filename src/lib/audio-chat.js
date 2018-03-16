@@ -201,7 +201,7 @@ const GUM = ({
         if (!peers || !peers.length) return;
         var peer = peers[0];
 
-        if (message.type === 'offer') {
+        if (message.type === 'offer' || message.type === 'answer') {
             unicastNick(peer);
         }
 
