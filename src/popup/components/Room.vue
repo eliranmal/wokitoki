@@ -84,7 +84,6 @@
                 };
             },
             remotesFailure() {
-                console.log('no data')
                 return !Object.keys(this.remotes).length && this.remotesTimeout;
             },
             ...mapState({
