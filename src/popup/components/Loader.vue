@@ -49,7 +49,7 @@
     }
 
     p {
-        font-size: 1.3rem;
+        font-size: .85rem;
     }
 
 </style>

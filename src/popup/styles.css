@@ -27,7 +27,7 @@
 }
 
 .flexbox > * {
-    margin: 0 0 2rem 0;
+    margin: 0 0 1.333rem 0;
 }
 
 .flexbox > :last-child {
@@ -35,7 +35,7 @@
 }
 
 .flexbox.horizontal > * {
-    margin: 0 2rem 0 0;
+    margin: 0 1.333rem 0 0;
 }
 
 .flexbox.horizontal > :last-child {
@@ -44,23 +44,28 @@
 
 /* baseline styles */
 
+html,
+body {
+    font-size: 24px;
+}
+
 body {
     font-family: 'Avenir', Helvetica, Arial, sans-serif;
-    font-size: 24px;
     letter-spacing: 0.005em;
     color: #555;
     background-color: #f6f6f6;
+    transition: font-size 500ms;
 }
 
 header.flexbox {
-    margin-bottom: 5rem;
+    margin-bottom: 3.333rem;
 }
 
 h1 {
-    font-size: 4.5rem;
+    font-size: 3rem;
     font-weight: bold;
     text-align: center;
-    margin-bottom: 2rem;
+    margin-bottom: 1.333rem;
     line-height: 2;
 }
 
@@ -110,7 +115,7 @@ input:focus,
 input,
 [contenteditable],
 output {
-    padding: 0 1.5rem;
+    padding: 0 1rem;
 }
 
 input,
@@ -180,7 +185,7 @@ button:disabled,
 /* components */
 
 .info {
-    font-size: 1.1rem;
+    font-size: .7rem;
     color: #ef5575;
 }
 
@@ -188,7 +193,7 @@ button:disabled,
     width: 2.2em;
     height: 2.2em;
     line-height: 0;
-    padding: 0;
+    padding: .55em;
     border-radius: 2px;
     text-align: center;
     color: #fff;
@@ -234,6 +239,7 @@ button:disabled,
 
 .tooltip-inner {
     border-radius: 2px;
+    font-size: .7rem;
 }
 
 /* vue-svgicon */
@@ -251,4 +257,14 @@ button:disabled,
 .svg-fill {
     fill: currentColor;
     stroke: none;
+}
+
+
+/* conditionals */
+
+
+@media screen and (max-width: 400px) {
+    body {
+        font-size: 1.2rem;
+    }
 }

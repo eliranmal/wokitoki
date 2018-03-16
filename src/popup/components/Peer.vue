@@ -113,8 +113,6 @@
                 }
                 return {
                     name,
-                    width: '26',
-                    height: '26',
                     theme: 'dark',
                 };
             },
@@ -176,7 +174,7 @@ color: ${this.color}
     }
 
     .details .avatar {
-        margin-right: 1.5rem;
+        margin-right: 1rem;
     }
 
     .details .avatar i {
@@ -186,6 +184,7 @@ color: ${this.color}
     .local .details {
         border-bottom: 1px solid #ddd;
         padding-bottom: 2rem;
+        margin-bottom: .666rem;
     }
 
     .local .details .nick,

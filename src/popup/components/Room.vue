@@ -3,11 +3,11 @@
         <header class="flexbox horizontal">
             <h1 class="fill">{{ name }}</h1>
             <div class="controls flexbox horizontal pull-right">
-                <button type="button" class="icon"
+                <button type="button" class="icon leave"
                         v-b-tooltip.click.blur="i18n.leaveRoomHelp"
                         v-on:blur="leaveClicked = false"
                         v-on:click="leave">
-                    <icon name="flaticon/misc/011-bicycle" width="36" height="36" theme="dark" />
+                    <icon name="flaticon/misc/011-bicycle" width="36" height="36" theme="dark"/>
                 </button>
             </div>
         </header>
@@ -28,7 +28,8 @@
     import devices from '../../lib/devices';
     import Icon from './Icon';
     import Peer from './Peer';
-    import Loader from "./Loader";
+    import Loader from './Loader';
+    import Config from '../../../conf';
 
     export default {
         name: 'room',
@@ -270,11 +271,11 @@
             resetRemotesTimer() {
                 this.remotesTimeout = false;
                 console.debug('> room > this.remotesTimeout:', this.remotesTimeout);
+
                 setTimeout(() => {
                     this.remotesTimeout = true;
                     console.debug('> room > this.remotesTimeout callback:', this.remotesTimeout);
-                    }, 1000 * 30);
-                // }, 300); // for debugging
+                }, Config.remotesLookupTimeout);
             },
         },
     };
@@ -283,8 +284,8 @@
 <style scoped>
 
     h1 {
-        padding-right: 6rem;
-        line-height: 4.5rem;
+        padding-right: 4rem;
+        line-height: 3rem;
         text-align: left;
         word-break: break-word;
         word-wrap: break-word;
@@ -299,19 +300,28 @@
         font-size: 14px;
     }
 
+    .leave {
+        /* make room for the big icon */
+        padding: 0;
+    }
+
     @media screen and (max-width: 800px) {
         h1 {
-            padding-right: 2rem;
+            padding-right: 1.333rem;
         }
     }
 
     @media screen and (max-width: 600px) {
         h1 {
-            padding-right: 1rem;
+            padding-right: .666rem;
         }
     }
 
     @media screen and (max-width: 400px) {
+        .room {
+            flex-grow: 1;
+        }
+
         h1 {
             padding-right: 0;
         }

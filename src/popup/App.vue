@@ -103,12 +103,12 @@
     .app {
         overflow: hidden;
         min-height: 100vh;
-        padding: 4rem;
+        padding: 2.666rem;
         transition: padding 300ms;
     }
 
     .app > * {
-        min-width: 40rem;
+        min-width: 25rem;
     }
 
     @media screen and (max-width: 800px) {
@@ -119,13 +119,13 @@
 
     @media screen and (max-width: 600px) {
         .app {
-            padding: 3rem;
+            padding: 2rem;
         }
     }
 
     @media screen and (max-width: 400px) {
         .app {
-            padding: 2rem;
+            padding: 1.333rem;
         }
     }
 

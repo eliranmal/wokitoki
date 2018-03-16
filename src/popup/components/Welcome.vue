@@ -88,8 +88,8 @@
 
     form > i {
         position: absolute;
-        top: .8rem;
-        left: .8rem;
+        top: .6rem;
+        left: .6rem;
         opacity: .25;
     }
 
