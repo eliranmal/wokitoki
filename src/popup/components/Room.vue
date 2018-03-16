@@ -95,10 +95,10 @@
         watch: {
             'local.nickName': {
                 handler(newValue, oldValue) {
+                    this.publishNickName(newValue);
                     if (newValue === oldValue) {
                         return;
                     }
-                    this.publishNickName(newValue);
                     this.$store.dispatch('save', {
                         key: 'local.nickName',
                         value: newValue,
