@@ -48,9 +48,9 @@ const doCreate = (room, done) => {
         if (!err) {
             done(room);
         } else {
-            console.log('error', err, room);
+            console.debug('> audio-chat > error', err, room);
             if (err === 'taken') {
-                console.log('room taken!');
+                console.debug('> audio-chat > room taken!');
                 room = `${room}_${Date.now()}`;
                 doCreate(room, done);
             }
@@ -101,15 +101,15 @@ const setLocalEnabled = (state) => {
 };
 
 const broadcastNick = () => {
-    if (webrtc && nick) {
-        console.log('broadcasting nickname to all peers');
+    if (webrtc && typeof nick === 'string') {
+        console.debug('> audio-chat > broadcasting nickname to all peers', nick);
         webrtc.sendToAll('nickname', {nick});
     }
 };
 
 const unicastNick = (peer) => {
-    if (peer && nick) {
-        console.log('unicasting nickname to peer:', peer.id);
+    if (peer && typeof nick === 'string') {
+        console.debug('> audio-chat > unicasting nickname to peer', peer.id, nick);
         peer.send('nickname', {nick});
     }
 };
@@ -210,7 +210,7 @@ const GUM = ({
 
     // local p2p/ice failure
     webrtc.on('iceFailed', (peer) => {
-        console.log('local fail', peer.sid);
+        console.debug('> audio-chat > local fail', peer.sid);
         track('iceFailed', {
             source: 'local',
             session: peer.sid,
@@ -222,7 +222,7 @@ const GUM = ({
 
     // remote p2p/ice failure
     webrtc.on('connectivityError', (peer) => {
-        console.log('remote fail', peer.sid);
+        console.debug('> audio-chat > remote fail', peer.sid);
         track('iceFailed', {
             source: 'remote',
             session: peer.sid,
