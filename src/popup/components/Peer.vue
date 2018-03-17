@@ -11,7 +11,9 @@
                 <icon v-bind="avatarIcon"/>
             </div>
             <output class="fill"
-                    v-if="isRemote">{{ nick }}</output>
+                    v-if="isRemote"
+                    v-text="remoteNickText"
+                    v-bind:style="remoteNickStyle"></output>
             <editable class="nick fill"
                       v-else
                       v-bind:disabled="nickDisabled"
@@ -56,7 +58,8 @@
         data() {
             return {
                 i18n: {
-                    nickNamePlaceholder: 'find a cool nick name'
+                    nickNamePlaceholder: 'find a cool nick name',
+                    anonymousRemote: 'anonymous',
                 },
                 nick: this.nickName,
                 muted: this.isMuted,
@@ -69,6 +72,9 @@
             },
             isRemote() {
                 return this.type === 'remote';
+            },
+            isDark() {
+                return colors.isDark(this.color);
             },
             color() {
                 if (this.nickDisabled) {
@@ -84,8 +90,17 @@
                 return this.nick ? icons.fromText(this.nick) : 'flaticon/nerd/039-nerd-1';
                 // return this.nick ? icons.fromText(this.nick) : 'flaticon/nerd/050-nerd';
             },
-            isDark() {
-                return colors.isDark(this.color);
+            remoteNickText() {
+                return this.nick === '' ? this.i18n.anonymousRemote : this.nick;
+            },
+            remoteNickStyle() {
+                if (this.nick === '') {
+                    return {
+                        color: '#aaa',
+                        fontStyle: 'italic',
+                    };
+                }
+                return {};
             },
             avatarStyle() {
                 return {
