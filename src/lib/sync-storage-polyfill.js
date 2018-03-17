@@ -52,7 +52,7 @@ const resolveLocalStorageArgs = (cmd, request) => {
     }
 
     const lsReqArgs = [key];
-    if (val) {
+    if (typeof val !== 'undefined') {
         lsReqArgs.push(val);
     }
     return lsReqArgs;
