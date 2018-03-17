@@ -60,6 +60,7 @@
                 i18n: {
                     nickNamePlaceholder: 'find a cool nick name',
                     anonymousRemote: 'anonymous',
+                    unknownRemote: 'unknown',
                 },
                 nick: this.nickName,
                 muted: this.isMuted,
@@ -84,6 +85,9 @@
             },
             icon() {
                 if (this.nickDisabled) {
+                    if (this.isRemote) {
+                        return 'flaticon/nerd/050-nerd';
+                    }
                     return '';
                 }
                 // todo - get a proper icon for the anonymous mode? or stick with this one? i dunno.
@@ -91,10 +95,16 @@
                 // return this.nick ? icons.fromText(this.nick) : 'flaticon/nerd/050-nerd';
             },
             remoteNickText() {
-                return this.nick === '' ? this.i18n.anonymousRemote : this.nick;
+                if (this.nickDisabled) {
+                    return this.i18n.unknownRemote;
+                }
+                if (this.nick === '') {
+                    return this.i18n.anonymousRemote;
+                }
+                return this.nick;
             },
             remoteNickStyle() {
-                if (this.nick === '') {
+                if (this.nickDisabled || this.nick === '') {
                     return {
                         color: '#aaa',
                         fontStyle: 'italic',
