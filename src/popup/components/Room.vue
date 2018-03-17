@@ -178,6 +178,11 @@
             addRemote(peerId) {
                 console.debug('> room > remote peer added', peerId);
 
+                if (peerId === this.local.id) {
+                    console.debug('> room > added remote has the same id as local, aborting');
+                    return;
+                }
+
                 const remote = {
                     id: peerId,
                     type: 'remote',
@@ -213,10 +218,10 @@
                 console.debug('> room > message from peer', peerId, message);
                 switch (message.type) {
                     case 'nickname':
-                        this.$set(this.remotes[peerId], 'nickName', message.payload.nick);
                         if (this.remotes[peerId].nickDisabled) {
                             this.$set(this.remotes[peerId], 'nickDisabled', false);
                         }
+                        this.$set(this.remotes[peerId], 'nickName', message.payload.nick);
                         break;
                 }
             },
