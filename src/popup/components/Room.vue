@@ -45,10 +45,8 @@
             return {
                 i18n: {
                     leaveRoomHelp: 'click again to leave',
-                    remotesLoaderProgress: 'searching for peers...', // with spinning random icon
-                    remotesLoaderTimeout: 'tired of searching. try again?', // with refresh icon
+                    remotesLoader: 'waiting for peers...',
                 },
-                remotesTimeout: false,
                 remotes: {},
             };
         },
@@ -81,11 +79,8 @@
             remotesLoader() {
                 return {
                     isLoading: !Object.keys(this.remotes).length,
-                    text: this.remotesFailure ? this.i18n.remotesLoaderTimeout : this.i18n.remotesLoaderProgress,
+                    text: this.i18n.remotesLoader,
                 };
-            },
-            remotesFailure() {
-                return !Object.keys(this.remotes).length && this.remotesTimeout;
             },
             ...mapState({
                 local: 'local',
@@ -136,7 +131,7 @@
             },
             open() {
                 if (this.action) {
-                    console.log(`> invoking ${this.action}()`);
+                    console.log(`> room > invoking ${this.action}()`);
                     this[this.action]();
                 }
             },
@@ -250,7 +245,6 @@
 
             setupConnection(sessionId) {
                 this.setLocalId(sessionId);
-                this.resetRemotesTimer();
             },
 
             showLocal(stream) {
@@ -266,16 +260,6 @@
 
             setLocalId(sessionId) {
                 this.$set(this.local, 'id', sessionId);
-            },
-
-            resetRemotesTimer() {
-                this.remotesTimeout = false;
-                console.debug('> room > this.remotesTimeout:', this.remotesTimeout);
-
-                setTimeout(() => {
-                    this.remotesTimeout = true;
-                    console.debug('> room > this.remotesTimeout callback:', this.remotesTimeout);
-                }, Config.remotesLookupTimeout);
             },
         },
     };
