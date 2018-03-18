@@ -45,7 +45,16 @@
             return {
                 i18n: {
                     leaveRoomHelp: 'click again to leave',
-                    remotesLoader: 'waiting for peers...',
+                    remotesLoader: {
+                        initialize: 'connecting...',
+                        join: 'joining room...',
+                        create: 'creating room...',
+                        wait: 'waiting for peers...',
+                        lookupFailed: [
+                            'no one seems to be here.',
+                            'ask someone to join, or refresh the page'
+                        ],
+                    },
                 },
                 remotes: {},
                 remotesLookupTimeout: false,
@@ -120,7 +129,9 @@
             },
         },
         methods: {
+
             init() {
+                console.debug(`> room > init`);
                 audioChat.init({
                     onReady: this.open,
                     onConnectionReady: this.setupConnection,
@@ -131,30 +142,25 @@
                 });
                 audioChat.start();
 
-                this.remotesLoaderText = 'connecting...';
+                this.remotesLoaderText = this.i18n.remotesLoader.initialize;
             },
+
             open() {
                 console.debug(`> room > open > action:`, this.action);
                 if (!this.action) {
+                    console.warn(`> room > open > no action, aborting`);
                     return;
                 }
+
+                this.remotesLoaderText = this.i18n.remotesLoader[this.action];
+
                 console.log(`> room > open > invoking ${this.action}()`);
-                this.remotesLoaderText = this.action === 'join' ? 'joining room...' : 'creating room...';
                 this[this.action](() => {
-                    this.remotesLoaderText = 'waiting for peers...';
+                    this.remotesLoaderText = this.i18n.remotesLoader.wait;
                     this.queueRemotesLookupExpiry();
                 });
             },
-            queueRemotesLookupExpiry() {
-                console.debug('> room > open > setting remotes timer, timeout (ms):', Config.remotesLookupTimeout);
-                setTimeout(() => {
-                    console.debug('> room > open > remotes timer called');
-                    this.remotesLoaderText = [
-                        'no one seems to be here.',
-                        'ask someone to join, or refresh the page'
-                    ];
-                }, Config.remotesLookupTimeout);
-            },
+
             create(done = () => 1) {
                 console.debug('> room > create');
                 audioChat.createRoom(this.name, (...args) => {
@@ -167,6 +173,7 @@
                     done();
                 });
             },
+
             join(done = () => 1) {
                 console.debug('> room > join');
                 audioChat.joinRoom(this.name, (...args) => {
@@ -178,6 +185,7 @@
                     done();
                 });
             },
+
             leave() {
                 if (!this.leaveClicked) {
                     this.leaveClicked = true;
@@ -188,19 +196,31 @@
                 audioChat.leaveRoom();
                 this.$emit('leave');
             },
+
+            queueRemotesLookupExpiry() {
+                console.debug('> room > open > setting remotes timer, timeout (ms):', Config.remotesLookupTimeout);
+                setTimeout(() => {
+                    console.debug('> room > open > remotes timer called');
+                    this.remotesLoaderText = this.i18n.remotesLoader.lookupFailed;
+                }, Config.remotesLookupTimeout);
+            },
+
             publishNickName(nickName) {
                 console.debug('> room > publishing nickName:', nickName);
                 audioChat.updateNick(nickName);
             },
+
             setMuteState(state) {
                 console.debug('> room > setting mute state:', state);
                 audioChat.setLocalEnabled(!state);
             },
+
             // fixme - why is this fired twice?
             setRemoteMuteState({id, muted}) {
                 console.debug(' > room > updating remote mute state', id, muted);
                 audioChat.setPeerMuted(id, muted);
             },
+
             addRemote(peerId) {
                 console.debug('> room > remote peer added', peerId);
 
@@ -222,6 +242,7 @@
 
                 this.$set(this.remotes, remote.id, remote);
             },
+
             updateRemote(peerId, state) {
                 console.debug('> room > remote peer updated', peerId, state);
                 // todo - should i implement this? look for clues in the css
@@ -240,6 +261,7 @@
                         break;
                 }
             },
+
             updatePeerDetails(peerId, message) {
                 console.debug('> room > message from peer', peerId, message);
                 switch (message.type) {
@@ -251,6 +273,7 @@
                         break;
                 }
             },
+
             sniffDevices(done) {
                 // todo - move this to App
                 if (!devices.hasBrowserSupport()) {
