@@ -37,8 +37,16 @@
             },
         },
         watch: {
-            isLoading(newValue, oldValue) {
-                if (newValue) {
+            text(newValue) {
+                this.randomizeIcon(newValue);
+            },
+            isLoading(newValue) {
+                this.randomizeIcon(newValue);
+            },
+        },
+        methods: {
+            randomizeIcon(observable) {
+                if (observable) {
                     this.icon = icons.random();
                 }
             },
