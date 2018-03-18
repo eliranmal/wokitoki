@@ -103,7 +103,7 @@
     .app {
         overflow: hidden;
         min-height: 100vh;
-        padding: 2.666rem;
+        padding: 4rem;
         transition: padding 300ms;
     }
 
