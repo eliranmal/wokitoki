@@ -14,6 +14,8 @@ const state = {
         type: 'local',
         isMuted: true,
         nickName: '',
+        nickDisabled: true,
+        muteDisabled: true,
     },
 };
 
