@@ -48,6 +48,8 @@
                     remotesLoader: 'waiting for peers...',
                 },
                 remotes: {},
+                remotesLookupTimeout: false,
+                remotesLoaderText: null,
             };
         },
         mounted() {
@@ -79,7 +81,7 @@
             remotesLoader() {
                 return {
                     isLoading: !Object.keys(this.remotes).length,
-                    text: this.i18n.remotesLoader,
+                    text: this.remotesLoaderText,
                 };
             },
             ...mapState({
@@ -128,28 +130,52 @@
                     onMessage: this.updatePeerDetails,
                 });
                 audioChat.start();
+
+                this.remotesLoaderText = 'connecting...';
             },
             open() {
-                if (this.action) {
-                    console.log(`> room > invoking ${this.action}()`);
-                    this[this.action]();
+                console.debug(`> room > open > action:`, this.action);
+                if (!this.action) {
+                    return;
                 }
+                console.log(`> room > open > invoking ${this.action}()`);
+                this.remotesLoaderText = this.action === 'join' ? 'joining room...' : 'creating room...';
+                this[this.action](() => {
+                    this.remotesLoaderText = 'waiting for peers...';
+                    this.queueRemotesLookupExpiry();
+                });
             },
-            create() {
-                audioChat.createRoom(this.name, () => {
-                    console.log('> room > created:', this.name);
+            queueRemotesLookupExpiry() {
+                console.debug('> room > open > setting remotes timer, timeout (ms):', Config.remotesLookupTimeout);
+                setTimeout(() => {
+                    console.debug('> room > open > remotes timer called');
+                    this.remotesLoaderText = [
+                        'no one seems to be here.',
+                        'ask someone to join, or refresh the page'
+                    ];
+                }, Config.remotesLookupTimeout);
+            },
+            create(done = () => 1) {
+                console.debug('> room > create');
+                audioChat.createRoom(this.name, (...args) => {
+                    console.log('> room > create done > name:', this.name);
+                    console.debug('> room > create done > args:', ...args);
                     this.$emit('created', this.name);
                     // fixme - the join() call was an attempt to fix the state when a newly created room
                     // fixme - was not connected. try and figure out if the problem is somewhere else
                     // this.join(this.name);
+                    done();
                 });
             },
-            join() {
-                audioChat.joinRoom(this.name, () => {
-                    console.log('> room > joined:', this.name);
-                    if (this.local.nickName) {
+            join(done = () => 1) {
+                console.debug('> room > join');
+                audioChat.joinRoom(this.name, (...args) => {
+                    console.log('> room > join done > name:', this.name);
+                    console.debug('> room > join done > args:', ...args);
+                    if (typeof this.local.nickName === 'string') {
                         this.publishNickName(this.local.nickName);
                     }
+                    done();
                 });
             },
             leave() {
