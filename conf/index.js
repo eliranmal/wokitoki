@@ -3,6 +3,6 @@ const envMap = {
     production: 'prod',
 };
 
-const confPath = envMap[process.env.NODE_ENV];
+const confModule = envMap[process.env.NODE_ENV];
 
-module.exports = require('./' + confPath);
+module.exports = require('./' + confModule);
