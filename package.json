@@ -6,8 +6,8 @@
   "private": true,
   "scripts": {
     "start": "npm run svg && npm run dev",
-    "dev": "cross-env NODE_ENV=development webpack-dev-server --hot",
-    "prod": "cross-env NODE_ENV=production webpack --progress --hide-modules",
+    "dev": "env NODE_ENV=development webpack-dev-server --hot",
+    "prod": "env NODE_ENV=production webpack --progress --hide-modules",
     "stage": "npm run prod && cd ./dist && python -m SimpleHTTPServer 9099",
     "svg": "vsvg -s ./resources/svg/icons -t ./src/popup/components/icons",
     "_TODO_": "activate svg script on git pre-commit hook (if there are changes in the resources/icons dir)"
@@ -36,7 +36,6 @@
     "babel-preset-stage-3": "^6.24.1",
     "clean-webpack-plugin": "^0.1.17",
     "copy-webpack-plugin": "^4.3.1",
-    "cross-env": "^5.0.5",
     "css-loader": "^0.28.7",
     "file-loader": "^1.1.4",
     "html-loader": "^0.5.4",
