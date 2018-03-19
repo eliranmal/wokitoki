@@ -20,7 +20,7 @@ const state = {
     },
 };
 
-const defaults = Object.freeze(Object.assign({}, state));
+const defaults = JSON.parse(JSON.stringify(state));
 
 const mutations = {
     update(state, payload) {
