@@ -1,4 +1,4 @@
 export default {
     remotesLookupTimeout: 1000 * 45,
-    roomNameMinChars: 7,
+    roomNameMinChars: 10,
 };
