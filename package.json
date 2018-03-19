@@ -7,7 +7,7 @@
   "scripts": {
     "start": "npm run svg && npm run dev",
     "dev": "cross-env NODE_ENV=development webpack-dev-server --hot",
-    "prod": "cross-env NODE_ENV=production webpack --progress --hide-modules",
+    "prod": "cross-env NODE_ENV=production webpack --progress --hide-modules && python -m SimpleHTTPServer 9099",
     "svg": "vsvg -s ./resources/svg/icons -t ./src/popup/components/icons",
     "_TODO_": "activate svg script on git pre-commit hook (if there are changes in the resources/icons dir)"
   },
