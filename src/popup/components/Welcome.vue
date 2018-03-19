@@ -22,11 +22,11 @@
 </template>
 
 <script>
+    import Config from '../../../conf';
 
     export default {
         name: 'welcome',
         data() {
-            const roomMinChars = 3;
             return {
                 i18n: {
                     title: 'wokitoki',
@@ -39,12 +39,12 @@
                         create: 'i want to create a new channel',
                     },
                     help: {
-                        minChars: `${roomMinChars} characters or more :)`,
+                        minChars: `${Config.roomNameMinChars} characters or more :)`,
                     },
                 },
                 action: 'join',
                 roomName: null,
-                roomMinChars: roomMinChars,
+                roomMinChars: Config.roomNameMinChars,
             };
         },
         computed: {
