@@ -50,6 +50,9 @@ body {
 }
 
 body {
+    /* todo - figure out how to make this happen for the popup page, only on browser action (extension popup opened) */
+    /*width: 600px;*/
+    /*height: 600px;*/
     font-family: 'Avenir', Helvetica, Arial, sans-serif;
     letter-spacing: 0.005em;
     color: #555;
