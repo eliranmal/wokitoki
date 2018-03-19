@@ -1,4 +1,8 @@
 import Promise from 'bluebird';
+import Logger from './logger';
+
+
+const logger = Logger.get('async');
 
 
 const noop = () => 1;
@@ -8,7 +12,7 @@ const all = (nodeFns, done = noop) => {
         return Promise.promisify(fn)();
     });
     Promise.all(promises).then(done).catch(e => {
-        console.error(e);
+        logger.error(e);
     });
 };
 

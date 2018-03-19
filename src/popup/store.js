@@ -2,9 +2,10 @@
 
 import storage from '../lib/sync-storage';
 import namespace from '../lib/namespace';
+import Logger from '../lib/logger';
 
 
-const debug = process.env.NODE_ENV === 'development';
+const logger = Logger.get('store');
 
 const state = {
     roomName: '',
@@ -24,30 +25,30 @@ const defaults = Object.freeze(Object.assign({}, state));
 const mutations = {
     update(state, payload) {
         for (let [key, value] of Object.entries(payload)) {
-            trace(`> store > mutation > update > key: '${key}', value: '${value}'`);
+            logger.debug(`mutation > update > key: '${key}', value: '${value}'`);
             const oldValue = namespace.get(key, state);
             if (oldValue !== value) {
                 namespace.set(key, value, state);
-                trace(`> store > mutation done > update > key: '${key}', old value: '${oldValue}', new value: '${namespace.get(key, state)}'`);
+                logger.debug(`mutation done > update > key: '${key}', old value: '${oldValue}', new value: '${namespace.get(key, state)}'`);
             }
         }
     },
     delete(state, {key}) {
-        trace(`> store > mutation > delete > key: '${key}'`);
+        logger.debug(`mutation > delete > key: '${key}'`);
         const value = namespace.get(key, state);
         if (value) {
             namespace.remove(key, state);
-            trace(`> store > mutation done > delete > key: '${key}'`);
+            logger.debug(`mutation done > delete > key: '${key}'`);
         }
     },
 };
 
 const actions = {
     retrieve({commit}, {key, commit: doCommit = true, done = () => 1}) {
-        trace(`> store > action [retrieve] > key: '${key}'.`);
+        logger.debug(`action [retrieve] > key: '${key}'.`);
         const defaultValue = namespace.get(key, defaults);
         storage.get({[key]: defaultValue}, (data) => {
-            trace(`> store > action [retrieve] done > response:`, data);
+            logger.debug(`action [retrieve] done > response:`, data);
             // chrome sync storage might return undefined on errors. avoid the commit if so
             if (doCommit && typeof data[key] !== 'undefined') {
                 commit('update', {[key]: data[key]});
@@ -56,26 +57,22 @@ const actions = {
         });
     },
     save({commit}, {key, value, commit: doCommit = true, done = () => 1}) {
-        trace(`> store > action [save] > key: '${key}', value: '${value}'.`);
+        logger.debug(`action [save] > key: '${key}', value: '${value}'.`);
         storage.set({[key]: value}, () => {
-            trace(`> store > action [save] done > key: '${key}', value: '${value}'`);
+            logger.debug(`action [save] done > key: '${key}', value: '${value}'`);
             doCommit && commit('update', {[key]: value});
             done();
         });
     },
     clear({commit}, {key, commit: doCommit = true, done = () => 1}) {
-        trace(`> store > action [clear] > key: '${key}'.`);
+        logger.debug(`action [clear] > key: '${key}'.`);
         const defaultValue = namespace.get(key, defaults);
         storage.remove(key, () => {
-            trace(`> store > action [clear] done > key: '${key}'`);
+            logger.debug(`action [clear] done > key: '${key}'`);
             doCommit && commit('update', {[key]: defaultValue});
             done();
         });
     },
-};
-
-const trace = (...msg) => {
-    debug && console.debug(...msg);
 };
 
 

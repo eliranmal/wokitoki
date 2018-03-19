@@ -1,5 +1,9 @@
 import namespace from './namespace';
 import SyncStoragePolyfill from './sync-storage-polyfill';
+import Logger from './logger';
+
+
+const logger = Logger.get('sync-storage');
 
 
 SyncStoragePolyfill.use();
@@ -8,12 +12,12 @@ SyncStoragePolyfill.use();
 const trace = (ctx, cmd) => {
     return (...args) => {
         const cb = args.pop();
-        console.debug(`> sync-storage > ${cmd}`, ...args);
+        logger.debug(`${cmd}`, ...args);
         args.push((...args) => {
-            console.debug(`> sync-storage > ${cmd} > done`, ...args);
+            logger.debug(`${cmd} > done`, ...args);
             const runtimeError = namespace.safeGet('chrome.runtime.lastError', global);
             if (runtimeError) {
-                console.debug('> sync-storage > chrome runtime invocation failed. error message:\n' + runtimeError.message);
+                logger.debug('chrome runtime invocation failed. error message:\n' + runtimeError.message);
             }
             cb(...args);
         });
@@ -29,7 +33,7 @@ const size = trace(chrome.storage.sync, 'getBytesInUse');
 
 const changeHandler = namespace.safeGet('chrome.storage.onChanged', global);
 if (changeHandler) {
-    changeHandler.addListener((...args) => console.log(`> sync-storage > onChange`, ...args));
+    changeHandler.addListener((...args) => logger.log(`onChange`, ...args));
 }
 
 

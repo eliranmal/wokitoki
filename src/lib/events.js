@@ -1,5 +1,8 @@
 import commands from './commands';
+import Logger from './logger';
 
+
+const logger = Logger.get('events');
 
 function apiCommandListener(api, channel) {
     return function commandListener(req, sender, sendResponse) {
@@ -10,15 +13,15 @@ function apiCommandListener(api, channel) {
             try {
                 var res = api[req.cmd].apply(api, req.args);
                 if (typeof res !== 'undefined') {
-                    console.log('api:request', req);
-                    console.log('api:response', res);
+                    logger.log('api:request', req);
+                    logger.log('api:response', res);
                     sendResponse(res);
                 } else {
-                    console.log('api:command', req);
+                    logger.log('api:command', req);
                 }
             } catch (ex) {
-                console.error('api:error', req);
-                console.error(ex);
+                logger.error('api:error', req);
+                logger.error(ex);
             }
         }
     }
@@ -27,7 +30,7 @@ function apiCommandListener(api, channel) {
 function userCommandListener(command) {
     const fn = commands[command];
     if (typeof fn === 'function') {
-        console.log('user:command', command);
+        logger.log('user:command', command);
         fn();
     }
 }

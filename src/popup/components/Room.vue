@@ -30,6 +30,9 @@
     import Peer from './Peer';
     import Loader from './Loader';
     import Config from '../../../conf';
+    import Logger from '../../lib/logger';
+
+    const logger = Logger.get('room');
 
     export default {
         name: 'room',
@@ -80,7 +83,7 @@
 
             this.sniffDevices(err => {
                 if (err) {
-                    console.error(err);
+                    logger.error(err);
                     return;
                 }
                 this.init();
@@ -131,7 +134,7 @@
         methods: {
 
             init() {
-                console.debug(`> room > init`);
+                logger.debug('init');
                 audioChat.init({
                     onReady: this.open,
                     onConnectionReady: this.setupConnection,
@@ -146,15 +149,15 @@
             },
 
             open() {
-                console.debug(`> room > open > action:`, this.action);
+                logger.debug(`open > action:`, this.action);
                 if (!this.action) {
-                    console.warn(`> room > open > no action, aborting`);
+                    logger.warn(`open > no action, aborting`);
                     return;
                 }
 
                 this.remotesLoaderText = this.i18n.remotesLoader[this.action];
 
-                console.log(`> room > open > invoking ${this.action}()`);
+                logger.log(`open > invoking ${this.action}()`);
                 this[this.action](() => {
                     this.remotesLoaderText = this.i18n.remotesLoader.wait;
                     this.queueRemotesLookupExpiry();
@@ -162,10 +165,10 @@
             },
 
             create(done = () => 1) {
-                console.debug('> room > create');
+                logger.debug('create');
                 audioChat.createRoom(this.name, (...args) => {
-                    console.log('> room > create done > name:', this.name);
-                    console.debug('> room > create done > args:', ...args);
+                    logger.log('create done > name:', this.name);
+                    logger.debug('create done > args:', ...args);
                     this.$emit('created', this.name);
                     // fixme - the join() call was an attempt to fix the state when a newly created room
                     // fixme - was not connected. try and figure out if the problem is somewhere else
@@ -175,10 +178,10 @@
             },
 
             join(done = () => 1) {
-                console.debug('> room > join');
+                logger.debug('join');
                 audioChat.joinRoom(this.name, (...args) => {
-                    console.log('> room > join done > name:', this.name);
-                    console.debug('> room > join done > args:', ...args);
+                    logger.log('join done > name:', this.name);
+                    logger.debug('join done > args:', ...args);
                     if (typeof this.local.nickName === 'string') {
                         this.publishNickName(this.local.nickName);
                     }
@@ -198,34 +201,34 @@
             },
 
             queueRemotesLookupExpiry() {
-                console.debug('> room > open > setting remotes timer, timeout (ms):', Config.remotesLookupTimeout);
+                logger.debug('open > setting remotes timer, timeout (ms):', Config.remotesLookupTimeout);
                 setTimeout(() => {
-                    console.debug('> room > open > remotes timer called');
+                    logger.debug('open > remotes timer called');
                     this.remotesLoaderText = this.i18n.remotesLoader.lookupFailed;
                 }, Config.remotesLookupTimeout);
             },
 
             publishNickName(nickName) {
-                console.debug('> room > publishing nickName:', nickName);
+                logger.debug('publishing nickName:', nickName);
                 audioChat.updateNick(nickName);
             },
 
             setMuteState(state) {
-                console.debug('> room > setting mute state:', state);
+                logger.debug('setting mute state:', state);
                 audioChat.setLocalEnabled(!state);
             },
 
             // fixme - why is this fired twice?
             setRemoteMuteState({id, muted}) {
-                console.debug(' > room > updating remote mute state', id, muted);
+                logger.debug('updating remote mute state', id, muted);
                 audioChat.setPeerMuted(id, muted);
             },
 
             addRemote(peerId) {
-                console.debug('> room > remote peer added', peerId);
+                logger.debug('remote peer added', peerId);
 
                 if (peerId === this.local.id) {
-                    console.debug('> room > added remote has the same id as local, aborting');
+                    logger.debug('added remote has the same id as local, aborting');
                     return;
                 }
 
@@ -244,7 +247,7 @@
             },
 
             updateRemote(peerId, state) {
-                console.debug('> room > remote peer updated', peerId, state);
+                logger.debug('remote peer updated', peerId, state);
                 // todo - should i implement this? look for clues in the css
                 // const container = document.querySelector('#container_' + peerDomId);
                 // container.className = 'peerContainer p2p' +
@@ -263,7 +266,7 @@
             },
 
             updatePeerDetails(peerId, message) {
-                console.debug('> room > message from peer', peerId, message);
+                logger.debug('message from peer', peerId, message);
                 switch (message.type) {
                     case 'nickname':
                         if (this.remotes[peerId].nickDisabled) {
@@ -278,11 +281,11 @@
                 // todo - move this to App
                 if (!devices.hasBrowserSupport()) {
                     // fixme - show 'sorry, get a modern browser'
-                    console.error('> no bananas. get a better browser!');
+                    logger.error('no bananas. get a better browser!');
                     return done(new Error('no support'));
                 }
                 devices.hasMics((err, hasMics) => {
-                    console.log('> has mics:', hasMics);
+                    logger.log('has mics:', hasMics);
                     // todo - implement this
                     // if (hasMics) {
                     //     document.getElementById('requirements').style.display = 'none';
@@ -302,7 +305,7 @@
             },
 
             showLocal(stream) {
-                console.debug('> room > local stream', stream);
+                logger.debug('local stream', stream);
 
                 var localAudio = document.getElementById('localAudio');
                 localAudio.disabled = false;

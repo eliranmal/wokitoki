@@ -1,6 +1,9 @@
 
 import SimpleWebRTC from 'simplewebrtc';
+import Logger from './logger';
 
+
+const logger = Logger.get('audio-chat');
 
 const noop = () => void 0;
 
@@ -48,9 +51,9 @@ const doCreate = (room, done) => {
         if (!err) {
             done(room);
         } else {
-            console.debug('> audio-chat > error', err, room);
+            logger.warn('create-room error', err, room);
             if (err === 'taken') {
-                console.debug('> audio-chat > room taken!');
+                logger.debug('room taken!');
                 room = `${room}_${Date.now()}`;
                 doCreate(room, done);
             }
@@ -102,14 +105,14 @@ const setLocalEnabled = (state) => {
 
 const broadcastNick = () => {
     if (webrtc && typeof nick === 'string') {
-        console.debug('> audio-chat > broadcasting nickname to all peers', nick);
+        logger.debug('broadcasting nickname to all peers', nick);
         webrtc.sendToAll('nickname', {nick});
     }
 };
 
 const unicastNick = (peer) => {
     if (peer && typeof nick === 'string') {
-        console.debug('> audio-chat > unicasting nickname to peer', peer.id, nick);
+        logger.debug('unicasting nickname to peer', peer.id, nick);
         peer.send('nickname', {nick});
     }
 };
@@ -210,7 +213,7 @@ const GUM = ({
 
     // local p2p/ice failure
     webrtc.on('iceFailed', (peer) => {
-        console.debug('> audio-chat > local fail', peer.sid);
+        logger.debug('local fail', peer.sid);
         track('iceFailed', {
             source: 'local',
             session: peer.sid,
@@ -222,7 +225,7 @@ const GUM = ({
 
     // remote p2p/ice failure
     webrtc.on('connectivityError', (peer) => {
-        console.debug('> audio-chat > remote fail', peer.sid);
+        logger.debug('remote fail', peer.sid);
         track('iceFailed', {
             source: 'remote',
             session: peer.sid,
