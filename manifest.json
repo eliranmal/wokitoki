@@ -10,7 +10,8 @@
   },
   "browser_action": {
     "default_title": "wokitoki",
-    "default_icon": "assets/images/logo-48.png"
+    "default_icon": "assets/images/logo-48.png",
+    "__disabled__default_popup": "popup.html"
   },
   "commands": {
     "create-popup": {
