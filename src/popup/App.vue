@@ -15,8 +15,8 @@
     import {mapState} from 'vuex';
     import async from '../lib/async';
     import Loader from './components/Loader';
-    import Welcome from './components/Welcome';
-    import Room from './components/Room';
+    import Welcome from './pages/Welcome';
+    import Room from './pages/Room';
 
     export default {
         name: 'app',

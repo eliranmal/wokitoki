@@ -24,13 +24,13 @@
 
 <script>
     import {mapState} from 'vuex';
-    import Config from '../../../config';
+    import Config from '../../../config/index';
     import Logger from '../../lib/logger';
     import audioChat from '../../lib/audio-chat';
     import devices from '../../lib/devices';
-    import Icon from './Icon';
-    import Peer from './Peer';
-    import Loader from './Loader';
+    import Icon from '../components/Icon';
+    import Peer from '../components/Peer';
+    import Loader from '../components/Loader';
 
     const logger = Logger.get('room');
 
