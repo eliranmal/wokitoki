@@ -82,20 +82,6 @@ const doJoin = (room, done) => {
     });
 };
 
-const toggleLocalEnabled = () => {
-    if (!localTrack) {
-        return;
-    }
-    localTrack.enabled = !localTrack.enabled;
-};
-
-const isLocalEnabled = () => {
-    if (!localTrack) {
-        return;
-    }
-    return localTrack.enabled;
-};
-
 const setLocalEnabled = (state) => {
     if (!localTrack) {
         return;
@@ -251,8 +237,6 @@ export default {
     updateNick,
     isPeerMuted,
     setPeerMuted,
-    toggleLocalEnabled,
     setLocalEnabled,
-    isLocalEnabled,
 };
 
