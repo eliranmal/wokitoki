@@ -62,8 +62,8 @@ const doCreate = (room, done) => {
 };
 
 const doLeave = () => {
-    webrtc.leaveRoom();
     webrtc.stopLocalVideo();
+    webrtc.leaveRoom();
     started = false;
 };
 
