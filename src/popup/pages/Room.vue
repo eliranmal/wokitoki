@@ -24,7 +24,7 @@
 
 <script>
     import {mapState} from 'vuex';
-    import Config from '../../../config/index';
+    import Config from '../../../config';
     import Logger from '../../lib/logger';
     import audioChat from '../../lib/audio-chat';
     import devices from '../../lib/devices';
