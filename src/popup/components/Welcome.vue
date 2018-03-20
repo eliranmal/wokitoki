@@ -22,7 +22,7 @@
 </template>
 
 <script>
-    import Config from '../../../conf';
+    import Config from '../../../config';
 
     export default {
         name: 'welcome',

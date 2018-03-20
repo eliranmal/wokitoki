@@ -29,7 +29,7 @@
     import Icon from './Icon';
     import Peer from './Peer';
     import Loader from './Loader';
-    import Config from '../../../conf';
+    import Config from '../../../config';
     import Logger from '../../lib/logger';
 
     const logger = Logger.get('room');
