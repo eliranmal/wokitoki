@@ -4,13 +4,14 @@ main() {
 
 	local source_dir="$( cd "$(dirname "${BASH_SOURCE}")" ; pwd -P )"
 	local root_dir="$source_dir"'/..'
-	local pack_source_dir="$root_dir"'/app'
-	local pack_target_dir="$root_dir"'/export'
+	local pack_source="$root_dir"'/dist'
+	local pack_target="$root_dir"'/export/wokitoki.zip'
 
-	echo "packing [$pack_source_dir => $pack_target_dir]"
+	echo
+	echo "packing [$pack_source => $pack_target]"
 
-	pushd "$pack_source_dir" \
-	    && zip -v "$pack_target_dir"'/wokitoki.zip' -r * \
+	pushd "$pack_source" \
+	    && zip -v "$pack_target" -r * \
 	    && popd
 }
 
