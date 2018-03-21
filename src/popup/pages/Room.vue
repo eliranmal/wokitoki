@@ -24,10 +24,9 @@
 
 <script>
     import {mapState} from 'vuex';
+    import audioChat from '../../lib/audio-chat';
     import Config from '../../../config';
     import Logger from '../../lib/logger';
-    import audioChat from '../../lib/audio-chat';
-    import devices from '../../lib/devices';
     import Icon from '../components/Icon';
     import Peer from '../components/Peer';
     import Loader from '../components/Loader';
@@ -81,13 +80,7 @@
                 done: () => this.$set(this.local, 'muteDisabled', false),
             });
 
-            this.sniffDevices(err => {
-                if (err) {
-                    logger.error(err);
-                    return;
-                }
-                this.init();
-            });
+            this.init();
         },
         computed: {
             remotesLoader() {
@@ -275,29 +268,6 @@
                         this.$set(this.remotes[peerId], 'nickName', message.payload.nick);
                         break;
                 }
-            },
-
-            sniffDevices(done) {
-                // todo - move this to App
-                if (!devices.hasBrowserSupport()) {
-                    // fixme - show 'sorry, get a modern browser'
-                    logger.error('no bananas. get a better browser!');
-                    return done(new Error('no support'));
-                }
-                devices.hasMics((err, hasMics) => {
-                    logger.log('sniffDevices > has mics:', hasMics);
-                    // todo - implement this
-                    // if (hasMics) {
-                    //     document.getElementById('requirements').style.display = 'none';
-                    // } else {
-                    //     document.getElementById('microphoneWarning').style.display = 'block';
-                    //     document.querySelector('form#createRoom>button').disabled = true;
-                    // }
-                    if (!hasMics) {
-                        return done(new Error('no mics'));
-                    }
-                    done();
-                });
             },
 
             setupConnection(sessionId) {

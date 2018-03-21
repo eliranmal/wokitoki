@@ -14,9 +14,13 @@
 <script>
     import {mapState} from 'vuex';
     import async from '../lib/async';
+    import devices from '../lib/devices';
+    import Logger from '../lib/logger';
     import Loader from './components/Loader';
     import Welcome from './pages/Welcome';
     import Room from './pages/Room';
+
+    const logger = Logger.get('app');
 
     export default {
         name: 'app',
@@ -40,6 +44,7 @@
                     key: 'roomName',
                     done,
                 }),
+                this.sniffDevices,
             ]);
         },
         computed: {
@@ -52,6 +57,27 @@
             ]),
         },
         methods: {
+            sniffDevices(done) {
+                if (!devices.hasBrowserSupport()) {
+                    // fixme - show 'sorry, get a modern browser'
+                    logger.error('sniffDevices > no bananas. get a better browser!');
+                    return done(new Error('no support'));
+                }
+                devices.hasMics((err, hasMics) => {
+                    logger.log('sniffDevices > has mics:', hasMics);
+                    // todo - implement this
+                    // if (hasMics) {
+                    //     document.getElementById('requirements').style.display = 'none';
+                    // } else {
+                    //     document.getElementById('microphoneWarning').style.display = 'block';
+                    //     document.querySelector('form#createRoom>button').disabled = true;
+                    // }
+                    if (!hasMics) {
+                        return done(new Error('no mics'));
+                    }
+                    done();
+                });
+            },
             enterRoom({name, action}) {
                 const fns = [];
                 if (action) {
