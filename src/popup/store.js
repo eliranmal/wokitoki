@@ -17,6 +17,7 @@ const state = {
         nickName: '',
         nickDisabled: true,
         muteDisabled: true,
+        audioDisabled: true,
     },
 };
 

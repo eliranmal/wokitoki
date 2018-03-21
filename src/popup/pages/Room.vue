@@ -138,7 +138,7 @@
                 audioChat.init({
                     onReady: this.open,
                     onConnectionReady: this.setupConnection,
-                    onLocalStream: this.showLocal,
+                    onLocalStream: this.setupLocal,
                     onPeerConnectionStateChanged: this.updateRemote,
                     onPeerCreated: this.addRemote,
                     onMessage: this.updatePeerDetails,
@@ -285,7 +285,7 @@
                     return done(new Error('no support'));
                 }
                 devices.hasMics((err, hasMics) => {
-                    logger.log('has mics:', hasMics);
+                    logger.log('sniffDevices > has mics:', hasMics);
                     // todo - implement this
                     // if (hasMics) {
                     //     document.getElementById('requirements').style.display = 'none';
@@ -301,22 +301,14 @@
             },
 
             setupConnection(sessionId) {
-                this.setLocalId(sessionId);
-            },
-
-            showLocal(stream) {
-                logger.debug('local stream', stream);
-
-                var localAudio = document.getElementById('localAudio');
-                localAudio.disabled = false;
-                localAudio.volume = 0;
-
-                // todo - should i implement this?
-                // document.querySelector('.local').style.display = 'block';
-            },
-
-            setLocalId(sessionId) {
+                logger.debug('setupConnection > session id:', sessionId);
+                // the local peer id is the same as the session id
                 this.$set(this.local, 'id', sessionId);
+            },
+
+            setupLocal(stream) {
+                logger.debug('setupLocal > stream:', stream);
+                this.$set(this.local, 'audioDisabled', false);
             },
         },
     };

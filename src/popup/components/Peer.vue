@@ -1,7 +1,6 @@
 <template>
     <div class="peerContainer"
          v-bind:class="type">
-        <!-- todo - it might make sense to make the avatar/input/buttons big when peer is local -->
         <div class="flexbox horizontal details">
             <div class="avatar icon round"
                  v-on:click="toggleAvatarSpin"
@@ -27,18 +26,20 @@
                 <icon v-bind="muteIcon"/>
             </button>
         </div>
-        <!--todo - don't use id like that, it could be duplicated-->
-        <audio id="localAudio" controls oncontextmenu="return false;" disabled style="display: none;"
-               v-if="isLocal"></audio>
+        <audio controls oncontextmenu="return false;" style="display: none;"
+               v-if="isLocal" ref="localAudio"></audio>
     </div>
 </template>
 
 <script>
 
+    import Logger from '../../lib/logger';
     import icons from '../../lib/icons';
     import colors from '../../lib/colors';
     import Icon from './Icon';
     import Editable from './Editable';
+
+    const logger = Logger.get('peer');
 
     export default {
         name: 'peer',
@@ -53,6 +54,7 @@
             isMuted: Boolean,
             nickDisabled: Boolean,
             muteDisabled: Boolean,
+            audioDisabled: Boolean,
         },
         data() {
             return {
@@ -67,6 +69,10 @@
                 muted: this.isMuted,
                 isAvatarSpinning: false,
             };
+        },
+        mounted() {
+            logger.debug('mounted > this.audioDisabled:', this.audioDisabled);
+            this.setAudioDisabled(this.audioDisabled);
         },
         computed: {
             isLocal() {
@@ -159,6 +165,9 @@
             isMuted(newValue, oldValue) {
                 this.toggleMute(newValue);
             },
+            audioDisabled(newValue, oldValue) {
+                this.setAudioDisabled(newValue);
+            },
         },
         methods: {
             toggleMute(state = !this.muted) {
@@ -175,6 +184,11 @@
             },
             toggleAvatarSpin() {
                 this.isAvatarSpinning = !this.isAvatarSpinning;
+            },
+            setAudioDisabled(state) {
+                const localAudio = this.$refs.localAudio;
+                logger.debug(`setAudioDisabled > new value: ${!!state}, old value: ${localAudio.disabled}.`);
+                localAudio.disabled = !!state;
             },
         },
     };
