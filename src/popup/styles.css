@@ -14,10 +14,6 @@
     justify-content: center;
 }
 
-.flexbox.pull-right {
-    justify-content: flex-end;
-}
-
 .flexbox > .fill {
     flex-grow: 1;
 }

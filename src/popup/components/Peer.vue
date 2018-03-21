@@ -6,8 +6,7 @@
             <div class="avatar icon round"
                  v-on:click="toggleAvatarSpin"
                  v-bind:class="isAvatarSpinning ? 'spin' : ''"
-                 v-bind:style="avatarStyle"
-                 v-b-tooltip.hover.html="avatarTooltip">
+                 v-bind:style="avatarStyle">
                 <icon v-bind="avatarIcon"/>
             </div>
             <output class="fill"
@@ -61,6 +60,8 @@
                     nickNamePlaceholder: 'find a cool nick name',
                     anonymousRemote: 'anonymous',
                     unknownRemote: 'unknown',
+                    muted: 'click to unmute',
+                    unmuted: 'click to mute',
                 },
                 nick: this.nickName,
                 muted: this.isMuted,
@@ -142,7 +143,7 @@
                 };
             },
             muteButtonTooltip() {
-                return this.muted ? 'unmute' : 'mute';
+                return this.muted ? this.i18n.muted : this.i18n.unmuted;
 //                 return `
 // <div style="padding: .2em .2em .5em .2em; line-height: 2;">
 //     ${this.muted ? 'unmute' : 'mute'}<br/>
@@ -175,18 +176,6 @@
             toggleAvatarSpin() {
                 this.isAvatarSpinning = !this.isAvatarSpinning;
             },
-            avatarTooltip() {
-                // tooltips are good for debugging, and more things
-                return `<pre style="color: #fff; text-align: left; white-space: pre-wrap; font-size: 12px; padding: .5em;">
-   id: ${this.id}
- type: ${this.type}
- nick: ${this.nick}
- mute: ${!!this.muted}
- spin: ${this.isAvatarSpinning}
- icon: ${this.icon}
-color: ${this.color}
-</pre>`;
-            },
         },
     };
 </script>
@@ -202,9 +191,12 @@ color: ${this.color}
         margin-right: 1rem;
     }
 
-    .details .avatar i {
-        pointer-events: none;
-    }
+    /* todo - create a tiles mode, and enable to toggle tiles/list */
+    /*.details .avatar.icon {*/
+        /*width: 5.4em;*/
+        /*height: 5.4em;*/
+        /*padding: calc((5.4em - 3.817em) / 2 + 5px);*/
+    /*}*/
 
     .local .details {
         border-bottom: 1px solid #ddd;

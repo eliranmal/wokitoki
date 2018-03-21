@@ -2,7 +2,7 @@
     <div class="room flexbox">
         <header class="flexbox horizontal">
             <h1 class="fill">{{ name }}</h1>
-            <div class="controls flexbox horizontal pull-right">
+            <div class="controls flexbox horizontal">
                 <button type="button" class="icon leave"
                         v-b-tooltip.click.blur="i18n.leaveRoomHelp"
                         v-on:blur="leaveClicked = false"
