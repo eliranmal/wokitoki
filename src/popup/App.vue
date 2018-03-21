@@ -36,6 +36,7 @@
         },
         mounted() {
             this.withLoader([
+                this.sniffDevices,
                 done => this.$store.dispatch('retrieve', {
                     key: 'roomAction',
                     done,
@@ -44,7 +45,6 @@
                     key: 'roomName',
                     done,
                 }),
-                this.sniffDevices,
             ]);
         },
         computed: {
