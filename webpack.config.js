@@ -44,6 +44,11 @@ let config = {
                 }));
             },
         }]),
+        new CopyWebpackPlugin([{
+            // todo - make a logo-32.png icon for this
+            from: 'assets/images/logo-48.png',
+            to: 'favicon.ico'
+        }]),
         new HtmlWebpackPlugin({
             filename: 'popup.html',
             template: './popup.html',
