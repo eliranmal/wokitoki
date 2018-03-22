@@ -187,6 +187,9 @@
             },
             setAudioDisabled(state) {
                 const localAudio = this.$refs.localAudio;
+                if (!localAudio) {
+                    return;
+                }
                 logger.debug(`setAudioDisabled > new value: ${!!state}, old value: ${localAudio.disabled}.`);
                 localAudio.disabled = !!state;
             },
