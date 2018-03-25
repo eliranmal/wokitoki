@@ -5,7 +5,7 @@
             <div class="controls flexbox horizontal">
                 <button type="button" class="icon leave"
                         v-b-tooltip.click.blur="i18n.leaveRoomHelp"
-                        v-on:blur="leaveClicked = false"
+                        v-on:blur="leaveCalled = false"
                         v-on:click="leave">
                     <icon name="flaticon/misc/011-bicycle" width="36" height="36" theme="dark"/>
                 </button>
@@ -183,11 +183,11 @@
             },
 
             leave() {
-                if (!this.leaveClicked) {
-                    this.leaveClicked = true;
+                if (!this.leaveCalled) {
+                    this.leaveCalled = true;
                     return;
                 }
-                this.leaveClicked = false;
+                this.leaveCalled = false;
 
                 audioChat.leaveRoom();
                 this.$emit('leave');
@@ -232,9 +232,6 @@
                     nickDisabled: true,
                     muteDisabled: true,
                 };
-
-                // todo - should i implement this?
-                // mute.style.visibility = 'hidden';
 
                 this.$set(this.remotes, remote.id, remote);
             },
