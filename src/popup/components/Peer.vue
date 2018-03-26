@@ -2,12 +2,7 @@
     <div class="peerContainer"
          v-bind:class="type">
         <div class="flexbox horizontal details">
-            <div class="avatar icon round"
-                 v-on:click="toggleAvatarSpin"
-                 v-bind:class="isAvatarSpinning ? 'spin' : ''"
-                 v-bind:style="avatarStyle">
-                <icon v-bind="avatarIcon"/>
-            </div>
+            <avatar v-bind:icon="avatarIcon" v-bind:color="color"/>
             <output class="fill"
                     v-if="isRemote"
                     v-text="remoteNickText"
@@ -38,6 +33,7 @@
     import colors from '../../lib/colors';
     import Icon from './Icon';
     import Editable from './Editable';
+    import Avatar from './Avatar';
 
     const logger = Logger.get('peer');
 
@@ -46,6 +42,7 @@
         components: {
             Icon,
             Editable,
+            Avatar,
         },
         props: {
             id: String,
@@ -67,7 +64,6 @@
                 },
                 nick: this.nickName,
                 muted: this.isMuted,
-                isAvatarSpinning: false,
             };
         },
         mounted() {
@@ -90,16 +86,15 @@
                 }
                 return this.nick ? colors.fromText(this.nick) : '#555555';
             },
-            icon() {
+            avatarIcon() {
                 if (this.nickDisabled) {
                     if (this.isRemote) {
                         return 'flaticon/nerd/050-nerd';
                     }
                     return '';
                 }
-                // todo - get a proper icon for the anonymous mode? or stick with this one? i dunno.
                 return this.nick ? icons.fromText(this.nick) : 'flaticon/nerd/039-nerd-1';
-                // return this.nick ? icons.fromText(this.nick) : 'flaticon/nerd/050-nerd';
+                // return this.nick ? icons.fromText(this.nick) : 'flaticon/nerd/050-nerd'; // alternate icons
             },
             remoteNickText() {
                 if (this.nickDisabled) {
@@ -119,21 +114,9 @@
                 }
                 return {};
             },
-            avatarStyle() {
-                return {
-                    borderColor: this.color,
-                    backgroundColor: this.color,
-                };
-            },
             nickInputStyle() {
                 return {
                     borderColor: this.color,
-                };
-            },
-            avatarIcon() {
-                return {
-                    theme: this.isDark ? 'dark' : 'light',
-                    name: this.icon
                 };
             },
             muteIcon() {
