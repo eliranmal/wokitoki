@@ -131,13 +131,20 @@
 
             init() {
                 logger.debug('init');
+                
+                // todo - make a store adapter for event-based apis, use it on audio-chat, 
+                // todo - and rely on reactivity and state changes instead of binding listeners
+                // todo - (bind them inside the adapter instead)
+                // todo - move all the audio-chat code there.
+                // todo - possible problem: when to fire the init() ?
+                
                 audioChat.init({
                     onReady: this.open,
                     onConnectionReady: this.setupConnection,
                     onLocalStream: this.setupLocal,
-                    onPeerConnectionStateChanged: this.updateRemote,
                     onPeerCreated: this.addRemote,
-                    onMessage: this.updatePeerDetails,
+                    onPeerMessage: this.updateRemoteDetails,
+                    onPeerConnectionStateChanged: this.updateRemoteState,
                 });
                 audioChat.start();
 
@@ -235,6 +242,8 @@
                 const remote = {
                     id: peerId,
                     type: 'remote',
+                    
+                    // todo - move this back into audio-chat, it's his job
                     isMuted: audioChat.isPeerMuted(peerId),
                     nickDisabled: true,
                     muteDisabled: true,
@@ -243,7 +252,7 @@
                 this.$set(this.remotes, remote.id, remote);
             },
 
-            updateRemote(peerId, state) {
+            updateRemoteState(peerId, state) {
                 logger.debug('remote peer updated', peerId, state);
                 // todo - should i implement this? look for clues in the css
                 // const container = document.querySelector('#container_' + peerDomId);
@@ -262,7 +271,7 @@
                 }
             },
 
-            updatePeerDetails(peerId, message) {
+            updateRemoteDetails(peerId, message) {
                 logger.debug('message from peer', peerId, message);
                 switch (message.type) {
                     case 'nickname':

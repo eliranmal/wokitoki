@@ -261,9 +261,28 @@ button:disabled,
 
 /* conditionals */
 
-
 @media screen and (max-width: 400px) {
     body {
         font-size: 1.2rem;
     }
+}
+
+
+
+
+
+.p2pChecking {
+    background-color: #ffeed7;
+}
+.p2pConnected, .p2pCompleted {
+    background-color: #e8f7ef;
+}
+.p2pFailed {
+    background-color: #ffe3eb
+}
+.p2pDisconnected {
+    background-color: #ffeed7;
+}
+.p2pClosed {
+    background-color: #f5f7f8;
 }

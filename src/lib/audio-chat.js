@@ -124,9 +124,9 @@ const GUM = ({
                  onReady = noop,
                  onConnectionReady = noop,
                  onLocalStream = noop,
-                 onPeerConnectionStateChanged = noop,
                  onPeerCreated = noop,
-                 onMessage = noop,
+                 onPeerMessage = noop,
+                 onPeerConnectionStateChanged = noop,
              }) => {
 
     webrtc = new SimpleWebRTC({
@@ -194,7 +194,7 @@ const GUM = ({
             unicastNick(peer);
         }
 
-        onMessage(peer.id, message);
+        onPeerMessage(peer.id, message);
     });
 
     // local p2p/ice failure
