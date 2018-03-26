@@ -114,7 +114,7 @@
             },
             'local.isMuted': {
                 handler(newValue, oldValue) {
-                    this.setMuteState(newValue);
+                    this.updateLocalMuteState(newValue);
                     if (newValue === oldValue) {
                         return;
                     }
@@ -221,8 +221,8 @@
                 audioChat.updateNick(nickName);
             },
 
-            setMuteState(state) {
-                logger.debug('setting mute state:', state);
+            updateLocalMuteState(state) {
+                logger.debug('updating local mute state:', state);
                 audioChat.setLocalEnabled(!state);
             },
 
