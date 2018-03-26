@@ -19,10 +19,10 @@
                       v-bind:placeholder="i18n.nickNamePlaceholder"
                       v-model="nick"
                       v-on:blur="updateNickName($event)"/>
-            <button type="button" class="icon"
+            <button type="button" class="icon" id="mute-button"
                     v-bind:disabled="muteDisabled"
                     v-b-tooltip.hover.html="muteButtonTooltip"
-                    v-on:click="toggleMute()">
+                    v-on:click="muteClicked">
                 <icon v-bind="muteIcon"/>
             </button>
         </div>
@@ -170,9 +170,12 @@
             },
         },
         methods: {
-            toggleMute(state = !this.muted) {
+            muteClicked() {
+                this.$root.$emit('bv::hide::tooltip', 'mute-button');
+                this.$emit('update:isMuted', !this.muted);
+            },
+            toggleMute(state) {
                 this.muted = state;
-                this.$emit('update:isMuted', this.muted);
                 this.$emit('muteToggled', {
                     id: this.id,
                     muted: this.muted,
@@ -210,9 +213,9 @@
 
     /* todo - create a tiles mode, and enable to toggle tiles/list */
     /*.details .avatar.icon {*/
-        /*width: 5.4em;*/
-        /*height: 5.4em;*/
-        /*padding: calc((5.4em - 3.817em) / 2 + 5px);*/
+    /*width: 5.4em;*/
+    /*height: 5.4em;*/
+    /*padding: calc((5.4em - 3.817em) / 2 + 5px);*/
     /*}*/
 
     .local .details {
