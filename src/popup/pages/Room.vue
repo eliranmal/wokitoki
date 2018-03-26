@@ -85,9 +85,12 @@
         computed: {
             remotesLoader() {
                 return {
-                    isLoading: !Object.keys(this.remotes).length,
-                    text: this.remotesLoaderText,
+                    isLoading: this.isRemotesEmpty,
+                    text: this.isRemotesEmpty ? this.remotesLoaderText : null,
                 };
+            },
+            isRemotesEmpty() {
+                return !Object.keys(this.remotes).length;
             },
             ...mapState({
                 local: 'local',
@@ -151,10 +154,15 @@
                 this.remotesLoaderText = this.i18n.remotesLoader[this.action];
 
                 logger.log(`open > invoking ${this.action}()`);
-                this[this.action](() => {
-                    this.remotesLoaderText = this.i18n.remotesLoader.wait;
-                    this.queueRemotesLookupExpiry();
-                });
+                this[this.action](this.onOpened);
+            },
+
+            onOpened() {
+                if (!this.isRemotesEmpty) {
+                    return;
+                }
+                this.remotesLoaderText = this.i18n.remotesLoader.wait;
+                this.queueRemotesLookupExpiry();
             },
 
             create(done = () => 1) {
@@ -196,7 +204,7 @@
             queueRemotesLookupExpiry() {
                 logger.debug('open > setting remotes timer, timeout (ms):', Config.remotesLookupTimeout);
                 setTimeout(() => {
-                    logger.debug('open > remotes timer called');
+                    logger.debug('open > remotes timer callback');
                     this.remotesLoaderText = this.i18n.remotesLoader.lookupFailed;
                 }, Config.remotesLookupTimeout);
             },
@@ -211,7 +219,6 @@
                 audioChat.setLocalEnabled(!state);
             },
 
-            // fixme - why is this fired twice?
             setRemoteMuteState({id, muted}) {
                 logger.debug('updating remote mute state', id, muted);
                 audioChat.setPeerMuted(id, muted);
