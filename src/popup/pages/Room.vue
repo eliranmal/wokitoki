@@ -24,7 +24,9 @@
 
 <script>
     import {mapState} from 'vuex';
+    import intercept from '../../lib/intercept';
     import audioChat from '../../lib/audio-chat';
+    import audioChatStoreAdapter from '../store/adapters/audio-chat';
     import Config from '../../../config';
     import Logger from '../../lib/logger';
     import Icon from '../components/Icon';
@@ -138,6 +140,14 @@
                 // todo - move all the audio-chat code there.
                 // todo - possible problem: when to fire the init() ?
                 
+                
+                // take 1: (not working... good night)
+
+                intercept.methods(audioChat, audioChatStoreAdapter);
+
+
+
+
                 audioChat.init({
                     onReady: this.open,
                     onConnectionReady: this.setupConnection,
