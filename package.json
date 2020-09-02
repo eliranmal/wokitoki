@@ -22,7 +22,7 @@
   ],
   "dependencies": {
     "bluebird": "^3.5.1",
-    "bootstrap-vue": "^2.0.0-rc.1",
+    "bootstrap-vue": "^2.0.0-rc.12",
     "minireset.css": "^0.0.3",
     "simplewebrtc": "^3.0.1",
     "vue": "^2.5.13",
